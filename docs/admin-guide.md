@@ -18,7 +18,7 @@ Today's numbers: players, games finished, average score, the spread of final for
 - **Verified**: only verified answers are accepted. Imported and AI-suggested answers start unverified.
 - **Active**: only active questions with at least one verified answer are picked for automatic games.
 
-Players do not need exact spelling: a guess that is at least 80% the same as an answer or alias is accepted (numbers must match exactly, and a guess equally close to two answers is rejected). You only need aliases for genuinely different names, not for typos.
+Players do not need exact spelling: a guess that is at least 80% the same as an answer or alias is shown a "did you mean" suggestion, and pressing Enter submits the suggested name (numbers must match exactly, and a guess equally close to two answers gets no suggestion). You only need aliases for genuinely different names, not for typos.
 
 ## Unknown answers
 

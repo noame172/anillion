@@ -29,7 +29,7 @@ export async function getUserViewer(): Promise<UserViewer | null> {
     // getUser() validates the token with Supabase; it does not trust the cookie contents.
     const { data } = await supabase.auth.getUser();
     if (!data.user) return null;
-    await ensureProfile(data.user.id, data.user.email, data.user.user_metadata?.username);
+    await ensureProfile(data.user.id, data.user.email, data.user.user_metadata?.username, Boolean(data.user.email_confirmed_at));
     return loadUserViewer(data.user.id);
   }
   const store = await cookies();

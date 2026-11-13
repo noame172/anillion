@@ -25,7 +25,12 @@ export async function rateLimit(key: string, limit: number, windowSec: number, n
 }
 
 export const LIMITS = {
+  /** Per account. */
   login: { limit: 5, windowSec: 15 * 60 },
+  /** Per address: looser, because schools and homes share one. */
+  loginIp: { limit: 30, windowSec: 15 * 60 },
+  gameStartIp: { limit: 120, windowSec: 60 * 60 },
+  answerIp: { limit: 240, windowSec: 60 },
   register: { limit: 5, windowSec: 60 * 60 },
   passwordReset: { limit: 3, windowSec: 60 * 60 },
   answer: { limit: 45, windowSec: 60 },

@@ -20,9 +20,18 @@ const failed = () => new AppError(401, 'LOGIN_FAILED', 'Those login details are 
 export const POST = api(async (req) => {
   const body = await parseBody(req, schema);
   const identifier = body.identifier.toLowerCase();
-  // Brute-force protection: per address and per account name, counted before the password is checked.
-  await limitFor('login', `ip:${clientIp(req)}`);
-  await limitFor('login', `id:${identifier}`);
+  // Brute-force protection, counted before the password is checked: per address, and per
+  // account. Email and username resolve to the same account, so they share one allowance.
+  await limitFor('loginIp', clientIp(req));
+  const account = identifier.includes('@')
+    ? await queryOne<{ id: string }>(
+        config.mode === 'dev-local'
+          ? 'select user_id as id from local_credentials where lower(email) = $1'
+          : 'select id from auth.users where lower(email) = $1',
+        [identifier],
+      )
+    : await queryOne<{ id: string }>('select id from profiles where lower(username) = $1', [identifier]);
+  await limitFor('login', account ? `user:${account.id}` : `id:${identifier}`);
 
   let userId: string | null;
   if (config.mode === 'dev-local') {
@@ -44,7 +53,7 @@ export const POST = api(async (req) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: body.password });
     if (error || !data.user) throw failed();
     userId = data.user.id;
-    await ensureProfile(userId, data.user.email, data.user.user_metadata?.username);
+    await ensureProfile(userId, data.user.email, data.user.user_metadata?.username, Boolean(data.user.email_confirmed_at));
   }
 
   const guestId = await readGuestId();

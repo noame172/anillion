@@ -1077,6 +1077,48 @@ table.table {
   color: var(--red);
 }
 
+/* ---------- did you mean ---------- */
+.suggest {
+  min-height: 44px;
+  display: flex;
+  align-items: flex-end;
+  margin-top: 10px;
+}
+.suggest-chip {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 3px solid var(--yellow);
+  background: #0a0f2c;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  animation: pop-in 0.25s ease-out;
+}
+.suggest-chip .typed {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.suggest-chip .arrow {
+  color: var(--yellow);
+  font-weight: 700;
+}
+.suggest-chip strong {
+  color: var(--yellow);
+}
+.suggest-chip .key {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
 /* ---------- sign-in extras ---------- */
 .or {
   display: flex;

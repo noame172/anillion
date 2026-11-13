@@ -20,23 +20,38 @@ export async function usernameTaken(username: string, exceptUserId?: string): Pr
   return Boolean(row);
 }
 
-function cleanUsername(wanted: string | undefined, email: string | undefined): string {
-  const base = (wanted || email?.split('@')[0] || 'player').replace(/[^A-Za-z0-9_]/g, '').slice(0, 16);
-  return base.length >= 3 ? base : `player${base}`;
+const randomDigits = () => String(Math.floor(1000 + Math.random() * 9000));
+
+/** A chosen username, or a neutral one. Never derived from the email, which would publish it. */
+function cleanUsername(wanted: string | undefined): string {
+  const base = (wanted ?? '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 16);
+  return base.length >= 3 ? base : `player${randomDigits()}`;
 }
 
-/** Make sure an authenticated user has a profile row; returns nothing. */
-export async function ensureProfile(userId: string, email: string | undefined, wantedUsername?: string): Promise<void> {
+/**
+ * Make sure an authenticated user has a profile row.
+ * `emailVerified` must be false when the email address has not been confirmed:
+ * an unconfirmed address never earns administrator rights.
+ */
+export async function ensureProfile(
+  userId: string,
+  email: string | undefined,
+  wantedUsername?: string,
+  emailVerified = true,
+): Promise<void> {
   const existing = await queryOne('select 1 from profiles where id = $1', [userId]);
   if (!existing) {
-    let username = cleanUsername(wantedUsername, email);
-    for (let i = 0; i < 5 && (await usernameTaken(username)); i++) {
-      username = `${username.slice(0, 15)}${Math.floor(1000 + Math.random() * 9000)}`;
+    let username = cleanUsername(wantedUsername);
+    for (let i = 0; i < 8 && (await usernameTaken(username)); i++) {
+      username = `${username.slice(0, 14)}${randomDigits()}`;
     }
+    if (await usernameTaken(username)) username = `p_${userId.replace(/-/g, '').slice(0, 16)}`;
     await query('insert into profiles (id, username) values ($1, $2) on conflict (id) do nothing', [userId, username]);
   }
   // First-admin bootstrap: emails listed in ADMIN_EMAILS (server-only) are promoted on sign-in.
-  if (email && config.adminEmails.includes(email.toLowerCase())) {
+  // Local accounts have no email verification, so they are never promoted on a production server.
+  const trusted = emailVerified && !(config.mode === 'dev-local' && process.env.NODE_ENV === 'production');
+  if (trusted && email && config.adminEmails.includes(email.toLowerCase())) {
     await query(`update profiles set role = 'admin' where id = $1 and role <> 'admin'`, [userId]);
   }
 }

@@ -1,13 +1,14 @@
-import { query } from '@/lib/db/client';
+import { query, queryOne } from '@/lib/db/client';
 import { closestAnswer } from './fuzzy';
 import { normalizeAnswer } from './normalize';
 
-export type AnswerMatch = { answerId: string; canonical: string };
+/** `exact` is false when the text is only a close misspelling of the answer. */
+export type AnswerMatch = { answerId: string; canonical: string; exact: boolean };
 
 /**
  * Match free text to a verified answer for this question: by canonical name
- * or alias, or by a close misspelling of one. This is the only way an answer
- * is ever accepted.
+ * or alias (exact), or by a close misspelling of one (not exact: the player is
+ * asked to confirm it before it counts).
  */
 export async function matchAnswer(questionId: string, raw: string): Promise<AnswerMatch | null> {
   const norm = normalizeAnswer(raw);
@@ -22,9 +23,24 @@ export async function matchAnswer(questionId: string, raw: string): Promise<Answ
     [questionId],
   );
   const exact = names.find((n) => n.norm === norm);
-  const id = exact?.answerId ?? closestAnswer(norm, names);
+  let id = exact?.answerId ?? null;
+  if (!id) {
+    // A guess that is exactly a name the administrator has not accepted (an
+    // unverified answer or a rejected suggestion) is that name, not a typo.
+    const refused = await queryOne(
+      `select 1 from answers a where a.question_id = $1 and not a.verified and a.norm = $2
+       union all
+       select 1 from answer_aliases al join answers a on a.id = al.answer_id
+        where al.question_id = $1 and not a.verified and al.norm = $2
+       union all
+       select 1 from unknown_answers u where u.question_id = $1 and u.norm = $2 and u.status = 'rejected'
+       limit 1`,
+      [questionId, norm],
+    );
+    if (!refused) id = closestAnswer(norm, names);
+  }
   const hit = id ? names.find((n) => n.answerId === id) : null;
-  return hit ? { answerId: hit.answerId, canonical: hit.canonical } : null;
+  return hit ? { answerId: hit.answerId, canonical: hit.canonical, exact: Boolean(exact) } : null;
 }
 
 /** Remember an unrecognised answer so an administrator can review it. */

@@ -28,6 +28,8 @@ export default function PlayPage() {
   const [fatal, setFatal] = useState('');
   const [text, setText] = useState('');
   const [feedback, setFeedback] = useState('');
+  // "Did you mean": what the player typed and the accepted answer it is close to.
+  const [suggest, setSuggest] = useState<{ typed: string; name: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [shake, setShake] = useState(false);
   const [leftMs, setLeftMs] = useState(0);
@@ -38,11 +40,17 @@ export default function PlayPage() {
   const flash = hero.arrived;
 
   const deadline = useRef<number | null>(null);
+  // Bumped on every fresh state, so a buzzer check started for an older state gives up.
+  const epoch = useRef(0);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   /** Take a fresh state from the server as the single source of truth. */
   const apply = useCallback((next: GameState) => {
+    epoch.current++;
+    if (settleTimer.current) clearTimeout(settleTimer.current);
     deadline.current = next.current ? performance.now() + next.current.timeLeftMs : null;
     setLeftMs(next.current?.timeLeftMs ?? 0);
     setTimeUp(false);
@@ -63,16 +71,23 @@ export default function PlayPage() {
     for (const f of FORMS) new Image().src = `/hero/${f}/hero.svg`;
     return () => {
       alive = false;
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- a counter, not a DOM node
+      epoch.current++;
+      if (settleTimer.current) clearTimeout(settleTimer.current);
     };
   }, [apply, router]);
 
   const live = state?.phase === 'question' && !reveal;
 
   /** After the buzzer: ask the server what happened and show it. */
-  const settleTimeout = useCallback(async () => {
+  const settleTimeout = useCallback(async (started: number) => {
+    // An answer accepted right at the buzzer has already moved the game on: nothing to settle.
+    const stale = () => epoch.current !== started;
     for (let attempt = 0; attempt < 6; attempt++) {
+      if (stale()) return;
       try {
         const today = await apiFetch<{ state: GameState | null }>('/api/game/today');
+        if (stale()) return;
         const s = today.state;
         if (!s) break;
         if (s.phase !== 'question') {
@@ -87,6 +102,7 @@ export default function PlayPage() {
       }
       await new Promise((r) => setTimeout(r, 600));
     }
+    if (stale()) return;
     setFatal('Lost contact with the server. Refresh the page to continue.');
   }, [apply]);
 
@@ -99,7 +115,8 @@ export default function PlayPage() {
       if (left <= 0) {
         clearInterval(id);
         setTimeUp(true);
-        setTimeout(settleTimeout, TIMEOUT_SETTLE_MS);
+        const started = epoch.current;
+        settleTimer.current = setTimeout(() => settleTimeout(started), TIMEOUT_SETTLE_MS);
       }
     }, 100);
     return () => clearInterval(id);
@@ -112,8 +129,14 @@ export default function PlayPage() {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    const answer = text.trim();
+    let answer = text.trim();
     if (!answer || busy || !state?.current || timeUp) return;
+    // Enter on a pending suggestion takes it: the bar changes to the suggested name and that is sent.
+    if (suggest && suggest.typed === answer) {
+      answer = suggest.name;
+      setText(answer);
+    }
+    setSuggest(null);
     setBusy(true);
     setFeedback('');
     try {
@@ -125,6 +148,10 @@ export default function PlayPage() {
         setReveal({ kind: 'accepted', row: res.result });
         hero.ascend(formForTier(res.result.tier));
         setText('');
+      } else if (res.status === 'suggestion') {
+        deadline.current = performance.now() + res.timeLeftMs;
+        setSuggest({ typed: answer, name: res.suggestion });
+        inputRef.current?.focus();
       } else if (res.status === 'unrecognised') {
         deadline.current = performance.now() + res.timeLeftMs;
         setFeedback('Try another!');
@@ -164,6 +191,7 @@ export default function PlayPage() {
       const s = await apiFetch<GameState>('/api/game/next', { method: 'POST', body: {} });
       hero.reset();
       setReveal(null);
+      setSuggest(null);
       setFeedback('');
       apply(s);
     } catch (err) {
@@ -291,7 +319,19 @@ export default function PlayPage() {
                 <div className="qhint">Rarer answers charge higher. Wrong guesses cost nothing.</div>
               </section>
 
-              <form className="answer-bar" onSubmit={submit}>
+              <div className="suggest" role="status" aria-live="polite">
+                {suggest && !timeUp && (
+                  <button type="button" className="suggest-chip" onClick={() => formRef.current?.requestSubmit()}>
+                    <span className="typed">{suggest.typed}</span>
+                    <span className="arrow" aria-hidden="true">→</span>
+                    <span className="sr-only">Did you mean</span>
+                    <strong>{suggest.name}</strong>
+                    <span className="key">Enter ↵</span>
+                  </button>
+                )}
+              </div>
+
+              <form className="answer-bar" onSubmit={submit} ref={formRef}>
                 <div
                   className={`timer${seconds <= 5 ? ' low' : ''}`}
                   style={{ '--pct': pct } as CSSProperties}
@@ -309,7 +349,10 @@ export default function PlayPage() {
                     ref={inputRef}
                     className={`input answer-input${shake ? ' shake' : ''}`}
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    onChange={(e) => {
+                      setText(e.target.value);
+                      if (suggest && e.target.value.trim() !== suggest.typed) setSuggest(null);
+                    }}
                     placeholder="Type one answer…"
                     maxLength={80}
                     autoComplete="off"

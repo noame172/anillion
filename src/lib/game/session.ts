@@ -47,6 +47,8 @@ export type GameState = {
 export type SubmitResult =
   | { status: 'accepted'; result: AnsweredRow; state: GameState }
   | { status: 'unrecognised'; timeLeftMs: number }
+  /** Close to an accepted answer: nothing is scored until the player sends the suggested name. */
+  | { status: 'suggestion'; suggestion: string; timeLeftMs: number }
   | { status: 'timeout'; state: GameState };
 
 type SessionRow = {
@@ -276,6 +278,7 @@ export async function getResultForDate(viewer: Viewer, date: string, now: Date =
 /**
  * Submit an answer for the question whose timer is running.
  * Unrecognised answers cost nothing and can be retried until time runs out;
+ * a near-miss spelling gets a "did you mean" suggestion instead of points;
  * the first valid answer scores once and locks the question.
  */
 export async function submitAnswer(
@@ -312,6 +315,13 @@ export async function submitAnswer(
     if (!match) {
       await recordUnknown(question.id, input.text);
       return { status: 'unrecognised', timeLeftMs: Math.max(0, deadlineMs(session, game)! - now.getTime()) };
+    }
+    if (!match.exact) {
+      return {
+        status: 'suggestion',
+        suggestion: match.canonical,
+        timeLeftMs: Math.max(0, deadlineMs(session, game)! - now.getTime()),
+      };
     }
 
     const rarity = await lookupRarity(game.id, match.answerId);

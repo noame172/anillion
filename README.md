@@ -10,7 +10,7 @@ A daily anime guessing game. Every day everyone gets the same seven prompts ("Na
 | Time per prompt | 30 seconds, enforced by the server |
 | Wrong guesses | Cost nothing. Keep trying until the timer ends |
 | First correct answer | Scores once and locks the prompt |
-| Spelling | A guess that is at least 80% the same as an answer (or alias) is accepted. Numbers must match exactly |
+| Spelling | A guess that is at least 80% the same as an answer (or alias) gets a "did you mean" suggestion above the answer bar (`typed → Answer`). Press Enter to take it and submit. Numbers must match exactly, and adding or dropping a whole word is not treated as a typo |
 | Points | Common 25, Rare 50, Epic 75, Ultra 100 (fixed) |
 | Rarity | From real player data: more than 10% of answers = Common, more than 3% = Rare, more than 1% = Epic, otherwise Ultra |
 | Minimum sample | 100 valid answers per prompt. Before that, the tier an admin set is used |
@@ -86,7 +86,10 @@ The app switches to Supabase mode when `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL
    ```
 
 5. **Authentication → URL Configuration**: set the Site URL to your address and add `https://YOUR-DOMAIN/auth/callback` to the redirect URLs (also `http://localhost:3000/auth/callback` for local testing).
-6. Put your own email in `ADMIN_EMAILS`, register on the site with it, and log in. You are now an administrator.
+6. **Authentication → Email Templates**: so that confirmation and reset links work in any browser (for example a link requested on a laptop and opened on a phone), change the link in two templates:
+   - *Confirm signup*: `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email`
+   - *Reset password*: `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/reset-password/update`
+7. Keep **Confirm email** switched on. Put your own email in `ADMIN_EMAILS`, register on the site with it, confirm the email, and log in. You are now an administrator. An address that has not been confirmed is never promoted.
 
 Row Level Security is on for every table and the public roles have no table access; all reads and writes go through the server.
 
@@ -94,11 +97,17 @@ Row Level Security is on for every table and the public roles have no table acce
 
 1. In Google Cloud Console create an **OAuth client ID** (type: Web application). Add the authorised redirect URI `https://YOUR-PROJECT.supabase.co/auth/v1/callback`.
 2. In Supabase open **Authentication → Providers → Google**, switch it on, and paste the client ID and secret.
-3. The "Continue with Google" button on the login and register pages now works. A profile is created on first sign-in, with a username taken from the email address (changeable on the profile page).
+3. The "Continue with Google" button on the login and register pages now works. A profile is created on first sign-in with a neutral username such as `player4821` (changeable on the profile page), so the email address is never shown.
 
 ### Logging in
 
-Players can log in with their email **or** username plus password, or with Google. Login is limited to 5 attempts per 15 minutes per address and per account name.
+Players can log in with their email **or** username plus password, or with Google. Login is limited to 5 attempts per 15 minutes per account and 30 per address.
+
+### Known limits
+
+- Guests can play without an account, so a determined person can replay as a new guest after seeing the answers and then log in to keep the better score. An account's existing score for a day is never replaced, and requests are rate limited per address, but this cannot be fully closed while guest play exists.
+- Rarity is built from all valid answers, guests included. Per-address limits slow down scripted answer stuffing; review the **Suspicious activity** list if a question's rarity looks wrong.
+- Spelling tolerance is 80%, as designed, so a five-letter name with one wrong letter gets a suggestion. A suggestion shows the player one accepted answer close to what they typed. Names that are exactly an unverified or rejected answer, differ in a number, or only add or drop a whole word get no suggestion.
 
 ## Deploy to Vercel
 

@@ -20,22 +20,44 @@ export function similarity(a: string, b: string): number {
   return 1 - distance(a, b) / Math.max(a.length, b.length);
 }
 
-const digits = (s: string) => s.replace(/\D+/g, ' ').trim();
+const ROMAN = /^(?:i{1,3}|iv|vi{0,3}|ix|x)$/;
+
+/** The numbers in a name, arabic or roman, in order. "lupin iii" and "lupin ii" differ here. */
+const numerals = (s: string) =>
+  s
+    .split(' ')
+    .flatMap((t) => (ROMAN.test(t) ? [t] : (t.match(/\d+/g) ?? [])))
+    .join(' ');
+
+/** True when one name is the other with whole words added: "dragon ball z" vs "dragon ball". */
+function differsByWholeWords(a: string, b: string): boolean {
+  const [short, long] = a.length <= b.length ? [a.split(' '), b.split(' ')] : [b.split(' '), a.split(' ')];
+  if (short.length === long.length) return false;
+  const rest = [...long];
+  for (const word of short) {
+    const i = rest.indexOf(word);
+    if (i === -1) return false;
+    rest.splice(i, 1);
+  }
+  return true;
+}
 
 /**
  * The answer a misspelt guess most likely means, or null.
- * Numbers must match exactly ("Android 17" is not "Android 18"), and a guess
+ * Numbers must match exactly ("Android 17" is not "Android 18"), a guess that only
+ * adds or drops whole words is a different title ("Dragon Ball Z"), and a guess
  * equally close to two different answers is accepted as neither.
  */
 export function closestAnswer(norm: string, candidates: { answerId: string; norm: string }[]): string | null {
-  const wantDigits = digits(norm);
+  const wantNumerals = numerals(norm);
   let best = 0;
   let winner: string | null = null;
   let tied = false;
   for (const c of candidates) {
     // Cheap bound: strings this different in length cannot reach the threshold.
     if (Math.min(norm.length, c.norm.length) / Math.max(norm.length, c.norm.length) < FUZZY_MIN) continue;
-    if (digits(c.norm) !== wantDigits) continue;
+    if (numerals(c.norm) !== wantNumerals) continue;
+    if (differsByWholeWords(norm, c.norm)) continue;
     const score = similarity(norm, c.norm);
     if (score < FUZZY_MIN) continue;
     if (score > best) {

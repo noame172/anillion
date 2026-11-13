@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const fail = (reason: string) => NextResponse.redirect(new URL(`/login?error=${reason}`, config.siteUrl));
   if (config.mode !== 'supabase') return fail('google-off');
   try {
-    await limitFor('login', `ip:${clientIp(req)}`);
+    await limitFor('loginIp', clientIp(req));
     const supabase = await supabaseServer();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',

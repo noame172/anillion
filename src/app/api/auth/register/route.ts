@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { registerLocal } from '@/lib/auth/local';
-import { emailSchema, passwordSchema, usernameSchema, usernameTaken } from '@/lib/auth/profile';
+import { emailSchema, ensureProfile, passwordSchema, usernameSchema, usernameTaken } from '@/lib/auth/profile';
 import { supabaseServer } from '@/lib/auth/supabase';
 import { readGuestId, setLocalSession } from '@/lib/auth/viewer';
 import { config } from '@/lib/config';
@@ -34,6 +34,9 @@ export const POST = api(async (req) => {
   });
   if (error) throw new AppError(400, 'SIGNUP_FAILED', 'Could not create the account. Check your details and try again.');
   // With email confirmation on there is no session yet; guest progress is merged at first login.
-  if (data.session && data.user && guestId) await mergeGuestIntoUser(guestId, data.user.id);
+  if (data.session && data.user) {
+    await ensureProfile(data.user.id, data.user.email, body.username, Boolean(data.user.email_confirmed_at));
+    if (guestId) await mergeGuestIntoUser(guestId, data.user.id);
+  }
   return { ok: true, needsVerification: !data.session };
 });

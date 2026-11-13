@@ -41,9 +41,11 @@ create policy submissions_select_own on submissions for select to authenticated 
 -- Everything else (questions, answers, aliases, rarity, stats, settings, ...)
 -- has RLS on and no policy: unreachable through the public API.
 
--- Public leaderboard data: usernames and totals only, never email, role or status.
-create view public_profiles as
-  select id, username, avatar_url, streak, longest_streak, games_played, total_points
-  from profiles
-  where not suspended;
-grant select on public_profiles to anon, authenticated;
+-- Leaderboards are built by the server. There is deliberately no public view
+-- over profiles: a simple view would run with its owner's rights, skip RLS,
+-- and be writable through the public API.
+
+-- Tables and views created later must not inherit access for the public roles.
+alter default privileges in schema public revoke all on tables from anon, authenticated;
+alter default privileges in schema public revoke all on sequences from anon, authenticated;
+alter default privileges in schema public revoke all on functions from anon, authenticated;
