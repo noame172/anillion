@@ -1115,7 +1115,7 @@ table.table {
     column-gap: 14px;
   }
   .stage .hero {
-    --hero-size: 96px;
+    width: 96px;
     grid-row: span 2;
   }
   .stage .powerbar {
