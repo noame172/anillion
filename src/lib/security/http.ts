@@ -40,7 +40,7 @@ export async function parseBody<T extends z.ZodType>(req: NextRequest, schema: T
   return schema.parse(json);
 }
 
-type Ctx = { params: Promise<Record<string, string>> };
+type Ctx = { params: Promise<any> };
 type Handler = (req: NextRequest, ctx: Ctx) => Promise<unknown>;
 
 /** Wraps a route handler: CSRF check, JSON output, and safe error responses. */
