@@ -46,7 +46,8 @@ The goal is a habit-forming daily game with streaks, leaderboards and sharing.
   Placeholder SVG art in `public/hero/<form>/`, replaceable.
 - **Tier names:** Common (25), Rare (50), Epic (75), Ultra (100); display
   names configurable in one module.
-- **Questions per game:** default 10, configurable.
+- **Questions per game:** default 7, configurable; same questions for everyone on a given day.
+- **Timer:** 30 seconds per question, enforced on the server. Wrong answers do not count and can be retried until time runs out; the first valid answer scores and locks.
 - **Optional integrations:** AniList import, AI question helper, AdSense and
   Analytics are off unless their environment variables are set.
 
