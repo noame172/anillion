@@ -25,7 +25,7 @@ export default function AdminUnknownPage() {
       </p>
       <div className="tabs">
         {(['pending', 'approved', 'rejected'] as const).map((s) => (
-          <button key={s} type="button" className="tab" aria-selected={status === s} onClick={() => setStatus(s)}>{s}</button>
+          <button key={s} type="button" className="tab" aria-pressed={status === s} onClick={() => setStatus(s)}>{s}</button>
         ))}
       </div>
       <p className="hint" role="status" aria-live="polite">{msg}</p>

@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, type CSSProperties } from 'react';
+import { AllAnswers } from '@/components/AllAnswers';
 import { AdSlot } from '@/components/Consent';
 import { Countdown } from '@/components/Countdown';
 import { Hero } from '@/components/Hero';
 import { ShareButton } from '@/components/ShareButton';
+import { useAscend } from '@/components/useAscend';
 import { apiFetch, type ApiError } from '@/lib/client/api';
 import { FORM_LABELS } from '@/lib/game/forms';
 import { shareText } from '@/lib/game/share-text';
@@ -31,6 +33,15 @@ function Results() {
   const [data, setData] = useState<{ state: GameState; streak: number; guest: boolean } | null>(null);
   const [error, setError] = useState('');
   const [missing, setMissing] = useState(false);
+  // The hero climbs from base to the final form, then the numbers appear.
+  const hero = useAscend();
+  const [shown, setShown] = useState(false);
+  const { ascend } = hero;
+  const finalForm = data?.state.form;
+
+  useEffect(() => {
+    if (finalForm) ascend(finalForm, () => setShown(true));
+  }, [finalForm, ascend]);
 
   useEffect(() => {
     const load = /^\d{4}-\d{2}-\d{2}$/.test(date ?? '')
@@ -77,10 +88,15 @@ function Results() {
 
   return (
     <div className="stack">
+      {hero.arrived && (
+        <div className="transform-flash" data-form={hero.arrived} style={{ '--aura': 'rgba(255,220,120,0.9)' } as CSSProperties} aria-hidden="true">
+          <div className="word">{FORM_LABELS[hero.arrived]}!</div>
+        </div>
+      )}
       <section className="card">
         <div className="results-top">
-          <Hero form={state.form} size={190} burst />
-          <div className="stack" style={{ gap: 10 }}>
+          <Hero form={hero.form} size={190} burst={hero.burst} />
+          <div className="stack fade-in" style={{ gap: 10, visibility: shown ? 'visible' : 'hidden' }} key={String(shown)}>
             <div className="chip" style={{ justifySelf: 'start' }}>
               Game #{state.gameNumber} · {state.date}
               {!state.completed && ' · unfinished'}
@@ -188,6 +204,8 @@ function Results() {
           real data, so its rarity is provisional.
         </p>
       </section>
+
+      {state.completed && <AllAnswers date={state.date} />}
 
       {state.completed && (
         <section className="card stack">

@@ -49,18 +49,24 @@ export async function registerLocal(input: { email: string; password: string; us
   });
 }
 
-/** Returns the user id, or null. Never reveals whether the email exists. */
-export async function loginLocal(emailRaw: string, password: string): Promise<string | null> {
-  const email = emailSchema.safeParse(emailRaw);
-  const row = email.success
-    ? await queryOne<{ user_id: string; password_hash: string }>(
-        'select user_id, password_hash from local_credentials where lower(email) = $1',
-        [email.data],
-      )
-    : null;
+/**
+ * Log in with an email address or a username. Returns the user id, or null.
+ * Never reveals whether the email or username exists.
+ */
+export async function loginLocal(identifier: string, password: string): Promise<string | null> {
+  const id = String(identifier ?? '').trim().toLowerCase().slice(0, 254);
+  type Row = { user_id: string; email: string; password_hash: string };
+  const row = id.includes('@')
+    ? await queryOne<Row>('select user_id, email, password_hash from local_credentials where lower(email) = $1', [id])
+    : await queryOne<Row>(
+        `select c.user_id, c.email, c.password_hash
+           from profiles p join local_credentials c on c.user_id = p.id
+          where lower(p.username) = $1`,
+        [id],
+      );
   const ok = await verifyPassword(String(password ?? '').slice(0, 200), row?.password_hash ?? (await DUMMY_HASH));
   if (!row || !ok) return null;
-  await ensureProfile(row.user_id, email.data);
+  await ensureProfile(row.user_id, row.email);
   return row.user_id;
 }
 

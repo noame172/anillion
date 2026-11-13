@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import { Hero } from '@/components/Hero';
-import { PowerBar } from '@/components/PowerBar';
+import { useAscend } from '@/components/useAscend';
 import { ApiError, apiFetch } from '@/lib/client/api';
-import { FORM_LABELS, FORMS, type Form } from '@/lib/game/forms';
+import { FORM_LABELS, FORMS, formForTier } from '@/lib/game/forms';
 import type { AnsweredRow, GameState, SubmitResult } from '@/lib/game/session';
 import { TIER_LABELS } from '@/lib/game/tiers';
 
@@ -30,22 +30,19 @@ export default function PlayPage() {
   const [feedback, setFeedback] = useState('');
   const [busy, setBusy] = useState(false);
   const [shake, setShake] = useState(false);
-  const [flash, setFlash] = useState<Form | null>(null);
   const [leftMs, setLeftMs] = useState(0);
   const [timeUp, setTimeUp] = useState(false);
 
+  // The hero shows the rarity of the answer just given, then drops back to base.
+  const hero = useAscend();
+  const flash = hero.arrived;
+
   const deadline = useRef<number | null>(null);
-  const lastForm = useRef<Form | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
 
   /** Take a fresh state from the server as the single source of truth. */
   const apply = useCallback((next: GameState) => {
-    if (lastForm.current && lastForm.current !== next.form) {
-      setFlash(next.form);
-      setTimeout(() => setFlash(null), 1600);
-    }
-    lastForm.current = next.form;
     deadline.current = next.current ? performance.now() + next.current.timeLeftMs : null;
     setLeftMs(next.current?.timeLeftMs ?? 0);
     setTimeUp(false);
@@ -126,10 +123,11 @@ export default function PlayPage() {
       if (res.status === 'accepted') {
         apply(res.state);
         setReveal({ kind: 'accepted', row: res.result });
+        hero.ascend(formForTier(res.result.tier));
         setText('');
       } else if (res.status === 'unrecognised') {
         deadline.current = performance.now() + res.timeLeftMs;
-        setFeedback(`“${answer}” isn’t on the list. No penalty — try another!`);
+        setFeedback('Try another!');
         setShake(true);
         setTimeout(() => setShake(false), 400);
         inputRef.current?.select();
@@ -164,6 +162,7 @@ export default function PlayPage() {
     setBusy(true);
     try {
       const s = await apiFetch<GameState>('/api/game/next', { method: 'POST', body: {} });
+      hero.reset();
       setReveal(null);
       setFeedback('');
       apply(s);
@@ -213,7 +212,7 @@ export default function PlayPage() {
       <div className="hud">
         <div className="hud-box">
           <div className="k">FORM</div>
-          <div className="v">{FORM_LABELS[state.form]}</div>
+          <div className="v">{FORM_LABELS[hero.form]}</div>
         </div>
         <div className="hud-mid">
           <div className="pips" aria-hidden="true">
@@ -237,11 +236,10 @@ export default function PlayPage() {
 
       <div className="arena">
         <div className="stage">
-          <Hero form={state.form} burst={Boolean(flash)} />
-          <div className="form-name display" data-form={state.form}>
-            {FORM_LABELS[state.form]}
+          <Hero form={hero.form} burst={hero.burst} />
+          <div className="form-name display" data-form={hero.form}>
+            {FORM_LABELS[hero.form]}
           </div>
-          <PowerBar progress={state.progress} />
         </div>
 
         <div>
@@ -267,7 +265,7 @@ export default function PlayPage() {
                 </>
               )}
               <button ref={nextRef} type="button" className="btn" onClick={next} disabled={busy}>
-                {state.completed ? 'See results' : `Next prompt (${state.position + 1}/${state.total})`}
+                {state.completed ? 'See results' : '⚡ Power Up'}
               </button>
             </section>
           ) : state.phase === 'between' ? (
@@ -278,7 +276,7 @@ export default function PlayPage() {
               </div>
               <div className="qhint">The {limitMs / 1000}-second timer starts when you continue.</div>
               <button ref={nextRef} type="button" className="btn" onClick={next} disabled={busy}>
-                Start prompt
+                ⚡ Power Up
               </button>
             </section>
           ) : (

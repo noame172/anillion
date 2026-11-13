@@ -653,31 +653,6 @@ textarea.input {
   color: #fff;
   text-shadow: 0 0 14px #cfe3ff;
 }
-.powerbar {
-  width: 100%;
-  max-width: 260px;
-}
-.powerbar .track {
-  height: 16px;
-  border-radius: 999px;
-  background: #0a0f2c;
-  border: 3px solid var(--line);
-  overflow: hidden;
-}
-.powerbar .fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--orange), var(--yellow));
-  border-radius: 999px;
-  transition: width 0.6s cubic-bezier(0.2, 0.9, 0.2, 1);
-}
-.powerbar .cap {
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
-  margin-top: 6px;
-  font-weight: 600;
-}
-
 .qcard {
   background: linear-gradient(180deg, var(--panel-2), var(--panel));
   border: 3px solid var(--line);
@@ -1101,6 +1076,97 @@ table.table {
   color: var(--red);
 }
 
+/* ---------- sign-in extras ---------- */
+.or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.or::before,
+.or::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: var(--line);
+}
+.btn.google {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* ---------- all answers (results) ---------- */
+.all-answers details {
+  border: 3px solid var(--line);
+  border-radius: 14px;
+  background: #0a0f2c;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.all-answers summary {
+  cursor: pointer;
+  padding: 12px 14px;
+  font-weight: 700;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.all-answers summary .count {
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+}
+.all-answers .body {
+  padding: 0 14px 14px;
+}
+.answer-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  max-height: 340px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 6px;
+}
+.answer-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: var(--panel);
+  border-left: 5px solid currentColor;
+  font-size: 14px;
+}
+.answer-list li .name {
+  color: var(--text, #fff);
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.answer-list li .meta {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.answer-list li.mine {
+  outline: 2px solid var(--yellow);
+}
+.fade-in {
+  animation: pop-in 0.4s ease-out;
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 720px) {
   .arena {
@@ -1116,13 +1182,6 @@ table.table {
   }
   .stage .hero {
     width: 96px;
-    grid-row: span 2;
-  }
-  .stage .powerbar {
-    max-width: none;
-  }
-  .stage .powerbar .cap {
-    text-align: left;
   }
   .qcard {
     min-height: 150px;

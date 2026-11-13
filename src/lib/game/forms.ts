@@ -1,4 +1,6 @@
-export const FORMS = ['base', 'ascended', 'azure', 'ultra'] as const;
+import type { Tier } from './tiers';
+
+export const FORMS =['base', 'ascended', 'azure', 'ultra'] as const;
 export type Form = (typeof FORMS)[number];
 
 /** Minimum total score for each hero form. */
@@ -16,6 +18,18 @@ export function formForScore(score: number): Form {
   if (score >= FORM_MIN.azure) return 'azure';
   if (score >= FORM_MIN.ascended) return 'ascended';
   return 'base';
+}
+
+/** The form the hero takes for a single answer of this rarity. */
+export const TIER_FORM: Record<Tier, Form> = { common: 'base', rare: 'ascended', epic: 'azure', ultra: 'ultra' };
+
+export function formForTier(tier: Tier | null | undefined): Form {
+  return tier ? TIER_FORM[tier] : 'base';
+}
+
+/** Every form from base up to and including the target, in order. */
+export function formPath(to: Form): Form[] {
+  return FORMS.slice(0, FORMS.indexOf(to) + 1);
 }
 
 export type Progress = {

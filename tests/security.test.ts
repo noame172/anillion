@@ -63,6 +63,14 @@ describe('accounts', () => {
     expect(await loginLocal('ASH@example.test', creds.password)).toBe(id);
   });
 
+  it('logs in with the username instead of the email', async () => {
+    const id = await registerLocal(creds);
+    expect(await loginLocal('ash_k', creds.password)).toBe(id);
+    expect(await loginLocal('ASH_K', creds.password)).toBe(id);
+    expect(await loginLocal('ash_k', 'wrong password')).toBeNull();
+    expect(await loginLocal('ash_x', creds.password)).toBeNull();
+  });
+
   it('rejects wrong passwords and unknown emails the same way', async () => {
     await registerLocal(creds);
     expect(await loginLocal(creds.email, 'wrong password')).toBeNull();
