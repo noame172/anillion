@@ -22,7 +22,8 @@ export const POST = api(async (req) => {
   const identifier = body.identifier.toLowerCase();
   // Brute-force protection, counted before the password is checked: per address, and per
   // account. Email and username resolve to the same account, so they share one allowance.
-  await limitFor('loginIp', clientIp(req));
+  const ip = clientIp(req);
+  await limitFor('loginIp', ip);
   const account = identifier.includes('@')
     ? await queryOne<{ id: string }>(
         config.mode === 'dev-local'
@@ -31,7 +32,11 @@ export const POST = api(async (req) => {
         [identifier],
       )
     : await queryOne<{ id: string }>('select id from profiles where lower(username) = $1', [identifier]);
-  await limitFor('login', account ? `user:${account.id}` : `id:${identifier}`);
+  // The tight limit is per account AND address: someone elsewhere typing wrong passwords for a
+  // public username must not be able to lock the real owner out.
+  const subject = account ? `user:${account.id}` : `id:${identifier}`;
+  await limitFor('login', `${subject}:${ip}`);
+  await limitFor('loginAccount', subject);
 
   let userId: string | null;
   if (config.mode === 'dev-local') {
@@ -48,8 +53,13 @@ export const POST = api(async (req) => {
             [identifier],
           )
         )?.email;
-    if (!email) throw failed();
     const supabase = await supabaseServer();
+    if (!email) {
+      // Do the same slow call a real account would, so response time does not reveal which
+      // usernames and emails exist.
+      await supabase.auth.signInWithPassword({ email: 'no-such-account@example.invalid', password: body.password });
+      throw failed();
+    }
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: body.password });
     if (error || !data.user) throw failed();
     userId = data.user.id;

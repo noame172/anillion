@@ -34,8 +34,13 @@ export async function GET(req: NextRequest) {
           : await supabase.auth.exchangeCodeForSession(code!);
       if (!error && data.user) {
         await ensureProfile(data.user.id, data.user.email, data.user.user_metadata?.username, Boolean(data.user.email_confirmed_at));
-        const guestId = await readGuestId();
-        if (guestId) await mergeGuestIntoUser(guestId, data.user.id);
+        // Only the `code` flow (bound to this browser by PKCE) may carry the visitor's guest game
+        // into the account. A `token_hash` link works in any browser, so anyone could send one to
+        // a victim and have the victim's guest progress merged into the sender's account.
+        if (!tokenHash) {
+          const guestId = await readGuestId();
+          if (guestId) await mergeGuestIntoUser(guestId, data.user.id);
+        }
         return NextResponse.redirect(new URL(next, config.siteUrl));
       }
     } catch (err) {

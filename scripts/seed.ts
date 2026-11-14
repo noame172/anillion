@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import { createPgDriver } from '../src/lib/db/pg';
 import { findSeedCollisions, loadSeedFile, seed } from '../src/lib/db/seed';
 
-if (fs.existsSync('.env.local')) process.loadEnvFile('.env.local');
+// .env.local wins over .env (loadEnvFile never overrides variables that are already set).
+for (const f of ['.env.local', '.env']) if (fs.existsSync(f)) process.loadEnvFile(f);
 
 async function main() {
   const url = process.env.DATABASE_URL;

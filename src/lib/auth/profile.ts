@@ -41,6 +41,7 @@ export async function ensureProfile(
   emailVerified = true,
 ): Promise<void> {
   const existing = await queryOne('select 1 from profiles where id = $1', [userId]);
+  const created = !existing;
   if (!existing) {
     // Parallel first requests (or two people picking the same name) can race here. A bare
     // "on conflict do nothing" absorbs a clash on either the id or the username; if the
@@ -60,8 +61,16 @@ export async function ensureProfile(
   // First-admin bootstrap: emails listed in ADMIN_EMAILS (server-only) are promoted on sign-in.
   // Local accounts have no email verification, so they are never promoted on a production server.
   const trusted = emailVerified && !(config.mode === 'dev-local' && process.env.NODE_ENV === 'production');
+  // Promotion happens when the profile is first created, or while the site has no active admin at
+  // all (so the list can be filled in after signing up). Otherwise it would override an admin who
+  // was deliberately demoted: they would be promoted again on their next request.
   if (trusted && email && config.adminEmails.includes(email.toLowerCase())) {
-    await query(`update profiles set role = 'admin' where id = $1 and role <> 'admin'`, [userId]);
+    await query(
+      `update profiles set role = 'admin'
+        where id = $1 and role <> 'admin'
+          and ($2::boolean or not exists (select 1 from profiles where role = 'admin' and not suspended))`,
+      [userId, created],
+    );
   }
 }
 

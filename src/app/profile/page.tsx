@@ -230,20 +230,21 @@ export default function ProfilePage() {
         <section className="card">
           <h2>Password</h2>
           <form onSubmit={changePassword}>
-            {data.mode === 'dev-local' && (
-              <div className="field">
-                <label htmlFor="pw-current">Current password</label>
-                <input
-                  id="pw-current"
-                  className="input"
-                  type="password"
-                  autoComplete="current-password"
-                  value={current}
-                  onChange={(e) => setCurrent(e.target.value)}
-                  required
-                />
-              </div>
-            )}
+            <div className="field">
+              <label htmlFor="pw-current">Current password</label>
+              <input
+                id="pw-current"
+                className="input"
+                type="password"
+                autoComplete="current-password"
+                value={current}
+                onChange={(e) => setCurrent(e.target.value)}
+                required={data.mode === 'dev-local'}
+              />
+              {data.mode !== 'dev-local' && (
+                <p className="hint">Needed unless you signed in a few minutes ago or came from a reset link.</p>
+              )}
+            </div>
             <div className="field">
               <label htmlFor="pw-next">New password</label>
               <input

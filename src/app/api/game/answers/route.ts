@@ -3,7 +3,7 @@ import { getViewer } from '@/lib/auth/viewer';
 import { forbidden } from '@/lib/errors';
 import { getAnswerSummaries, getQuestionAnswers } from '@/lib/game/answers';
 import { dateSchema } from '@/lib/game/schemas';
-import { api } from '@/lib/security/http';
+import { api, clientIp } from '@/lib/security/http';
 import { limitFor } from '@/lib/security/ratelimit';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +14,7 @@ export const dynamic = 'force-dynamic';
  * that prompt's full answer list, so the page only loads what the player opens.
  */
 export const GET = api(async (req) => {
+  await limitFor('gameReadIp', clientIp(req));
   const viewer = await getViewer();
   await limitFor('gameRead', viewer.id);
   const date = dateSchema.parse(req.nextUrl.searchParams.get('date'));

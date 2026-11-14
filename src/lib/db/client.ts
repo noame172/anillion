@@ -31,6 +31,17 @@ async function create(): Promise<Driver> {
     const { createPgDriver } = await import('./pg');
     return createPgDriver(config.databaseUrl);
   }
+  // A live server must never quietly fall back to the throwaway local database (open sign-up,
+  // data lost on restart) because one environment variable is missing.
+  if (
+    process.env.NODE_ENV === 'production' &&
+    process.env.NEXT_PHASE !== 'phase-production-build' &&
+    process.env.ALLOW_DEV_LOCAL_IN_PRODUCTION !== 'true'
+  ) {
+    throw new Error(
+      'Supabase is not fully configured: DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must all be set in production.',
+    );
+  }
   const { createPgliteDriver } = await import('./pglite');
   const { migrate } = await import('./migrate');
   const { seedIfEmpty } = await import('./seed');

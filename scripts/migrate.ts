@@ -6,7 +6,8 @@ import fs from 'node:fs';
 import { migrate } from '../src/lib/db/migrate';
 import { createPgDriver } from '../src/lib/db/pg';
 
-if (fs.existsSync('.env.local')) process.loadEnvFile('.env.local');
+// .env.local wins over .env (loadEnvFile never overrides variables that are already set).
+for (const f of ['.env.local', '.env']) if (fs.existsSync(f)) process.loadEnvFile(f);
 
 async function main() {
   const url = process.env.DATABASE_URL;

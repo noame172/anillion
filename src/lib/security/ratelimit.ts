@@ -25,8 +25,10 @@ export async function rateLimit(key: string, limit: number, windowSec: number, n
 }
 
 export const LIMITS = {
-  /** Per account. */
+  /** Per account and address together, so a stranger cannot lock the owner out from elsewhere. */
   login: { limit: 5, windowSec: 15 * 60 },
+  /** Per account, from anywhere: a high ceiling that still stops guessing spread across many addresses. */
+  loginAccount: { limit: 100, windowSec: 15 * 60 },
   /** Per address: looser, because schools and homes share one. */
   loginIp: { limit: 30, windowSec: 15 * 60 },
   gameStartIp: { limit: 120, windowSec: 60 * 60 },
@@ -35,6 +37,11 @@ export const LIMITS = {
   passwordReset: { limit: 3, windowSec: 60 * 60 },
   answer: { limit: 45, windowSec: 60 },
   gameRead: { limit: 120, windowSec: 60 },
+  /**
+   * Per address, counted before the player is identified. A request without a guest cookie
+   * gets a fresh random id every time, so the per-player limit alone never stops it.
+   */
+  gameReadIp: { limit: 300, windowSec: 60 },
   profileWrite: { limit: 10, windowSec: 60 * 60 },
   admin: { limit: 300, windowSec: 60 },
 } as const;
