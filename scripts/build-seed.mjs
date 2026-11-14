@@ -368,6 +368,15 @@ const FRANCHISES = [
   ['Name a Ghost in the Shell character.', 'Ghost in the Shell', ['Koukaku Kidoutai', 'Koukaku Kidoutai: Stand Alone Complex'], { pages: 2 }],
   ['Name a Great Pretender character.', 'Great Pretender', ['Great Pretender'], { pages: 1 }],
   ['Name a Welcome to the NHK character.', 'Welcome to the NHK', ['NHK ni Youkoso!'], { pages: 1 }],
+  // Batch 3
+  ['Name a Black Lagoon character.', 'Black Lagoon', ['Black Lagoon', 'Black Lagoon: The Second Barrage'], { pages: 3 }],
+  ['Name a Durarara!! character.', 'Durarara!!', ['Durarara!!', 'Durarara!!x2 Shou'], { pages: 3 }],
+  ['Name a Baccano! character.', 'Baccano!', ['Baccano!'], { pages: 4 }],
+  ["Name a Kobayashi's Dragon Maid character.", "Kobayashi's Dragon Maid", ['Kobayashi-san Chi no Maid Dragon', 'Kobayashi-san Chi no Maid Dragon S'], { pages: 2 }],
+  ['Name a Hikaru no Go character.', 'Hikaru no Go', ['Hikaru no Go'], { pages: 2 }],
+  ['Name a Yuri!!! on Ice character.', 'Yuri!!! on Ice', ['Yuri!!! on Ice'], { pages: 2 }],
+  ["Name a Komi Can't Communicate character.", "Komi Can't Communicate", ['Komi-san wa, Komyushou desu.', 'Komi-san wa, Komyushou desu. 2nd Season'], { pages: 3 }],
+  ['Name a Goblin Slayer character.', 'Goblin Slayer', ['Goblin Slayer', 'Goblin Slayer II'], { pages: 2 }],
 ];
 
 const STUDIO_QUESTIONS = [
@@ -375,6 +384,8 @@ const STUDIO_QUESTIONS = [
   'A-1 Pictures', 'Production I.G', 'Pierrot', 'TMS Entertainment', 'Shaft', 'CloverWorks', 'J.C.STAFF', 'P.A.Works',
   'Studio Deen', 'David Production', 'Silver Link.', 'Lerche', 'Brain\'s Base', 'Gainax', 'Doga Kobo',
   'Studio Ghibli',
+  // Batch 3
+  'Bandai Namco Pictures', 'Tatsunoko Production', 'Science SARU', 'White Fox', 'Kinema Citrus',
 ];
 
 const LISTS = [
@@ -439,6 +450,19 @@ const LISTS = [
   ['Name an anime with exactly 26 episodes.', 'Length', 'episodes:26, format:TV, sort:POPULARITY_DESC', { pages: 5 }],
   ['Name an anime OVA.', 'Format', 'format:OVA, sort:POPULARITY_DESC', { pages: 5 }],
   ['Name an ONA (anime made for streaming).', 'Format', 'format:ONA, sort:POPULARITY_DESC', { pages: 5 }],
+  // Batch 3
+  ['Name a baseball anime.', 'Genre', 'tag:"Baseball", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a basketball anime.', 'Genre', 'tag:"Basketball", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 2 }],
+  ['Name a soccer anime.', 'Genre', 'tag:"Football", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a volleyball anime.', 'Genre', 'tag:"Volleyball", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 2 }],
+  ['Name a boxing anime.', 'Genre', 'tag:"Boxing", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 2 }],
+  ['Name an anime set in space.', 'Genre', 'tag:"Space", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name a historical anime.', 'Genre', 'tag:"Historical", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime with a female protagonist.', 'Genre', 'tag:"Female Protagonist", minimumTagRank:70, sort:POPULARITY_DESC', { pages: 6 }],
+  ['Name an anime based on a visual novel.', 'Source', 'source:VISUAL_NOVEL, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2016.', 'Era', 'startDate_greater:20160000, startDate_lesser:20170000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2017.', 'Era', 'startDate_greater:20170000, startDate_lesser:20180000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2018.', 'Era', 'startDate_greater:20180000, startDate_lesser:20190000, sort:POPULARITY_DESC', { pages: 5 }],
 ];
 
 // ---------------------------------------------------------------- run
