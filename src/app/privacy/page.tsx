@@ -48,15 +48,15 @@ export default function PrivacyPage() {
       </p>
 
       <h2>Cookies</h2>
-      <ul>
-        <li><strong>Necessary:</strong> your guest identifier and, if you log in, your session.</li>
-        <li>
-          <strong>Optional:</strong>{' '}
-          {gaOn || adsOn
-            ? `With your consent we load ${[gaOn && 'Google Analytics', adsOn && 'Google AdSense'].filter(Boolean).join(' and ')}, which set their own cookies. You can choose “Necessary only” on the cookie banner; clearing this site's data in your browser brings the banner back.`
-            : 'This site does not currently load any analytics or advertising cookies.'}
-        </li>
-      </ul>
+      <p>
+        We always use a few <strong>necessary</strong> cookies: your guest identifier, your login session and a note of
+        your cookie choice. Analytics and advertising cookies are{' '}
+        {gaOn || adsOn
+          ? `only used with your consent (${[gaOn && 'Google Analytics', adsOn && 'Google AdSense'].filter(Boolean).join(' and ')}).`
+          : 'not used on this site at the moment, and would only ever be used with your consent.'}{' '}
+        If you press “Reject all” we load nothing else and nothing is passed to any third party. Every cookie is listed
+        in the <Link href="/cookies">cookie policy</Link>, where you can also change your choice.
+      </p>
 
       <h2>Service providers</h2>
       <p>

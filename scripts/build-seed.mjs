@@ -110,7 +110,15 @@ function assemble(cands, tiers, curated = []) {
     const aliases = c.aliases.filter((a) => count.get(norm(a)) === 1 || norm(a) === norm(c.name));
     take(c.name, tierAt(i++, tiers), aliases);
   }
-  return out;
+  return capUltras(out);
+}
+
+/** At most 2 ultra answers per question (3 above 1000): the last, rarest ones keep it, the rest are epic. */
+function capUltras(answers) {
+  const max = answers.length > 1000 ? 3 : 2;
+  const ultra = answers.map((a, i) => (a[1] === 'ultra' ? i : -1)).filter((i) => i >= 0);
+  for (const i of ultra.slice(0, Math.max(0, ultra.length - max))) answers[i] = [answers[i][0], 'epic', ...answers[i].slice(2)];
+  return answers;
 }
 const tierAt = (i, [a, b, c]) => (i < a ? 'common' : i < b ? 'rare' : i < c ? 'epic' : 'ultra');
 
@@ -145,6 +153,9 @@ async function listMedia(args, { pages = 4, per = 50 } = {}) {
   return out;
 }
 
+/** AniList lists some non-characters (voice-over, crowds) among a show's characters. */
+const NOT_CHARACTERS = /^(narrator|announcer|commentator|unknown|extras?|crowd|villagers?|students?|customer|reporter|host|mc|mob)$/i;
+
 async function characters(searches, { pages = 4, keep = 120 } = {}) {
   const byId = new Map();
   for (const search of searches) {
@@ -169,7 +180,7 @@ async function characters(searches, { pages = 4, keep = 120 } = {}) {
   const out = [];
   for (const n of sorted) {
     const full = n.name?.full && clean(n.name.full);
-    if (!full || !isLatin(full)) continue;
+    if (!full || !isLatin(full) || NOT_CHARACTERS.test(full)) continue;
     const { first, last } = n.name;
     const aliases = [];
     if (first && isLatin(first) && first.length >= 3) aliases.push(first);
@@ -301,7 +312,7 @@ const FRANCHISES = [
 const STUDIO_QUESTIONS = [
   'MAPPA', 'Madhouse', 'Bones', 'Wit Studio', 'ufotable', 'Kyoto Animation', 'TRIGGER', 'Sunrise', 'Toei Animation',
   'A-1 Pictures', 'Production I.G', 'Pierrot', 'TMS Entertainment', 'Shaft', 'CloverWorks', 'J.C.STAFF', 'P.A.Works',
-  'Studio Deen', 'David Production', 'Silver Link.', 'Lerche', 'Brain\'s Base', 'Studio Pierrot', 'Gainax', 'Doga Kobo',
+  'Studio Deen', 'David Production', 'Silver Link.', 'Lerche', 'Brain\'s Base', 'Gainax', 'Doga Kobo',
   'Studio Ghibli',
 ];
 
@@ -318,11 +329,11 @@ const LISTS = [
   ['Name a comedy anime.', 'Genre', 'genre:"Comedy", sort:POPULARITY_DESC', { pages: 8 }],
   ['Name a fantasy anime.', 'Genre', 'genre:"Fantasy", sort:POPULARITY_DESC', { pages: 8 }],
   ['Name an action anime.', 'Genre', 'genre:"Action", sort:POPULARITY_DESC', { pages: 8 }],
-  ['Name an isekai anime.', 'Genre', 'tag:"Isekai", sort:POPULARITY_DESC', { pages: 6 }],
-  ['Name an anime about time travel.', 'Genre', 'tag:"Time Manipulation", sort:POPULARITY_DESC', { pages: 3 }],
-  ['Name a school anime.', 'Genre', 'tag:"School", sort:POPULARITY_DESC', { pages: 8 }],
-  ['Name a shounen anime.', 'Genre', 'tag:"Shounen", sort:POPULARITY_DESC', { pages: 8 }],
-  ['Name a seinen anime.', 'Genre', 'tag:"Seinen", sort:POPULARITY_DESC', { pages: 6 }],
+  ['Name an isekai anime.', 'Genre', 'tag:"Isekai", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 6 }],
+  ['Name an anime about time travel.', 'Genre', 'tag:"Time Manipulation", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a school anime.', 'Genre', 'tag:"School", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 8 }],
+  ['Name a shounen anime.', 'Genre', 'tag:"Shounen", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 8 }],
+  ['Name a seinen anime.', 'Genre', 'tag:"Seinen", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 6 }],
   ['Name an anime movie.', 'Movies', 'format:MOVIE, sort:POPULARITY_DESC', { pages: 8 }],
   ['Name an anime that aired in the 1990s.', 'Era', 'startDate_greater:19900000, startDate_lesser:20000000, sort:POPULARITY_DESC', { pages: 5 }],
   ['Name an anime that aired in the 2000s.', 'Era', 'startDate_greater:20000000, startDate_lesser:20100000, sort:POPULARITY_DESC', { pages: 6 }],

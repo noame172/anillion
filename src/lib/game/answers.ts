@@ -1,23 +1,24 @@
 import { query, queryOne } from '@/lib/db/client';
-import { getGameByDate } from './daily';
+import { getGameByDate, type DailyGame } from './daily';
 import type { Viewer } from './session';
 import { pointsForTier, type Tier } from './tiers';
 
 export type ListedAnswer = { name: string; tier: Tier; points: number; share: number | null };
-export type QuestionAnswers = {
+export type QuestionSummary = {
   position: number;
   question: string;
   /** The answer this player gave, if any. */
   yours: string | null;
-  answers: ListedAnswer[];
+  /** How many answers the full list holds. */
+  count: number;
 };
+export type QuestionAnswers = { position: number; answers: ListedAnswer[] };
 
 /**
- * Every accepted answer for a game, with the rarity frozen for that game.
- * Only for a player who has finished that game: until then the list stays
- * on the server. Returns null when it is not available to this viewer.
+ * The player's finished session for a game, with the game itself. Only a player who has
+ * finished that game may see its answer list: until then it stays on the server.
  */
-export async function getAllAnswers(viewer: Viewer, date: string): Promise<QuestionAnswers[] | null> {
+async function finishedGame(viewer: Viewer, date: string): Promise<{ game: DailyGame; sessionId: string } | null> {
   const game = await getGameByDate(date);
   if (!game) return null;
   const col = viewer.kind === 'user' ? 'user_id' : 'guest_id';
@@ -25,34 +26,51 @@ export async function getAllAnswers(viewer: Viewer, date: string): Promise<Quest
     `select id from game_sessions where game_id = $1 and ${col} = $2 and status = 'completed'`,
     [game.id, viewer.id],
   );
-  if (!session) return null;
+  return session ? { game, sessionId: session.id } : null;
+}
 
-  const rows = await query<{ question_id: string; id: string; name: string; tier: Tier; share: number | null }>(
-    `select a.question_id, a.id, a.canonical as name,
-            coalesce(rs.tier, a.provisional_tier) as tier, rs.share::float8 as share
-       from daily_game_questions dq
-       join answers a on a.question_id = dq.question_id and a.verified
-       left join rarity_snapshots rs on rs.game_id = dq.game_id and rs.answer_id = a.id
-      where dq.game_id = $1`,
+/** One line per prompt: cheap to load, so the results page opens straight away. */
+export async function getAnswerSummaries(viewer: Viewer, date: string): Promise<QuestionSummary[] | null> {
+  const found = await finishedGame(viewer, date);
+  if (!found) return null;
+  const { game, sessionId } = found;
+  const counts = await query<{ question_id: string; n: number }>(
+    `select a.question_id, count(*)::int as n
+       from daily_game_questions dq join answers a on a.question_id = dq.question_id and a.verified
+      where dq.game_id = $1 group by a.question_id`,
     [game.id],
   );
-  const mine = await query<{ question_id: string; answer_id: string | null }>(
-    'select question_id, answer_id from submissions where session_id = $1',
-    [session.id],
+  const mine = await query<{ question_id: string; canonical: string | null }>(
+    `select s.question_id, a.canonical from submissions s left join answers a on a.id = s.answer_id where s.session_id = $1`,
+    [sessionId],
   );
-  const mineByQuestion = new Map(mine.map((m) => [m.question_id, m.answer_id]));
+  const countBy = new Map(counts.map((c) => [c.question_id, c.n]));
+  const mineBy = new Map(mine.map((m) => [m.question_id, m.canonical]));
+  return game.questions.map((q) => ({
+    position: q.position,
+    question: q.text,
+    yours: mineBy.get(q.id) ?? null,
+    count: countBy.get(q.id) ?? 0,
+  }));
+}
 
-  return game.questions.map((q) => {
-    const list = rows.filter((r) => r.question_id === q.id);
-    const yoursId = mineByQuestion.get(q.id);
-    return {
-      position: q.position,
-      question: q.text,
-      yours: list.find((r) => r.id === yoursId)?.name ?? null,
-      answers: list
-        .map((r) => ({ name: r.name, tier: r.tier, points: pointsForTier(r.tier), share: r.share }))
-        // Most popular first, then alphabetical.
-        .sort((a, b) => (b.share ?? -1) - (a.share ?? -1) || a.points - b.points || a.name.localeCompare(b.name)),
-    };
-  });
+/** The full answer list for one prompt, loaded when the player opens it. */
+export async function getQuestionAnswers(viewer: Viewer, date: string, position: number): Promise<QuestionAnswers | null> {
+  const found = await finishedGame(viewer, date);
+  const question = found?.game.questions.find((q) => q.position === position);
+  if (!found || !question) return null;
+  const rows = await query<{ name: string; tier: Tier; share: number | null }>(
+    `select a.canonical as name, coalesce(rs.tier, a.provisional_tier) as tier, rs.share::float8 as share
+       from answers a
+       left join rarity_snapshots rs on rs.game_id = $1 and rs.answer_id = a.id
+      where a.question_id = $2 and a.verified`,
+    [found.game.id, question.id],
+  );
+  return {
+    position,
+    answers: rows
+      .map((r) => ({ name: r.name, tier: r.tier, points: pointsForTier(r.tier), share: r.share }))
+      // Most popular first, then rarer, then alphabetical.
+      .sort((a, b) => (b.share ?? -1) - (a.share ?? -1) || a.points - b.points || a.name.localeCompare(b.name)),
+  };
 }

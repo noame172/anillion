@@ -70,7 +70,22 @@ describe('rarity', () => {
     expect(r.get('d')).toMatchObject({ tier: 'epic', share: 2.5 });
     expect(r.get('f')).toMatchObject({ tier: 'epic', share: 1.5 });
     expect(r.get('e')).toMatchObject({ tier: 'ultra', share: 1 });
-    expect(r.get('g')).toMatchObject({ tier: 'ultra', share: 0 });
+    // Nobody has given 'g' yet, so it has not earned ultra.
+    expect(r.get('g')).toMatchObject({ tier: 'epic', share: 0 });
+  });
+
+  it('allows at most 2 ultras per question, or 3 above 1000 answers', () => {
+    const many = (n: number) =>
+      Array.from({ length: n }, (_, i) => ({ answerId: `x${String(i).padStart(4, '0')}`, count: i < 5 ? 1 : 0, provisionalTier: 'ultra' as const }));
+    const ultras = (r: ReturnType<typeof computeRarity>) => [...r.values()].filter((v) => v.tier === 'ultra').length;
+    // Provisional: only 2 of 50 admin-set ultras survive.
+    expect(ultras(computeRarity(many(50), thresholds, 1000))).toBe(2);
+    expect(ultras(computeRarity(many(1001), thresholds, 1_000_000))).toBe(3);
+    // Player data: 1000 answers each at or below 1%, only the 2 rarest found by players are ultra.
+    const real = Array.from({ length: 60 }, (_, i) => ({ answerId: `r${i}`, count: i < 40 ? 1 : 0, provisionalTier: 'common' as const }));
+    const r = computeRarity(real, { common: 10, rare: 3, epic: 1 }, 10);
+    expect(ultras(r)).toBe(2);
+    expect(r.get('r50')!.tier).toBe('epic');
   });
 
   it('falls back to provisional tiers below the minimum sample', () => {

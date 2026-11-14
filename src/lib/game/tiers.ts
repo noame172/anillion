@@ -12,6 +12,14 @@ export const TIER_LABELS: Record<Tier, string> = {
   ultra: 'Ultra Answer',
 };
 
+/**
+ * Ultra is meant to be genuinely rare: at most 2 answers per question, or 3 once a
+ * question has more than 1000 answers. Anything that would be ultra beyond that is epic.
+ */
+export function maxUltra(answerCount: number): number {
+  return answerCount > 1000 ? 3 : 2;
+}
+
 export function pointsForTier(tier: Tier): number {
   return TIER_POINTS[tier];
 }

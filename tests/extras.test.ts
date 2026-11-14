@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getAllAnswers } from '@/lib/game/answers';
+import { getAnswerSummaries, getQuestionAnswers } from '@/lib/game/answers';
 import { formForTier, formPath } from '@/lib/game/forms';
 import { closestAnswer, similarity } from '@/lib/game/fuzzy';
 import { nextQuestion, startSession, submitAnswer } from '@/lib/game/session';
@@ -71,9 +71,10 @@ describe('all answers after the game', () => {
 
   it('is locked until the player has finished that game', async () => {
     const p = guest();
-    expect(await getAllAnswers(p, '2026-03-10')).toBeNull();
+    expect(await getAnswerSummaries(p, '2026-03-10')).toBeNull();
     await startSession(p, DAY1);
-    expect(await getAllAnswers(p, '2026-03-10')).toBeNull();
+    expect(await getAnswerSummaries(p, '2026-03-10')).toBeNull();
+    expect(await getQuestionAnswers(p, '2026-03-10', 0)).toBeNull();
   });
 
   it('lists every verified answer with its frozen tier once the game is done', async () => {
@@ -85,15 +86,19 @@ describe('all answers after the game', () => {
       if (res.status !== 'accepted') throw new Error('expected accepted');
       state = i < 6 ? await nextQuestion(p, DAY1) : res.state;
     }
-    const all = await getAllAnswers(p, '2026-03-10');
+    const all = await getAnswerSummaries(p, '2026-03-10');
     expect(all).toHaveLength(7);
-    const first = all![0];
-    expect(first.position).toBe(0);
-    expect(first.yours).toMatch(/^u\d$/);
+    expect(all![0]).toMatchObject({ position: 0, count: 4 });
+    expect(all![0].yours).toMatch(/^u\d$/);
+    // The summary carries no answer lists; each one is fetched separately.
+    expect(JSON.stringify(all)).not.toContain('"tier"');
+    const first = (await getQuestionAnswers(p, '2026-03-10', 0))!;
     expect(first.answers.map((a) => a.tier).sort()).toEqual(['common', 'epic', 'rare', 'ultra']);
     expect(first.answers.find((a) => a.tier === 'ultra')).toMatchObject({ points: 100, share: null });
+    expect(await getQuestionAnswers(p, '2026-03-10', 99)).toBeNull();
     // Another player who has not finished still gets nothing.
-    expect(await getAllAnswers(guest(), '2026-03-10')).toBeNull();
+    expect(await getAnswerSummaries(guest(), '2026-03-10')).toBeNull();
+    expect(await getQuestionAnswers(guest(), '2026-03-10', 0)).toBeNull();
   });
 });
 

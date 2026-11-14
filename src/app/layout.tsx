@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Bungee, Rubik } from 'next/font/google';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ConsentProvider } from '@/components/Consent';
+import { ConsentProvider, CookieSettingsButton } from '@/components/Consent';
 import { SiteHeader } from '@/components/SiteHeader';
 import './globals.css';
 
@@ -42,6 +42,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <footer className="site-footer">
               <Link href="/how-to-play">How to play</Link>
               <Link href="/privacy">Privacy</Link>
+              <Link href="/cookies">Cookies</Link>
+              <CookieSettingsButton />
               <Link href="/terms">Terms</Link>
               <Link href="/contact">Contact</Link>
               <div style={{ marginTop: 8 }}>

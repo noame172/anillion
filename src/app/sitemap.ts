@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ['/leaderboard', 'hourly', 0.7],
     ['/how-to-play', 'monthly', 0.6],
     ['/privacy', 'yearly', 0.2],
+    ['/cookies', 'yearly', 0.2],
     ['/terms', 'yearly', 0.2],
     ['/contact', 'yearly', 0.2],
   ];

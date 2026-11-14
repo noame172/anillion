@@ -1,5 +1,5 @@
 import { query, queryOne } from '@/lib/db/client';
-import { tierForShare, type Thresholds, type Tier } from './tiers';
+import { maxUltra, tierForShare, type Thresholds, type Tier } from './tiers';
 
 export type Rarity = { tier: Tier; share: number | null; provisional: boolean };
 
@@ -25,6 +25,13 @@ export function computeRarity(
       out.set(a.answerId, { tier: a.provisionalTier, share: null, provisional: true });
     }
   }
+  // Keep ultra rare. With player data, the rarest answers players actually found keep it
+  // (an answer nobody has given yet is not proven rare); with provisional tiers, the
+  // first ones in a stable order do. The rest drop to epic.
+  const ultras = answers
+    .filter((a) => out.get(a.answerId)!.tier === 'ultra')
+    .sort((x, y) => (x.count === 0 ? 1 : 0) - (y.count === 0 ? 1 : 0) || x.count - y.count || x.answerId.localeCompare(y.answerId));
+  for (const a of ultras.slice(maxUltra(answers.length))) out.set(a.answerId, { ...out.get(a.answerId)!, tier: 'epic' });
   return out;
 }
 
