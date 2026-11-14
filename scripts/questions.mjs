@@ -16,6 +16,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { countUltra, ensureUltra, ULTRAS_PER_QUESTION } from './ultra.mjs';
 
 const SEED = path.join('data', 'seed.json');
 const LIST = path.join('data', 'questions.txt');
@@ -159,6 +160,19 @@ function report(d) {
     return `${c.text}: ${bits.join(', ')}`;
   });
   if (!d.removed.length && !d.added.length && !d.changed.length) console.log('\nThe file matches data/seed.json. No changes.');
+  const noUltra = d.questions.filter((q) => countUltra(q.answers) < ULTRAS_PER_QUESTION);
+  show(`Questions with fewer than ${ULTRAS_PER_QUESTION} ultra answers (apply fixes these)`, noUltra, (q) => `${q.text} (${countUltra(q.answers)})`);
+}
+
+/** Give every question its ultra answers. Returns the fixed list and how many questions were changed. */
+function withUltras(questions) {
+  let fixed = 0;
+  const out = questions.map((q) => {
+    const { answers, promoted } = ensureUltra(q.answers);
+    if (promoted) fixed++;
+    return promoted ? { ...q, answers } : q;
+  });
+  return { questions: out, fixed };
 }
 
 const cmd = process.argv[2];
@@ -175,10 +189,18 @@ if (cmd === 'export') {
   }
   report(d);
   if (cmd === 'apply') {
-    writeSeed(d.questions);
-    console.log(`\nUpdated ${SEED}: ${d.questions.length} questions. Now run: npm run db:sync`);
+    const { questions, fixed } = withUltras(d.questions);
+    writeSeed(questions);
+    if (fixed) writeList(questions); // keep the list file in step with the ultras that were added
+    console.log(`\nUpdated ${SEED}: ${questions.length} questions.${fixed ? ` ${fixed} question(s) got ultra answers added (the least popular answers).` : ''} Now run: npm run db:sync`);
   }
+} else if (cmd === 'ultra') {
+  // Give every question in data/seed.json its ultra answers, then rewrite the list file.
+  const { questions, fixed } = withUltras(readSeed());
+  writeSeed(questions);
+  writeList(questions);
+  console.log(`${fixed} question(s) got ultra answers added. Now run: npm run db:sync -- --apply`);
 } else {
-  console.log('Usage: npm run questions export | check | apply');
+  console.log('Usage: npm run questions export | check | apply | ultra');
   process.exit(1);
 }

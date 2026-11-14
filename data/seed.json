@@ -4166,8 +4166,8 @@
       ["Cedre","epic"],
       ["Garilhe","epic"],
       ["Heinz","epic"],
-      ["Priest","epic"],
-      ["Fudousan Gyousha","epic","Real Estate Agent"]
+      ["Priest","ultra"],
+      ["Fudousan Gyousha","ultra","Real Estate Agent"]
     ]
   },
   {
@@ -4448,8 +4448,8 @@
       ["Mirin Hinokuchi","epic","Mirin","Hinokuchi","Hinokuchi Mirin"],
       ["Ienaga","epic","Yeti"],
       ["Maki","epic"],
-      ["Subaru Suruga","epic","Subaru","Suruga","Suruga Subaru"],
-      ["Tenchou","epic"]
+      ["Subaru Suruga","ultra","Subaru","Suruga","Suruga Subaru"],
+      ["Tenchou","ultra"]
     ]
   },
   {
@@ -4493,8 +4493,8 @@
       ["Seito","epic"],
       ["Enji","epic"],
       ["TV-nai Onsei","epic"],
-      ["Ryou no Classmate","epic"],
-      ["Seikimatsu Classmate","epic"]
+      ["Ryou no Classmate","ultra"],
+      ["Seikimatsu Classmate","ultra"]
     ]
   },
   {
@@ -5432,8 +5432,8 @@
       ["Áki","epic","Ake","Åge"],
       ["Magni","epic"],
       ["Grim","epic","Grimm"],
-      ["Haldor","epic"],
-      ["Hakon","epic","Harkon"]
+      ["Haldor","ultra"],
+      ["Hakon","ultra","Harkon"]
     ]
   },
   {
@@ -5480,8 +5480,8 @@
       ["Owen","epic"],
       ["Jerome","epic"],
       ["Lord Gennon","epic"],
-      ["Tapasa","epic"],
-      ["Julius","epic"]
+      ["Tapasa","ultra"],
+      ["Julius","ultra"]
     ]
   },
   {
@@ -5521,8 +5521,8 @@
       ["Moknach","epic"],
       ["Belius","epic"],
       ["Zach","epic"],
-      ["Pluton Ainzach","epic","Pluton","Ainzach","Ainzach Pluton"],
-      ["Igvarge","epic"]
+      ["Pluton Ainzach","ultra","Pluton","Ainzach","Ainzach Pluton"],
+      ["Igvarge","ultra"]
     ]
   },
   {
@@ -5940,8 +5940,8 @@
       ["Rikurou Aisaka","epic","Rikurou","Aisaka Rikurou"],
       ["Inage","epic"],
       ["Seiji Takasu","epic","Seiji","Takasu Seiji"],
-      ["Murase","epic"],
-      ["Yuu Aisaka","epic","Yuu","Aisaka Yuu","Taiga's Mother","Taiga Haha"]
+      ["Murase","ultra"],
+      ["Yuu Aisaka","ultra","Yuu","Aisaka Yuu","Taiga's Mother","Taiga Haha"]
     ]
   },
   {
@@ -5985,8 +5985,8 @@
       ["Kyou no Chichi","epic","Kyou's Father"],
       ["Kisa no Haha","epic","Kisa's Mother"],
       ["Hiroshi","epic"],
-      ["Yuusuke","epic"],
-      ["Kazuma no Sofu","epic","Kazuma's Grandfather"]
+      ["Yuusuke","ultra"],
+      ["Kazuma no Sofu","ultra","Kazuma's Grandfather"]
     ]
   },
   {
@@ -6353,8 +6353,8 @@
       ["Aizenbou Fuguhara","epic","Aizenbou","Fuguhara","Fuguhara Aizenbou"],
       ["Takaharu Fukuroda","epic","Takaharu","Fukuroda","Fukuroda Takaharu"],
       ["Jack Naitou","epic","Jack","Naitou","Naitou Jack"],
-      ["Takiji Kuroido","epic","Takiji","Kuroido","Kuroido Takiji"],
-      ["Ryousuke Todoroki","epic","Ryousuke","Todoroki","Todoroki Ryousuke"]
+      ["Takiji Kuroido","ultra","Takiji","Kuroido","Kuroido Takiji"],
+      ["Ryousuke Todoroki","ultra","Ryousuke","Todoroki","Todoroki Ryousuke"]
     ]
   },
   {
@@ -6396,8 +6396,8 @@
       ["Cytomander","epic","The Swift"],
       ["Gabal Docker","epic","Gabal","Docker","Docker Gabal"],
       ["Tetsukan Littner","epic","Tetsukan","Littner Tetsukan"],
-      ["Guinble Kaito","epic","Guinble","Kaito","Kaito Guinble"],
-      ["Thymilph","epic","The Crasher","The Raging Wave"]
+      ["Guinble Kaito","ultra","Guinble","Kaito","Kaito Guinble"],
+      ["Thymilph","ultra","The Crasher","The Raging Wave"]
     ]
   },
   {
@@ -6418,8 +6418,8 @@
       ["Tomohisa Kaname","rare","Tomohisa","Kaname Tomohisa"],
       ["Kyousuke Kamijou","rare","Kyousuke","Kamijou","Kamijou Kyousuke"],
       ["Nakazawa","rare"],
-      ["Host B","rare"],
-      ["Shou","rare"]
+      ["Host B","ultra"],
+      ["Shou","ultra"]
     ]
   },
   {
@@ -6543,8 +6543,8 @@
       ["Oliver","epic"],
       ["Dansei Kyaku","epic","Male Customer"],
       ["Toby Selwyn","epic","Toby","Selwyn","Selwyn Toby"],
-      ["Eckhart Munter","epic","Eckhart","Munter","Munter Eckhart"],
-      ["Merkulov","epic","Brigadier General Merkulov"]
+      ["Eckhart Munter","ultra","Eckhart","Munter","Munter Eckhart"],
+      ["Merkulov","ultra","Brigadier General Merkulov"]
     ]
   },
   {
@@ -6591,8 +6591,8 @@
       ["Hansen","epic"],
       ["Masaru","epic"],
       ["Eki Kounai Announcer","epic","Station Announcer"],
-      ["TV Newscaster","epic"],
-      ["Kojima","epic"]
+      ["TV Newscaster","ultra"],
+      ["Kojima","ultra"]
     ]
   },
   {
@@ -6717,8 +6717,8 @@
       ["Tsutomu Iwamura","epic","Tsutomu","Iwamura","Iwamura Tsutomu"],
       ["Hiroshi Kobori","epic","Kobori","Kobori Hiroshi"],
       ["Yukinori Matsumoto","epic","Yukinori","Matsumoto","Matsumoto Yukinori"],
-      ["Yoshinori Susa","epic","Yoshinori","Susa","Susa Yoshinori"],
-      ["Kenji Takeda","epic","Kenji","Takeda","Takeda Kenji"]
+      ["Yoshinori Susa","ultra","Yoshinori","Susa","Susa Yoshinori"],
+      ["Kenji Takeda","ultra","Kenji","Takeda","Takeda Kenji"]
     ]
   },
   {
@@ -6758,8 +6758,8 @@
       ["Kazukiyo Souga","epic","Kazukiyo","Souga","Souga Kazukiyo"],
       ["Yabu","epic"],
       ["Isao Sonoda","epic","Isao","Sonoda","Sonoda Isao","Misuzu"],
-      ["Chikage Ukyou","epic","Chikage","Ukyou","Ukyou Chikage"],
-      ["Seika Ayanokoji","epic","Seika","Ayanokoji","Ayanokoji Seika"]
+      ["Chikage Ukyou","ultra","Chikage","Ukyou","Ukyou Chikage"],
+      ["Seika Ayanokoji","ultra","Seika","Ayanokoji","Ayanokoji Seika"]
     ]
   },
   {
@@ -6806,8 +6806,8 @@
       ["Keikan","epic"],
       ["Hanzaisha","epic"],
       ["Regro Haha","epic","Regro's Mother"],
-      ["Shinkenkan","epic"],
-      ["Jukensei","epic"]
+      ["Shinkenkan","ultra"],
+      ["Jukensei","ultra"]
     ]
   },
   {
@@ -6941,8 +6941,8 @@
       ["Teekyuu 2","epic","Te-kyuu 2"],
       ["Rage of Bahamut: Genesis - Short Story","epic","Shingeki no Bahamut: GENESIS - Short story"],
       ["The Rose of Versailles","epic","Versailles no Bara Movie","The Rose of Versailles Movie","Róża Wersalu","Rosa de Versalhes"],
-      ["Attack On Titan: The Final Season Specials","epic","Shingeki no Kyojin: Chimi Kyara Gekijou - Final","Shingeki no Kyojin: The Final Season Specials","Attack On Titan"],
-      ["Teekyuu 3","epic"]
+      ["Attack On Titan: The Final Season Specials","ultra","Shingeki no Kyojin: Chimi Kyara Gekijou - Final","Shingeki no Kyojin: The Final Season Specials","Attack On Titan"],
+      ["Teekyuu 3","ultra"]
     ]
   },
   {
@@ -7022,8 +7022,8 @@
       ["Kaiba","epic"],
       ["ChäoS;HEAd","epic"],
       ["Blue Literature Series","epic","Aoi Bungaku Series"],
-      ["Sousou no Frieren 3rd Season","epic","Frieren: Beyond Journey’s End Season 3 Golden Land Arc"],
-      ["No Game No Life Specials","epic","No Game No Life Mini OVAs","NGNL Specials"]
+      ["Sousou no Frieren 3rd Season","ultra","Frieren: Beyond Journey’s End Season 3 Golden Land Arc"],
+      ["No Game No Life Specials","ultra","No Game No Life Mini OVAs","NGNL Specials"]
     ]
   },
   {
@@ -7102,8 +7102,8 @@
       ["RahXephon","epic"],
       ["Fullmetal Alchemist: Brotherhood OVA Collection","epic","Moumoku no Renkinjutsushi","The Blind Alchemist","Shinpuru na Hitobito","Simple People"],
       ["Dragon Pilot: Hisone & Masotan","epic","Hisone to Maso-tan","HisoMaso","Hisone y Masotan: A Lomos del Dragón","Pilotos de Dragão - Hisone to Masotan","Smocza pilotka: Hisone i Masotan"],
-      ["Concrete Revolutio","epic","Concrete Revolutio: Choujin Gensou","ConRevo"],
-      ["Show By Rock!!","epic"]
+      ["Concrete Revolutio","ultra","Concrete Revolutio: Choujin Gensou","ConRevo"],
+      ["Show By Rock!!","ultra"]
     ]
   },
   {
@@ -7183,8 +7183,8 @@
       ["Laughing Under the Clouds: Gaiden Part 2","epic","Donten ni Warau Gaiden: Shukumei, Soutou no Fuuma"],
       ["Honzuki no Gekokujou: Kizoku-in no Jishou Tosho Iin","epic","Ascendance of a Bookworm Season 5","Honzuki no Gekokujou"],
       ["Cool-headed Hoozuki OVA","epic","Hoozuki no Reitetsu OVA","Hozuki no Reitetsu OVA"],
-      ["Evangelion × Attack ZERO","epic"],
-      ["Mahoutsukai no Yome: Gakuin-hen","epic"]
+      ["Evangelion × Attack ZERO","ultra"],
+      ["Mahoutsukai no Yome: Gakuin-hen","ultra"]
     ]
   },
   {
@@ -7246,8 +7246,8 @@
       ["Anime Tenchou Movie","epic","Anime Tenchou Gekijouban"],
       ["Kimetsu no Yaiba × MLB Tokyo Series presented by Guggenheim","epic"],
       ["Bang!Bang!Bang!","epic","ZOOL BBB","IDOLISH7 - Bang!Bang!Bang!","ŹOOĻ - Bang!Bang!Bang!"],
-      ["Sakura no Ondo","epic"],
-      ["Majokko Shimai no Yoyo to Nene Movie Extra: Hatsukoi - Mikako Komatsu","epic","Majokko Shimai no Yoyo to Nene Movie Extra"]
+      ["Sakura no Ondo","ultra"],
+      ["Majokko Shimai no Yoyo to Nene Movie Extra: Hatsukoi - Mikako Komatsu","ultra","Majokko Shimai no Yoyo to Nene Movie Extra"]
     ]
   },
   {
@@ -7323,8 +7323,8 @@
       ["The Melancholy of Haruhi-chan Suzumiya","epic","Suzumiya Haruhi-chan no Yuuutsu","La Mélancolie de Mini Haruhi"],
       ["Myriad Colors Phantom World: The Polka Dot Miracle","epic","Musaigen no Phantom World: Mizutama no Kiseki"],
       ["Free! -Eternal Summer-: Forbidden All-Hard!","epic","Free!: Eternal Summer - Kindan no All Hard!","Free!: Eternal Summer Special"],
-      ["K-ON! Season 1 Shorts","epic","K-ON!: Ura-On!","K-On! Specials","Uraon!","Keion Specials"],
-      ["FrFr! ~Free! short movie~","epic"]
+      ["K-ON! Season 1 Shorts","ultra","K-ON!: Ura-On!","K-On! Specials","Uraon!","Keion Specials"],
+      ["FrFr! ~Free! short movie~","ultra"]
     ]
   },
   {
@@ -7370,8 +7370,8 @@
       ["THE LENTICULARS","rare","THE LENTICULARS a/"],
       ["Transformers 40th Anniversary Special Movie","rare","Transformers 40th Shuunen Kinen Special Movie"],
       ["Bishoujo Mobage: Mobami-chan","rare","Bishoujo Mobage"],
-      ["4th Project (Provisional Title)","rare"],
-      ["Yume no Ukiyo ni Saitemina","epic"]
+      ["4th Project (Provisional Title)","ultra"],
+      ["Yume no Ukiyo ni Saitemina","ultra"]
     ]
   },
   {
@@ -7451,8 +7451,8 @@
       ["Buddy Complex","epic"],
       ["Tales of the Abyss","epic"],
       ["Valvrave the Liberator 2","epic","Kakumeiki Valvrave 2"],
-      ["Phi-Brain: Puzzle of God","epic","Phi Brain: Kami no Puzzle","Phi-Brain"],
-      ["MAO","epic"]
+      ["Phi-Brain: Puzzle of God","ultra","Phi Brain: Kami no Puzzle","Phi-Brain"],
+      ["MAO","ultra"]
     ]
   },
   {
@@ -7531,8 +7531,8 @@
       ["Precure","epic","Futari wa Precure","Pretty Cure"],
       ["Digimon Adventure:","epic"],
       ["Bobobo-bo Bo-bobo","epic","Boboboobo Boobobo","Bo-Bobo","Boboboubo Boubobo"],
-      ["Magical DoReMi","epic","Ojamajo Doremi","Useless Witchgirl Doremi","La Màgica Doremi"],
-      ["Interstella 5555: The 5tory of the 5ecret 5tar 5ystem","epic","Interstellar 5555","Interstella 5555"]
+      ["Magical DoReMi","ultra","Ojamajo Doremi","Useless Witchgirl Doremi","La Màgica Doremi"],
+      ["Interstella 5555: The 5tory of the 5ecret 5tar 5ystem","ultra","Interstellar 5555","Interstella 5555"]
     ]
   },
   {
@@ -7610,8 +7610,8 @@
       ["Nanana's Buried Treasure","epic","Ryuugajou Nanana no Maizoukin"],
       ["Kaguya-sama: Love Is War -Stairway to Adulthood-","epic","Kaguya-sama wa Kokurasetai: Otona e no Kaidan","Kaguya-sama: Love Is War - The Grown-Up Staircase"],
       ["Fate/strange Fake -Whispers of Dawn-","epic"],
-      ["Black Butler: Book of the Atlantic","epic","Kuroshitsuji: Book of the Atlantic","Book of Atlantic"],
-      ["Wagnaria!!3","epic"]
+      ["Black Butler: Book of the Atlantic","ultra","Kuroshitsuji: Book of the Atlantic","Book of Atlantic"],
+      ["Wagnaria!!3","ultra"]
     ]
   },
   {
@@ -7691,8 +7691,8 @@
       ["B: The Beginning: Succession","epic","Perfect Bones 2"],
       ["Haikyu!! The Movie: Talent and Sense","epic","Haikyuu!!: Sainou to Sense"],
       ["BLOOD-C: The Last Dark","epic","Blood-C Movie"],
-      ["Dead Leaves","epic"],
-      ["Haikyu!! the Movie: The End and the Beginning","epic","Haikyuu!!: Owari to Hajimari"]
+      ["Dead Leaves","ultra"],
+      ["Haikyu!! the Movie: The End and the Beginning","ultra","Haikyuu!!: Owari to Hajimari"]
     ]
   },
   {
@@ -7769,8 +7769,8 @@
       ["elDLIVE","epic"],
       ["Letter Bee Reverse","epic","Tegami Bachi REVERSE","Tegami Bachi 2","Letter Bee 2"],
       ["Saiyuki","epic","Gensou Maden Saiyuuki","Gensoumaden Saiyuki"],
-      ["Black Clover: The All Magic Knights Thanksgiving Festa","epic","Black Clover: All Mahou Kishi Kanshasai","JSAF2018 Special Anime All Mahou Kishi Kanshasai","Black Clover: JSAF2018 La Thanksgiving des Chevaliers-Mages","Black Clover: Jump Festa 2018 Special"],
-      ["Kingdom Season 6","epic","Kingdom 6th Season"]
+      ["Black Clover: The All Magic Knights Thanksgiving Festa","ultra","Black Clover: All Mahou Kishi Kanshasai","JSAF2018 Special Anime All Mahou Kishi Kanshasai","Black Clover: JSAF2018 La Thanksgiving des Chevaliers-Mages","Black Clover: Jump Festa 2018 Special"],
+      ["Kingdom Season 6","ultra","Kingdom 6th Season"]
     ]
   },
   {
@@ -7849,8 +7849,8 @@
       ["Detective Conan: Magician of the Silver Sky","epic","Meitantei Conan: Ginyoku no Magician","Detective Conan: Ginyoku no Magician","Meitantei Conan Movie 08: Ginyoku no Magician","Detektiv Conan: Der Magier mit den Silberschwingen","Detective Conan Movie 08: Il mago del cielo d’argento"],
       ["Detective Conan: The Raven Chaser","epic","Meitantei Conan: Shikkoku no Chaser","Meitantei Conan Movie 13: Shikkoku no Chaser","Detective Conan Movie 13","Detektiv Conan: Der nachtschwarze Jäger","Detective Conan Movie 13: ...E le stelle stanno a guardare"],
       ["Cardfight Vanguard","epic"],
-      ["Detective Conan: The Lost Ship in the Sky","epic","Meitantei Conan: Tenkuu no Lost Ship","Detective Conan Movie 14: Tenkuu no Lost Ship","Meitantei Conan Movie 14: Tenkuu no Lost Ship","Detektiv Conan: Das verlorene Schiff im Himmel","Detective Conan Movie 14: Il dirigibile perduto nel cielo"],
-      ["Detective Conan: Crossroad in the Ancient Capital","epic","Meitantei Conan: Meikyuu no Crossroad","Meitantei Conan Movie 07: Meikyuu no Crossroad","Detektiv Conan: Die Kreuzung des Labyrinths","Detective Conan - La mappa del mistero","Détective Conan : Croisement dans l'ancienne capitale"]
+      ["Detective Conan: The Lost Ship in the Sky","ultra","Meitantei Conan: Tenkuu no Lost Ship","Detective Conan Movie 14: Tenkuu no Lost Ship","Meitantei Conan Movie 14: Tenkuu no Lost Ship","Detektiv Conan: Das verlorene Schiff im Himmel","Detective Conan Movie 14: Il dirigibile perduto nel cielo"],
+      ["Detective Conan: Crossroad in the Ancient Capital","ultra","Meitantei Conan: Meikyuu no Crossroad","Meitantei Conan Movie 07: Meikyuu no Crossroad","Detektiv Conan: Die Kreuzung des Labyrinths","Detective Conan - La mappa del mistero","Détective Conan : Croisement dans l'ancienne capitale"]
     ]
   },
   {
@@ -7923,8 +7923,8 @@
       ["Hidamari Sketch x Hoshimittsu","epic","Hidamari Sketch S3"],
       ["Fate/Grand Order CMs","epic"],
       ["Koyomi History","epic","Madogatari"],
-      ["League of Nations Air Force Aviation Magic Band Luminous Witches","epic","Renmei Kuugun Koukuu Mahou Ongakutai: Luminous Witches","Ongakutai Witches","Luminous Witches","Aliansi Angkatan Udara Idol Penyihir Luminous Witches"],
-      ["Hidamari Sketch x Honeycomb","epic","Hidamari Sketch × Honeycomb","Hidamari Sketch S4"]
+      ["League of Nations Air Force Aviation Magic Band Luminous Witches","ultra","Renmei Kuugun Koukuu Mahou Ongakutai: Luminous Witches","Ongakutai Witches","Luminous Witches","Aliansi Angkatan Udara Idol Penyihir Luminous Witches"],
+      ["Hidamari Sketch x Honeycomb","ultra","Hidamari Sketch × Honeycomb","Hidamari Sketch S4"]
     ]
   },
   {
@@ -8003,8 +8003,8 @@
       ["White Snow","epic","Shirayuki"],
       ["Promise","epic","Yakusoku"],
       ["Sakura Kakumei: Hanasaku Otome-tachi","epic","Sakura Revolution - Flower Blooming Midens","Sakura Kakumei"],
-      ["RGB","epic","Sangenshoku"],
-      ["LINE Novel CMs","epic"]
+      ["RGB","ultra","Sangenshoku"],
+      ["LINE Novel CMs","ultra"]
     ]
   },
   {
@@ -8083,8 +8083,8 @@
       ["Honey Lemon Soda","epic","Soda Chanh Mật Ong"],
       ["Bakuman. 2","epic","Bakuman. 2nd Series"],
       ["In Another World With My Smartphone 2","epic","Isekai wa Smartphone to Tomo ni. 2","Isesuma 2"],
-      ["DEMON LORD 2099","epic","Maou 2099"],
-      ["Overgeared","epic","Tempal: Item no Chikara","Temppal"]
+      ["DEMON LORD 2099","ultra","Maou 2099"],
+      ["Overgeared","ultra","Tempal: Item no Chikara","Temppal"]
     ]
   },
   {
@@ -8149,8 +8149,8 @@
       ["TARI TARI: Kumottari Kagayaitari Mata Itsuka Utattari","epic","Tari Tari: Being Cloudy, Shining, Singing Again Someday","Tari Tari Special"],
       ["true tears × Hanasaku Iroha × TARITARI: Utopia","epic","true tears × Hanasaku Iroha × TARITARI"],
       ["Run Run Lantern","epic","P.A. Works 25th Anniversary PV","P.A.WORKS 25 Shuunen Kinen PV"],
-      ["Sakuna: Of Rice and Ruin Kokorowa Rice Cultivation Diary","epic","Tensui no Sakuna-hime: Kokorowa Inasaku Nisshi","Sakuna: Of Rice and Ruin (Sequel)","Sakuna: Of Rice and Ruin - Kokorowa's Rice-Farming Diary"],
-      ["Planet:Valkyrie","epic","Planet"]
+      ["Sakuna: Of Rice and Ruin Kokorowa Rice Cultivation Diary","ultra","Tensui no Sakuna-hime: Kokorowa Inasaku Nisshi","Sakuna: Of Rice and Ruin (Sequel)","Sakuna: Of Rice and Ruin - Kokorowa's Rice-Farming Diary"],
+      ["Planet:Valkyrie","ultra","Planet"]
     ]
   },
   {
@@ -8228,8 +8228,8 @@
       ["Higurashi no Naku Koro ni Kira","epic","When They Cry Kira"],
       ["Mobile Police Patlabor","epic","Kidou Keisatsu Patlabor","Patlabor The Mobile Police: The Original OVA Series","Kidou Keisatsu Patlabor: Early Days"],
       ["Hakkenden: Eight Dogs of the East","epic","Hakkenden: Touhou Hakken Ibun","Hakkenden"],
-      ["R.O.D - READ OR DIE","epic","ROD OVA"],
-      ["GetBackers","epic","GetBackers: Dakkanya","Get Backers","GetBackers: Recovery Service"]
+      ["R.O.D - READ OR DIE","ultra","ROD OVA"],
+      ["GetBackers","ultra","GetBackers: Dakkanya","Get Backers","GetBackers: Recovery Service"]
     ]
   },
   {
@@ -8280,8 +8280,8 @@
       ["Ensemble Stars!!: Road to Show!!","epic"],
       ["Ensemble Stars!! 5th Anniversary ANIMATION PV","epic"],
       ["Kesshouban: Eigakan e Iku","epic","The Platelets Go to the Movie Theater","Kesshouban"],
-      ["Onitsuka Tiger × Urusei Yatsura to Collaboration Anime","epic","Onitsuka Tiger with the Anime Urusei Yatsura"],
-      ["LOST FOREST","epic","moka - lost forest"]
+      ["Onitsuka Tiger × Urusei Yatsura to Collaboration Anime","ultra","Onitsuka Tiger with the Anime Urusei Yatsura"],
+      ["LOST FOREST","ultra","moka - lost forest"]
     ]
   },
   {
@@ -8358,8 +8358,8 @@
       ["Fate/kaleid liner Prisma☆Illya: Dance at the Sports Festival!","epic","Fate/kaleid liner Prisma☆Illya: Undoukai DE Dance!"],
       ["Armed Girl's Machiavellism OVA","epic","Busou Shoujo Machiavellianism OVA"],
       ["Non Non Biyori: Repeat - Hotaru ga Tanoshinda","epic","Non Non Biyori: Repeat OVA"],
-      ["Sasaki and Peeps Season 2","epic","Sasaki to Pii-chan Season 2","Sasaki to Pii-chan 2nd Season","SasaPii 2"],
-      ["Brave Witches","epic"]
+      ["Sasaki and Peeps Season 2","ultra","Sasaki to Pii-chan Season 2","Sasaki to Pii-chan 2nd Season","SasaPii 2"],
+      ["Brave Witches","ultra"]
     ]
   },
   {
@@ -8430,8 +8430,8 @@
       ["Given: Hiiragi mix Specials","epic","given The Movie: Hiiragi Mix Specials","Given: Hiiragi mix Tokuten Eizou"],
       ["Mini Hama","epic","MINIMUM-HAMATORA"],
       ["Sakura Capsule","epic"],
-      ["Mini Hama Movie","epic","MINIMUM-HAMATORA Movie"],
-      ["First Step","epic"]
+      ["Mini Hama Movie","ultra","MINIMUM-HAMATORA Movie"],
+      ["First Step","ultra"]
     ]
   },
   {
@@ -8510,8 +8510,8 @@
       ["Innocent Venus","epic"],
       ["Mazinkaiser","epic"],
       ["New Getter Robo","epic","Shin Getter Robo"],
-      ["Dance with Devils: Fortuna","epic"],
-      ["BROTHERS CONFLICT Special","epic"]
+      ["Dance with Devils: Fortuna","ultra"],
+      ["BROTHERS CONFLICT Special","ultra"]
     ]
   },
   {
@@ -8574,8 +8574,8 @@
       ["Money Wars: Nerawareta Waterfront Keikaku","epic","Money Wars"],
       ["Suna no Akari","epic","Lights of Sand"],
       ["Sakyo Komatsu's Animation Theater","epic","Komatsu Sakyo Anime Gekijou"],
-      ["DATA NO.6","epic"],
-      ["BATTLE MODE","epic","Anime Shop Parody CM"]
+      ["DATA NO.6","ultra"],
+      ["BATTLE MODE","ultra","Anime Shop Parody CM"]
     ]
   },
   {
@@ -8651,8 +8651,8 @@
       ["Touken Ranbu: Hanamaru 2","epic","Zoku Touken Ranbu: Hanamaru","Touken Ranbu"],
       ["UzaMaid!: My Maid Is Still Seriously Way Too Annoying...","epic","Uchi no Maid ga Uzasugiru! OVA","UzaMaid! OVA"],
       ["Technoroid OVERMIND","epic"],
-      ["Shin Koihime Musou","epic","Shin Koihime Musou: Otome Ryouran Sangokushi Engi","Koihime Musou : Donzelas Intankáveis 2"],
-      ["How Heavy Are the Dumbbells You Lift?: Silverman Gym Intense Training Course","epic","Dumbbell Nan Kilo Moteru?: Silverman Gym Oni Tore Kouza","Silverman Gym Devilish Training Course","Dumbbell Nan Kilo Moteru? Specials","How Heavy Are the Dumbbells You Lift? Specials"]
+      ["Shin Koihime Musou","ultra","Shin Koihime Musou: Otome Ryouran Sangokushi Engi","Koihime Musou : Donzelas Intankáveis 2"],
+      ["How Heavy Are the Dumbbells You Lift?: Silverman Gym Intense Training Course","ultra","Dumbbell Nan Kilo Moteru?: Silverman Gym Oni Tore Kouza","Silverman Gym Devilish Training Course","Dumbbell Nan Kilo Moteru? Specials","How Heavy Are the Dumbbells You Lift? Specials"]
     ]
   },
   {
@@ -15508,8 +15508,8 @@
       ["Tajima","epic"],
       ["Yuu","epic"],
       ["Yuki","epic"],
-      ["Saki","epic"],
-      ["Yuji Suehara","epic","Yuji","Suehara","Suehara Yuji","Second Grade Students' Union Member"]
+      ["Saki","ultra"],
+      ["Yuji Suehara","ultra","Yuji","Suehara","Suehara Yuji","Second Grade Students' Union Member"]
     ]
   },
   {
@@ -15539,8 +15539,8 @@
       ["Igarashi","epic"],
       ["Nazo no Seinen","epic","Mysterious Boy"],
       ["Chaa","epic"],
-      ["Hitomi","epic"],
-      ["Saitou","epic","Fish Saitou"]
+      ["Hitomi","ultra"],
+      ["Saitou","ultra","Fish Saitou"]
     ]
   },
   {
@@ -15641,8 +15641,8 @@
       ["Shinpu","epic","Father Renaldo"],
       ["Richard Hellsing","epic","Richard","Hellsing Richard"],
       ["Makube","epic","M'Quve"],
-      ["Hugh Irons","epic","Hugh","Irons","Irons Hugh","Hugh Islands"],
-      ["Rob Walsh","epic","Rob","Walsh","Walsh Rob"]
+      ["Hugh Irons","ultra","Hugh","Irons","Irons Hugh","Hugh Islands"],
+      ["Rob Walsh","ultra","Rob","Walsh","Walsh Rob"]
     ]
   },
   {
@@ -15672,8 +15672,8 @@
       ["Yukimaru","epic"],
       ["Shinsuke","epic"],
       ["Denkibou","epic","Denkibo"],
-      ["Matsunosuke Shibui","epic","Matsunosuke","Shibui","Shibui Matsunosuke"],
-      ["Ryujirou Sasaki","epic","Ryujirou","Sasaki","Sasaki Ryujirou","Ryujiro Sasaki"]
+      ["Matsunosuke Shibui","ultra","Matsunosuke","Shibui","Shibui Matsunosuke"],
+      ["Ryujirou Sasaki","ultra","Ryujirou","Sasaki","Sasaki Ryujirou","Ryujiro Sasaki"]
     ]
   },
   {
@@ -15763,8 +15763,8 @@
       ["Vylk","epic"],
       ["Vincent","epic","Vinsento"],
       ["Sobo","epic","Sarah","Grandma","Grandmother"],
-      ["Mark","epic"],
-      ["Peter Ratri","epic","Peter","Ratri Peter"]
+      ["Mark","ultra"],
+      ["Peter Ratri","ultra","Peter","Ratri Peter"]
     ]
   },
   {
@@ -15811,8 +15811,8 @@
       ["Enbelietz","epic"],
       ["Zapo-jii","epic"],
       ["Tankutsuka","epic"],
-      ["Ajapoka","epic"],
-      ["Gaume","epic"]
+      ["Ajapoka","ultra"],
+      ["Gaume","ultra"]
     ]
   },
   {
@@ -15846,8 +15846,8 @@
       ["Yoshiyuki Terada","epic","Yoshiyuki","Terada","Terada Yoshiyuki"],
       ["Wei Wang","epic","Wei","Wang","Wang Wei"],
       ["Yuuki Tachibana","epic","Yuuki","Tachibana","Tachibana Yuuki","Alex Mills"],
-      ["Masaki Amamiya","epic","Masaki","Amamiya","Amamiya Masaki"],
-      ["Shouko Tsujitani","epic","Shouko","Tsujitani","Tsujitani Shouko"]
+      ["Masaki Amamiya","ultra","Masaki","Amamiya","Amamiya Masaki"],
+      ["Shouko Tsujitani","ultra","Shouko","Tsujitani","Tsujitani Shouko"]
     ]
   },
   {
@@ -16156,8 +16156,8 @@
       ["Yahagi","epic"],
       ["Songyuu Kim","epic","Songyuu","Kim","Kim Songyuu"],
       ["Misayo Amane","epic","Misayo","Amane","Amane Misayo"],
-      ["Momoko Matsuda","epic","Momoko","Matsuda","Matsuda Momoko"],
-      ["Tannin Kyoushi","epic"]
+      ["Momoko Matsuda","ultra","Momoko","Matsuda","Matsuda Momoko"],
+      ["Tannin Kyoushi","ultra"]
     ]
   },
   {
@@ -16233,8 +16233,8 @@
       ["Azusa Shiratori","rare","Azusa","Shiratori","Shiratori Azusa"],
       ["Toufuu Ono","rare","Toufuu","Ono","Ono Toufuu","Dr. Tofu"],
       ["Jusenkyou Guide","rare"],
-      ["Ichirou","rare"],
-      ["Mikado Sanzenin","rare","Mikado","Sanzenin","Sanzenin Mikado"]
+      ["Ichirou","ultra"],
+      ["Mikado Sanzenin","ultra","Mikado","Sanzenin","Sanzenin Mikado"]
     ]
   },
   {
@@ -16285,7 +16285,7 @@
       ["Satou","epic"],
       ["Shiemi no Sobo","epic","Shiemi's Grandmother"],
       ["Satoru","epic"],
-      ["Tatsuma no Chichi","epic","Tatsuma's Father"],
+      ["Tatsuma no Chichi","ultra","Tatsuma's Father"],
       ["Satoru no Haha","ultra","Satoru's Mother"]
     ]
   },
@@ -16621,8 +16621,8 @@
       ["Kishi Danchou","epic","Captain of Melromarc Knights"],
       ["Mald","epic"],
       ["Roudy","epic"],
-      ["Idol Rabier","epic","Idol","Rabier","Rabier Idol","Fanatic Noble"],
-      ["Shisai","epic","Priest"]
+      ["Idol Rabier","ultra","Idol","Rabier","Rabier Idol","Fanatic Noble"],
+      ["Shisai","ultra","Priest"]
     ]
   },
   {
@@ -16655,8 +16655,8 @@
       ["Elliot Baldwin Woodman","epic","Elliot Baldwin","Woodman","Woodman Elliot Baldwin"],
       ["Hiroto Tonomachi","epic","Hiroto","Tonomachi","Tonomachi Hiroto"],
       ["Munechika Nakatsugawa","epic","Munechika","Nakatsugawa","Nakatsugawa Munechika","The Dimension Breaker"],
-      ["Kyouji Kawagoe","epic","Kyouji","Kawagoe","Kawagoe Kyouji","Bad Marriage"],
-      ["Masaomi Mikimoto","epic","Masaomi","Mikimoto","Mikimoto Masaomi","Boss","Shachou-san"]
+      ["Kyouji Kawagoe","ultra","Kyouji","Kawagoe","Kawagoe Kyouji","Bad Marriage"],
+      ["Masaomi Mikimoto","ultra","Masaomi","Mikimoto","Mikimoto Masaomi","Boss","Shachou-san"]
     ]
   },
   {
@@ -16691,8 +16691,8 @@
       ["Keigo Izumi","epic","Keigo","Izumi Keigo"],
       ["Aoi Kitahara","epic","Aoi","Kitahara","Kitahara Aoi"],
       ["Takeru Sengoku","epic","Takeru","Sengoku Takeru"],
-      ["Ichirou Watabe","epic","Ichirou","Watabe","Watabe Ichirou"],
-      ["Kazuya Nakamine","epic","Kazuya","Nakamine","Nakamine Kazuya"]
+      ["Ichirou Watabe","ultra","Ichirou","Watabe","Watabe Ichirou"],
+      ["Kazuya Nakamine","ultra","Kazuya","Nakamine","Nakamine Kazuya"]
     ]
   },
   {
@@ -16724,8 +16724,8 @@
       ["Game Onsei","epic"],
       ["Seito","epic"],
       ["Tenin","epic"],
-      ["Kyaku","epic"],
-      ["Kengaku Kyaku","epic"]
+      ["Kyaku","ultra"],
+      ["Kengaku Kyaku","ultra"]
     ]
   },
   {
@@ -16752,8 +16752,8 @@
       ["Jin","rare"],
       ["Itou","rare"],
       ["Yamagishi","rare"],
-      ["Matsushita","epic"],
-      ["Hibana Kagari","epic","Hibana","Kagari","Kagari Hibana"]
+      ["Matsushita","ultra"],
+      ["Hibana Kagari","ultra","Hibana","Kagari","Kagari Hibana"]
     ]
   },
   {
@@ -16906,8 +16906,8 @@
       ["Huanguan B","epic"],
       ["Huanguan A","epic"],
       ["Xia Nu B","epic"],
-      ["Xia Nu A","epic"],
-      ["Huanguan C","epic"]
+      ["Xia Nu A","ultra"],
+      ["Huanguan C","ultra"]
     ]
   },
   {
@@ -17046,8 +17046,8 @@
       ["Cyberpsycho","epic"],
       ["Katsuo Tanaka","epic","Katsuo","Tanaka","Tanaka Katsuo"],
       ["Man in the Car","epic"],
-      ["Trauma Team","epic"],
-      ["Medic","epic"]
+      ["Trauma Team","ultra"],
+      ["Medic","ultra"]
     ]
   },
   {
@@ -17316,8 +17316,8 @@
       ["Takeshi Sawada","epic","Sawada","Sawada Takeshi"],
       ["Taichi Nakanishi","epic","Taichi","Nakanishi","Nakanishi Taichi"],
       ["Takeru Hyuuga","epic","Takeru","Hyuuga Takeru"],
-      ["Yayoi Aoba","epic","Yayoi","Aoba","Aoba Yayoi","Mary Tanada","Tippy","Amy"],
-      ["Kaori Matsumoto","epic","Kaori","Matsumoto","Matsumoto Kaori"]
+      ["Yayoi Aoba","ultra","Yayoi","Aoba","Aoba Yayoi","Mary Tanada","Tippy","Amy"],
+      ["Kaori Matsumoto","ultra","Kaori","Matsumoto","Matsumoto Kaori"]
     ]
   },
   {
@@ -17366,8 +17366,8 @@
       ["Miyu","epic"],
       ["Akira Yamashita","epic","Akira","Yamashita","Yamashita Akira"],
       ["Fukurokuju","epic"],
-      ["Hotei","epic"],
-      ["Jurojin","epic"]
+      ["Hotei","ultra"],
+      ["Jurojin","ultra"]
     ]
   },
   {
@@ -17471,8 +17471,8 @@
       ["Takeshi Enomoto","rare","Takeshi","Enomoto","Enomoto Takeshi"],
       ["Jien Yanagita","rare","Jien","Yanagita","Yanagita Jien"],
       ["Minoru Kanuma","rare","Minoru","Kanuma","Kanuma Minoru"],
-      ["Youdai Matsumoto","rare","Youdai","Matsumoto","Matsumoto Youdai"],
-      ["Yukinari Arima","rare","Yukinari","Arima","Arima Yukinari"]
+      ["Youdai Matsumoto","ultra","Youdai","Matsumoto","Matsumoto Youdai"],
+      ["Yukinari Arima","ultra","Yukinari","Arima","Arima Yukinari"]
     ]
   },
   {
@@ -17631,8 +17631,8 @@
       ["Kurosawa no Haha","epic","Dia's mother","Ruby's mother"],
       ["Eli no Sobo","epic","Eli's Grandmother"],
       ["Yoshimi","epic"],
-      ["Mutsu","epic"],
-      ["Hanamaru no Sobo","epic","Hanamaru's grandmother"]
+      ["Mutsu","ultra"],
+      ["Hanamaru no Sobo","ultra","Hanamaru's grandmother"]
     ]
   },
   {
@@ -17661,8 +17661,8 @@
       ["Riki Takeuchi","rare","Takeuchi","Takeuchi Riki"],
       ["Midori Nendou","epic","Midori","Nendou Midori"],
       ["Matsuzaki","epic"],
-      ["Kumi Saiki","epic","Kumi","Saiki Kumi"],
-      ["Takahashi","epic"]
+      ["Kumi Saiki","ultra","Kumi","Saiki Kumi"],
+      ["Takahashi","ultra"]
     ]
   },
   {
@@ -17713,7 +17713,7 @@
       ["Andre Gide","epic","Andre","Gide","Gide Andre"],
       ["Junsa Sugimoto","epic","Junsa","Sugimoto","Sugimoto Junsa"],
       ["Yamagiwa","epic"],
-      ["James L","epic","James","L James"],
+      ["James L","ultra","James","L James"],
       ["Aoiki King","ultra","Azure King"]
     ]
   },
@@ -17800,8 +17800,8 @@
       ["Midori Yamanishi","epic","Midori","Yamanishi","Yamanishi Midori"],
       ["Sawai","epic"],
       ["Nakayama","epic"],
-      ["Ariyoshi","epic"],
-      ["Noriko Shimizu","epic","Noriko","Shimizu","Shimizu Noriko"]
+      ["Ariyoshi","ultra"],
+      ["Noriko Shimizu","ultra","Noriko","Shimizu","Shimizu Noriko"]
     ]
   },
   {
@@ -17849,8 +17849,8 @@
       ["Daiya Oowada","epic","Daiya","Oowada Daiya"],
       ["Daisaku Bandai","epic","Daisaku","Bandai","Bandai Daisaku"],
       ["Naegi no Haha","epic","Naegi's Mom"],
-      ["Naegi no Papa","epic","Naegi's Dad"],
-      ["Physical Education Teacher","epic"]
+      ["Naegi no Papa","ultra","Naegi's Dad"],
+      ["Physical Education Teacher","ultra"]
     ]
   },
   {
@@ -17891,8 +17891,8 @@
       ["Takahashi","epic"],
       ["Toki Kaidou","epic","Toki","Kaidou Toki"],
       ["Warp","epic"],
-      ["Aiko Mikami","epic","Aiko","Mikami","Mikami Aiko"],
-      ["Sora Kaidou","epic","Sora","Kaidou Sora"]
+      ["Aiko Mikami","ultra","Aiko","Mikami","Mikami Aiko"],
+      ["Sora Kaidou","ultra","Sora","Kaidou Sora"]
     ]
   },
   {
@@ -17929,8 +17929,8 @@
       ["Tsunade","epic","Mayoi no Haha","Hachikuji's Mother"],
       ["Joshi Chuugakusei","epic"],
       ["Nadeko no Chichi","epic","Nadeko's Father"],
-      ["Sasayabu","epic"],
-      ["Danshiseito","epic","School Boy"]
+      ["Sasayabu","ultra"],
+      ["Danshiseito","ultra","School Boy"]
     ]
   },
   {
@@ -17957,8 +17957,8 @@
       ["Mast Saibou","rare","Fat Cell","Mast Cell","Himansaibou"],
       ["Naive T Saibou","rare","Naive T Cell","Naive."],
       ["Haien Kyuukin","rare","Pneumococcus Coccus"],
-      ["Memory T Saibou","epic","Memory T Cell"],
-      ["Oshokubudokyuukin","epic","Staphylococcus Aureus","Staphy"]
+      ["Memory T Saibou","ultra","Memory T Cell"],
+      ["Oshokubudokyuukin","ultra","Staphylococcus Aureus","Staphy"]
     ]
   },
   {
@@ -18001,8 +18001,8 @@
       ["Satsuki Kuzuhara","epic","Satsuki","Kuzuhara","Kuzuhara Satsuki"],
       ["Rouichi Ouryou","epic","Rouichi","Ouryou Rouichi"],
       ["Hiroko Fujii","epic","Hiroko","Fujii","Fujii Hiroko"],
-      ["Junmei Itou","epic","Junmei","Itou","Itou Junmei"],
-      ["Nobuaki Kudama","epic","Nobuaki","Kudama","Kudama Nobuaki"]
+      ["Junmei Itou","ultra","Junmei","Itou","Itou Junmei"],
+      ["Nobuaki Kudama","ultra","Nobuaki","Kudama","Kudama Nobuaki"]
     ]
   },
   {
@@ -18101,8 +18101,8 @@
       ["Renn","epic"],
       ["Bonn","epic"],
       ["Geslan","epic"],
-      ["Knight 2","epic","Kishi Ni"],
-      ["Knight 3","epic","Kishi San"]
+      ["Knight 2","ultra","Kishi Ni"],
+      ["Knight 3","ultra","Kishi San"]
     ]
   },
   {
@@ -18126,8 +18126,8 @@
       ["Yousuke Maesawa","rare","Yousuke","Maesawa","Maesawa Yousuke"],
       ["Azusagawa no Chichi","rare","Azusagawa's Father"],
       ["Nana Yoneyama","rare","Nana","Yoneyama","Yoneyama Nana"],
-      ["Tenchou","rare","Store Manager"],
-      ["Nodoka no Haha","rare","Nodoka's Mother"]
+      ["Tenchou","ultra","Store Manager"],
+      ["Nodoka no Haha","ultra","Nodoka's Mother"]
     ]
   },
   {
@@ -18219,8 +18219,8 @@
       ["Miki Edamura","epic","Miki","Edamura Miki"],
       ["Anderson","epic"],
       ["Christina","epic","Chris"],
-      ["Tim","epic"],
-      ["Dyshana","epic"]
+      ["Tim","ultra"],
+      ["Dyshana","ultra"]
     ]
   },
   {
@@ -18240,8 +18240,8 @@
       ["Danshi Seito","rare","Male Student"],
       ["Yuu Kusano","rare","Yuu","Kusano","Kusano Yuu"],
       ["Douryou","rare","Colleague"],
-      ["Onnanoko","rare"],
-      ["Joshikousei","rare","High-school Girl"]
+      ["Onnanoko","ultra"],
+      ["Joshikousei","ultra","High-school Girl"]
     ]
   },
   {
@@ -20325,8 +20325,8 @@
       ["Fate/Grand Order 6th Anniversary Trailer","epic","Fate/Grand Order: Haishin 6 Shuunen Kinen Animation PV"],
       ["Ninjala 2D Cartoon Anime","epic","Ninjala Cartoon Anime"],
       ["Sushi Ninja","epic"],
-      ["Shinobanai! Crypto Ninja Sakuya","epic"],
-      ["SUPER NINJA NEKO","epic"]
+      ["Shinobanai! Crypto Ninja Sakuya","ultra"],
+      ["SUPER NINJA NEKO","ultra"]
     ]
   },
   {
@@ -21095,8 +21095,8 @@
       ["Young Harlock wo Oe! Cosmo Warrior Zero Gaiden","epic","Cosmo Warrior Zero Specials"],
       ["It Comes Ryuuu And It Goes Kyuuu","epic","Ryuuutto Kite Kyuuu!!!"],
       ["ONE PIECE×KAWAISOUNI! Kono Boushi wo Omae ni Azukeru","epic"],
-      ["One Piece: Annecy Festival 60th Anniversary","epic"],
-      ["Ham Ham Grand Prix - The Miracle of Aurora Valley ~Ribon-chan's Close Call~","epic"]
+      ["One Piece: Annecy Festival 60th Anniversary","ultra"],
+      ["Ham Ham Grand Prix - The Miracle of Aurora Valley ~Ribon-chan's Close Call~","ultra"]
     ]
   },
   {
@@ -26237,8 +26237,8 @@
       ["Hiroshi","epic"],
       ["Takashi Nasujima","epic","Takashi","Nasujima","Nasujima Takashi"],
       ["Shuji Niekawa","epic","Shuji","Niekawa Shuji"],
-      ["Kanazawa","epic"],
-      ["Horada","epic"]
+      ["Kanazawa","ultra"],
+      ["Horada","ultra"]
     ]
   },
   {
@@ -26342,8 +26342,8 @@
       ["Sone","rare"],
       ["Kachou","rare","Kobayashi's Boss","Shochou"],
       ["Tatsuta","rare"],
-      ["Yamashita","rare"],
-      ["Toda","rare"]
+      ["Yamashita","ultra"],
+      ["Toda","ultra"]
     ]
   },
   {
@@ -26377,8 +26377,8 @@
       ["Mitani no Ane","epic","Mitani's Sister"],
       ["Mitsura Mashiba","epic","Mitsura","Mashiba","Mashiba Mitsura"],
       ["Akiko Touya","epic","Akiko","Touya Akiko"],
-      ["Hikaru no Chichi","epic","Hikaru's Father"],
-      ["Dake","epic"]
+      ["Hikaru no Chichi","ultra","Hikaru's Father"],
+      ["Dake","ultra"]
     ]
   },
   {
@@ -26420,8 +26420,8 @@
       ["Hisashi Morooka","epic","Hisashi","Morooka","Morooka Hisashi"],
       ["Lilia Baranovskaya","epic","Lilia","Baranovskaya","Baranovskaya Lilia"],
       ["Nikolai Plisetsky","epic","Nikolai","Plisetsky Nikolai","Kolya"],
-      ["Nobunari Oda","epic","Nobunari","Oda","Oda Nobunari"],
-      ["Min-so Park","epic","Min-so","Park","Park Min-so"]
+      ["Nobunari Oda","ultra","Nobunari","Oda","Oda Nobunari"],
+      ["Min-so Park","ultra","Min-so","Park","Park Min-so"]
     ]
   },
   {
@@ -26531,8 +26531,8 @@
       ["Rhea Sekkou","epic","Rhea Scout"],
       ["Ushikai Musume no Oji","epic","Cow Girl's Uncle"],
       ["Goblin Champion","epic"],
-      ["Half-Elf no Sekkou","epic","Half-Elf Scout"],
-      ["Kokuou","epic","Knight of Diamonds"]
+      ["Half-Elf no Sekkou","ultra","Half-Elf Scout"],
+      ["Kokuou","ultra","Knight of Diamonds"]
     ]
   },
   {
@@ -26600,8 +26600,8 @@
       ["Motto! Majime ni Fumajime Kaiketsu Zorori 2nd Season","epic"],
       ["Motto! Majime ni Fumajime Kaiketsu Zorori 3rd Season","epic"],
       ["Aikatsu! Memorial Stage: Kagayaki no Unit Cup","epic","Aikatsu! Memorial Stage ~Shining Unit Cup~","Aikatsu! Memorial Stage"],
-      ["Mahjong Soul X Gintama Collab - Anime Preview","epic","Jongtama × Gintama Collab Kettei Promotion Anime"],
-      ["Kuma no Gakkou: Patissier Jackie to Ohisama no Sweets","epic","Kuma no Gakkou"]
+      ["Mahjong Soul X Gintama Collab - Anime Preview","ultra","Jongtama × Gintama Collab Kettei Promotion Anime"],
+      ["Kuma no Gakkou: Patissier Jackie to Ohisama no Sweets","ultra","Kuma no Gakkou"]
     ]
   },
   {
@@ -26680,8 +26680,8 @@
       ["Time Bokan Series: Yatterman","epic","Yattaman","Yattaaman","Time Bokan Series"],
       ["Kiratto Pri☆Chan Season 3","epic"],
       ["Tekkaman Blade II","epic","Uchuu no Kishi Tekkaman Blade II","Tekkaman Blade 2","Space Knight Tekkaman Blade 2","Space Knight Tekkaman Blade OVA","Uchu no Kishi Tekkaman Blade OVA"],
-      ["Idol Land PriPara","epic"],
-      ["Yatterman","epic","Yattaman New Series","Yattaman Remake","Yattaaman 2"]
+      ["Idol Land PriPara","ultra"],
+      ["Yatterman","ultra","Yattaman New Series","Yattaman Remake","Yattaaman 2"]
     ]
   },
   {
@@ -26711,8 +26711,8 @@
       ["Koukaku Kidoutai: THE GHOST IN THE SHELL (Shinsaku Animation)","rare","THE GHOST IN THE SHELL (New Animation Project)"],
       ["SUPER SHIRO","rare"],
       ["Brand New Story","rare"],
-      ["Sui Kin Chi Ka Moku Dotten Amen SP Dance PV","rare","Kimi no Iro Special Dance Video","The Colors Within Special Dance Video","Amen I'm Going Somewhere Special Dance Video"],
-      ["Science SARU × MBS Original Short Anime Daisakusen!","rare","Ookuninushi to Sukunabikona","MOON","Panteon no Tori","Pantheon Bird"]
+      ["Sui Kin Chi Ka Moku Dotten Amen SP Dance PV","ultra","Kimi no Iro Special Dance Video","The Colors Within Special Dance Video","Amen I'm Going Somewhere Special Dance Video"],
+      ["Science SARU × MBS Original Short Anime Daisakusen!","ultra","Ookuninushi to Sukunabikona","MOON","Panteon no Tori","Pantheon Bird"]
     ]
   },
   {
@@ -26760,8 +26760,8 @@
       ["Soushin Shoujo Matoi: Kabushiki Gaisha Knight Busters","rare"],
       ["Sakura Internet Shinsei","rare"],
       ["Peacemaker Kurogane: Friend","epic","PEACE MAKER Kurogane: Yuumei"],
-      ["Monster no Niku wo Kutteitara Oui ni Tsuita Ken","epic","How I Became King by Eating Monsters"],
-      ["DPR Special Movie","epic","Dual-frequency Precipitation Radar Special Movie"]
+      ["Monster no Niku wo Kutteitara Oui ni Tsuita Ken","ultra","How I Became King by Eating Monsters"],
+      ["DPR Special Movie","ultra","Dual-frequency Precipitation Radar Special Movie"]
     ]
   },
   {
@@ -26835,8 +26835,8 @@
       ["Bottom Biting Bug 2","epic","Oshiri Kajiri Mushi 2","Oshiri Kajiri Mushi (TV) 2"],
       ["Bottom Biting Bug 3","epic","Oshiri Kajiri Mushi 3"],
       ["Bottom Biting Bug 4","epic","Oshiri Kajiri Mushi 4"],
-      ["Cardfight!! Vanguard Veil Lift","epic"],
-      ["Neppuu Kairiku Bushi Road: Kibou e no Michi","epic","Neppuu Kairiku Bushi Road Epilogue"]
+      ["Cardfight!! Vanguard Veil Lift","ultra"],
+      ["Neppuu Kairiku Bushi Road: Kibou e no Michi","ultra","Neppuu Kairiku Bushi Road Epilogue"]
     ]
   },
   {
@@ -26927,8 +26927,8 @@
       ["Kyojin no Hoshi: Shukumei no Taiketsu","epic"],
       ["Kenritsu Umisora Koukou Yakyuubu-in Yamashita Tarou-kun","epic"],
       ["Two Down Full Base","epic","Nishi Manrui"],
-      ["Kero Kero Keroppi no Ganbare! Keroppiis","epic","Keroppi in Let's Play Baseball"],
-      ["Mister Giants Eikou no Sebangou 3","epic","Mr. Glory Giants Squad 3"]
+      ["Kero Kero Keroppi no Ganbare! Keroppiis","ultra","Keroppi in Let's Play Baseball"],
+      ["Mister Giants Eikou no Sebangou 3","ultra","Mr. Glory Giants Squad 3"]
     ]
   },
   {
@@ -26978,8 +26978,8 @@
       ["Natsu ga Hajimaru.","epic","CalorieMate web movie","Surges"],
       ["A Turtle's Shell is a Human's Ribs","epic","Kame no Koura wa Abarabone"],
       ["Fei Ba! Lanqiu: Xuzhang","epic","ALLEY-oop: Prologue","Fly! Basketball: Prologue","Fei Ba! Lanqiu"],
-      ["Xi Yangyang Yu Hui Tailang: Kuang Chu Weilai","epic","Pleasant Goat and Big Big Wolf: Dunk For Future","Xi Yangyang Yu Hui Tailang"],
-      ["Onagawa Chuu Baske Bu: 5-nin no Natsu","epic","Onagawa Chuu Baske Bu"]
+      ["Xi Yangyang Yu Hui Tailang: Kuang Chu Weilai","ultra","Pleasant Goat and Big Big Wolf: Dunk For Future","Xi Yangyang Yu Hui Tailang"],
+      ["Onagawa Chuu Baske Bu: 5-nin no Natsu","ultra","Onagawa Chuu Baske Bu"]
     ]
   },
   {
@@ -27055,8 +27055,8 @@
       ["Golden★Kids","epic"],
       ["Kumo no Ue wa Itsumo, Hare","epic"],
       ["Tobe! Pegasus Kokoro no Goal ni Shoot","epic"],
-      ["J League wo 100-bai Tanoshiku Miru Houhou!!","epic"],
-      ["Jifeng Jingshe","epic"]
+      ["J League wo 100-bai Tanoshiku Miru Houhou!!","ultra"],
+      ["Jifeng Jingshe","ultra"]
     ]
   },
   {
@@ -27091,8 +27091,8 @@
       ["Ashita e Attack!","rare","Attack on Tomorrow","Smash"],
       ["Zoku Attacker YOU! Kin Medal e no Michi","rare","New Attacker You!","Mila e Shiro - Il sogno continua"],
       ["Attack No.1: Namida no Sekai Senshuken","rare"],
-      ["Anime Document: München e no Michi","rare","Road to Munich","Anime Document: Munich no Michi","Anime Document"],
-      ["Tokyo Great Bears Opening Movie","rare"]
+      ["Anime Document: München e no Michi","ultra","Road to Munich","Anime Document: Munich no Michi","Anime Document"],
+      ["Tokyo Great Bears Opening Movie","ultra"]
     ]
   },
   {
@@ -27133,8 +27133,8 @@
       ["Ring ni Kakero 1: Sekai Taikai-hen","rare","Ring ni Kakero 1: World Tournament Chapter"],
       ["Kintarou Taiiku Nikki","rare","Kintaro's Physical Education Diary"],
       ["Crocotires Traction AAA","rare"],
-      ["Kentoushi","rare","Kentoshi"],
-      ["Kimi to Fit Boxing","rare","Fitness Boxing","Fit Boxing Animation"]
+      ["Kentoushi","ultra","Kentoshi"],
+      ["Kimi to Fit Boxing","ultra","Fitness Boxing","Fit Boxing Animation"]
     ]
   },
   {
@@ -29147,8 +29147,8 @@
       ["Denkichi","epic"],
       ["Souryo","epic"],
       ["Sabame","epic"],
-      ["Munetsuna","epic"],
-      ["Nyoubou","epic"]
+      ["Munetsuna","ultra"],
+      ["Nyoubou","ultra"]
     ]
   },
   {
@@ -29583,8 +29583,8 @@
       ["Yoshihiro Wanibuchi","epic","Yoshihiro","Wanibuchi","Wanibuchi Yoshihiro"],
       ["Yuuichi no Haha","epic","Yuuichi's Mother"],
       ["Taeko no Haha","epic","Taeko's Mother"],
-      ["Ryuu Akihiko","epic","Ryuu","Akihiko","Akihiko Ryuu"],
-      ["Tsukiko no Chichi","epic","Tsukiko's Father"]
+      ["Ryuu Akihiko","ultra","Ryuu","Akihiko","Akihiko Ryuu"],
+      ["Tsukiko no Chichi","ultra","Tsukiko's Father"]
     ]
   },
   {
@@ -29617,8 +29617,8 @@
       ["Donraku Shoufuutei","epic","Donraku","Shoufuutei","Shoufuutei Donraku"],
       ["Satoshi Nagashima","epic","Satoshi","Nagashima","Nagashima Satoshi"],
       ["Producer","epic"],
-      ["Fukumoto","epic"],
-      ["Kondou","epic"]
+      ["Fukumoto","ultra"],
+      ["Kondou","ultra"]
     ]
   },
   {
@@ -31625,8 +31625,8 @@
       ["Rick and Morty: The Anime","epic","Rick i Morty: Anime","Rick és Morty: Anime","Rick and Morty"],
       ["Grendizer U","epic"],
       ["Kinnikuman Perfect Origin Arc","epic","Kinnikuman: Kanpeki Choujin Shiso-hen","Muscleman (New Anime)","Kinnikuman"],
-      ["CARDFIGHT!! VANGUARD Divinez Season 2","epic"],
-      ["Gendai Goyaku","epic","Modern Mistranslation"]
+      ["CARDFIGHT!! VANGUARD Divinez Season 2","ultra"],
+      ["Gendai Goyaku","ultra","Modern Mistranslation"]
     ]
   },
   {

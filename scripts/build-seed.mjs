@@ -12,6 +12,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { ensureUltra } from './ultra.mjs';
 
 const ENDPOINT = 'https://graphql.anilist.co';
 const CACHE = path.join('scripts', '.cache');
@@ -110,7 +111,8 @@ function assemble(cands, tiers, curated = []) {
     const aliases = c.aliases.filter((a) => count.get(norm(a)) === 1 || norm(a) === norm(c.name));
     take(c.name, tierAt(i++, tiers), aliases);
   }
-  return capUltras(out);
+  // Every question needs ultra answers (they are the point of the game), however short its list is.
+  return ensureUltra(capUltras(out)).answers;
 }
 
 /** At most 2 ultra answers per question (3 above 1000): the last, rarest ones keep it, the rest are epic. */
