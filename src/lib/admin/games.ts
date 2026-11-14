@@ -68,7 +68,7 @@ export async function createGame(input: unknown): Promise<string> {
   try {
     return await tx(async () => {
       if (await queryOne('select 1 from daily_games where game_date = $1', [date])) throw taken();
-      const ids = questionIds ?? (await pickQuestions(date, settings.questionsPerGame));
+      const ids = questionIds ?? (await pickQuestions(date, settings.questionsPerGame, settings.prelaunch));
       if (!ids.length) throw badRequest('There are no usable questions yet.');
       await assertQuestionsUsable(ids);
       const [{ id }] = await query<{ id: string }>(

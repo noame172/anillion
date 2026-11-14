@@ -1,6 +1,7 @@
 import { query, queryOne, tx } from '@/lib/db/client';
 import { advisoryLock, playerLock } from '@/lib/db/locks';
 import { AppError, conflict } from '@/lib/errors';
+import { getSettings } from '@/lib/settings';
 import { getTodayGame, getGameByDate, nextGameAt, type DailyGame } from './daily';
 import { formForScore, progressToNext, type Form, type Progress } from './forms';
 import { lookupRarity } from './rarity';
@@ -369,12 +370,15 @@ export async function submitAnswer(
       now,
     );
     // Today's answers feed future games only; this game's rarity is already frozen.
-    await query(
-      `insert into answer_stats (question_id, answer_id, valid_count, updated_at) values ($1, $2, 1, $3)
-       on conflict (question_id, answer_id)
-       do update set valid_count = answer_stats.valid_count + 1, updated_at = excluded.updated_at`,
-      [question.id, match.answerId, now.toISOString()],
-    );
+    // Before launch nothing counts: test plays must not shape the rarity real players will see.
+    if (!(await getSettings()).prelaunch) {
+      await query(
+        `insert into answer_stats (question_id, answer_id, valid_count, updated_at) values ($1, $2, 1, $3)
+         on conflict (question_id, answer_id)
+         do update set valid_count = answer_stats.valid_count + 1, updated_at = excluded.updated_at`,
+        [question.id, match.answerId, now.toISOString()],
+      );
+    }
     const state = await buildState(game, updated, now);
     return { status: 'accepted', result: state.answers[state.answers.length - 1], state };
   });

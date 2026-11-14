@@ -35,8 +35,16 @@ export function computeRarity(
   return out;
 }
 
-/** Freeze rarity for every question of a game from the statistics gathered so far. */
-export async function buildSnapshot(gameId: string, thresholds: Thresholds, minSample: number): Promise<void> {
+/**
+ * Freeze rarity for every question of a game from the statistics gathered so far.
+ * With `ignoreStats` (pre-launch) the statistics are not read, so every answer keeps its provisional tier.
+ */
+export async function buildSnapshot(
+  gameId: string,
+  thresholds: Thresholds,
+  minSample: number,
+  ignoreStats = false,
+): Promise<void> {
   const rows = await query<{ question_id: string; answer_id: string; count: number; tier: Tier }>(
     `select a.question_id, a.id as answer_id, coalesce(st.valid_count, 0)::int as count, a.provisional_tier as tier
        from daily_game_questions dq
@@ -48,7 +56,7 @@ export async function buildSnapshot(gameId: string, thresholds: Thresholds, minS
   const byQuestion = new Map<string, AnswerRarityInput[]>();
   for (const r of rows) {
     const list = byQuestion.get(r.question_id) ?? [];
-    list.push({ answerId: r.answer_id, count: r.count, provisionalTier: r.tier });
+    list.push({ answerId: r.answer_id, count: ignoreStats ? 0 : r.count, provisionalTier: r.tier });
     byQuestion.set(r.question_id, list);
   }
   const snapshot: object[] = [];

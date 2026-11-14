@@ -28,6 +28,11 @@ export const settingsSchema = z
     timeLimitSec: z.number().int().min(5).max(300),
     /** Build a game automatically when no game was scheduled for a day. */
     autoGenerate: z.boolean(),
+    /**
+     * Pre-launch testing: nothing played counts. Questions are picked as if none had ever been used,
+     * answers are not added to the rarity statistics, and rarity is not read from them.
+     */
+    prelaunch: z.boolean(),
   })
   .refine((s) => s.thresholds.common > s.thresholds.rare && s.thresholds.rare > s.thresholds.epic, {
     message: 'Thresholds must descend: common > rare > epic.',
@@ -43,6 +48,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rolloverHour: 0,
   timeLimitSec: 30,
   autoGenerate: true,
+  prelaunch: false,
 };
 
 // Every game request needs the settings several times (date, timer, rollover, next game).

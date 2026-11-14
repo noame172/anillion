@@ -89,6 +89,19 @@ export default function AdminSettingsPage() {
         </p>
       </section>
 
+      <section className="card">
+        <h2>Pre-launch mode</h2>
+        <label className="row">
+          <input type="checkbox" checked={s.prelaunch} onChange={(e) => setS({ ...s, prelaunch: e.target.checked })} />
+          Nothing counts yet (testing only)
+        </label>
+        <p className="hint">
+          While this is on, every question is treated as never played, so it can come up again on any day, and answers
+          are not added to the rarity statistics. Switch it off when the game goes live. Games already generated keep
+          the questions they have.
+        </p>
+      </section>
+
       <div className="row">
         <button type="submit" className="btn">Save settings</button>
         <span className="hint" role="status" aria-live="polite">{msg}</span>

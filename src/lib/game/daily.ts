@@ -78,13 +78,16 @@ async function freeze(game: GameRow, settings: Settings, now: Date): Promise<Fro
     timeLimitSec: settings.timeLimitSec,
     frozenAt: now.toISOString(),
   };
-  await buildSnapshot(game.id, config.thresholds, config.minSample);
+  await buildSnapshot(game.id, config.thresholds, config.minSample, settings.prelaunch);
   await query('update daily_games set config_snapshot = $2::jsonb where id = $1', [game.id, JSON.stringify(config)]);
   return config;
 }
 
-/** Pick questions for an unscheduled day: least recently used first, stable per date. */
-export async function pickQuestions(date: string, count: number): Promise<string[]> {
+/**
+ * Pick questions for an unscheduled day: least recently used first, stable per date.
+ * With `ignoreHistory` (pre-launch) every question counts as never used, so any of them can come up again.
+ */
+export async function pickQuestions(date: string, count: number, ignoreHistory = false): Promise<string[]> {
   const rows = await query<{ id: string }>(
     `select q.id
        from questions q
@@ -95,7 +98,7 @@ export async function pickQuestions(date: string, count: number): Promise<string
        ) u on u.question_id = q.id
       where q.active
         and exists (select 1 from answers a where a.question_id = q.id and a.verified)
-      order by u.last_used asc nulls first, md5(q.id::text || $1)
+      order by ${ignoreHistory ? '' : 'u.last_used asc nulls first,'} md5(q.id::text || $1)
       limit $2`,
     [date, count],
   );
@@ -198,7 +201,7 @@ export async function getTodayGame(now: Date = new Date()): Promise<DailyGame | 
     );
     if (!row) {
       if (!settings.autoGenerate) return null;
-      const ids = await pickQuestions(date, settings.questionsPerGame);
+      const ids = await pickQuestions(date, settings.questionsPerGame, settings.prelaunch);
       if (!ids.length) return null;
       // The unique date constraint makes concurrent creators converge on one game.
       const created = await queryOne<GameRow>(

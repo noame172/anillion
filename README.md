@@ -133,6 +133,20 @@ No scheduled job is needed: the day's game is created the first time someone ope
 - To refresh or extend it, edit the lists at the bottom of `scripts/build-seed.mjs` and run `node scripts/build-seed.mjs` (takes a few minutes: it stays under AniList's rate limit and caches responses in `scripts/.cache`). Review the diff, then run `npm run db:seed`. Seeding adds new questions and fills in missing answers on questions the seed created earlier; it never touches questions you made yourself. An answer you deleted from a seeded question comes back the next time you run it, so set it to unverified instead.
 - To add answers by hand in bulk, edit `data/seed.json`. Each answer is `["Canonical name", "tier", "alias", ...]`.
 
+### The question list file
+
+`data/questions.txt` lists every question, one per line as `Category | Question text`. Edit it to add, remove or recategorise questions:
+
+1. `npm run questions check` shows what your edits changed. A new line needs answers first (they go into `data/seed.json`).
+2. `npm run questions apply` applies removed lines and category changes to `data/seed.json`.
+3. `npm run db:sync` shows what would change in Supabase; `npm run db:sync -- --apply` does it. A removed question is deleted, or only switched off if it was ever used in a daily game or answered (so history stays intact). Answers are only ever added. Questions made by hand in the admin screens are never touched.
+
+`npm run questions export` rewrites the list from `data/seed.json` (it overwrites your edits).
+
+### Pre-launch mode
+
+While the game is not public, switch on **Admin → Rarity & rules → Pre-launch mode** (or `npm run prelaunch -- on`). Then nothing counts: every question is treated as never played, so any of them can be picked again on any day, and answers are not added to the rarity statistics (every answer keeps its provisional tier). `npm run prelaunch -- off` turns it off. To wipe what testing created (sessions, scores, statistics, served games, streaks) and start clean at launch, run `npm run db:reset-play-data` (it shows what it would delete; add `-- --yes` to do it).
+
 See [docs/admin-guide.md](docs/admin-guide.md) for the dashboard in detail.
 
 ## Hero artwork

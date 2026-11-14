@@ -10,7 +10,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:sync": "tsx scripts/sync-questions.ts",
+    "db:reset-play-data": "tsx scripts/reset-play-data.ts",
+    "prelaunch": "tsx scripts/prelaunch.ts",
+    "questions": "node scripts/questions.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.16",

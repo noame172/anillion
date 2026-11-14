@@ -43,6 +43,10 @@ export function createPgDriver(connectionString: string): Driver {
     idleTimeoutMillis: 30_000,
     ssl: sslFor(connectionString),
   });
+  // The server or network may drop a connection that is sitting idle in the pool. Without a handler
+  // that error ("ECONNRESET") is uncaught and takes the whole process down. The pool discards the
+  // broken connection by itself and opens a new one for the next query.
+  pool.on('error', (err) => console.error('[db] an idle connection was dropped:', err.message));
   return {
     async query(sql, params = []) {
       return (await pool.query(sql, params as any[])).rows;
