@@ -70,8 +70,7 @@ describe('rarity', () => {
     expect(r.get('d')).toMatchObject({ tier: 'epic', share: 2.5 });
     expect(r.get('f')).toMatchObject({ tier: 'epic', share: 1.5 });
     expect(r.get('e')).toMatchObject({ tier: 'ultra', share: 1 });
-    // Nobody has given 'g' yet, so it has not earned ultra.
-    expect(r.get('g')).toMatchObject({ tier: 'epic', share: 0 });
+    expect(r.get('g')).toMatchObject({ tier: 'ultra', share: 0 }); // second of the two allowed ultras
   });
 
   it('allows at most 2 ultras per question, or 3 above 1000 answers', () => {

@@ -8,3 +8,17 @@ node_modules
 next-env.d.ts
 coverage
 scripts/.cache
+
+# Editors and operating systems
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and local environment variants
+*.log
+.env*.local
+
+# Deployment
+.vercel
