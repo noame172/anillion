@@ -11,17 +11,21 @@ const body = Rubik({ subsets: ['latin'], variable: '--font-body', display: 'swap
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const description =
-  'Animellion is the daily anime guessing game. Seven prompts, thirty seconds each. The rarer your answer, the more power you gain.';
+  'Animellion is a free daily anime guessing game. Answer seven anime prompts, thirty seconds each. The rarer your answer, the more points you earn. A new game every day.';
+// The code Google Search Console gives you for the "HTML tag" verification method (optional).
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
+// No site-wide canonical here: a canonical set in the root layout is inherited by every page that
+// does not set its own, which would tell Google that all of them are copies of the home page.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: 'Animellion — the daily anime power-up', template: '%s · Animellion' },
+  title: { default: 'Animellion — Daily Anime Guessing Game & Quiz', template: '%s · Animellion' },
   description,
   applicationName: 'Animellion',
   keywords: ['anime game', 'daily game', 'anime quiz', 'anime trivia', 'guessing game'],
-  openGraph: { type: 'website', siteName: 'Animellion', title: 'Animellion — the daily anime power-up', description, url: siteUrl },
-  twitter: { card: 'summary_large_image', title: 'Animellion — the daily anime power-up', description },
-  alternates: { canonical: '/' },
+  openGraph: { type: 'website', siteName: 'Animellion', title: 'Animellion — Daily Anime Guessing Game & Quiz', description, url: siteUrl },
+  twitter: { card: 'summary_large_image', title: 'Animellion — Daily Anime Guessing Game & Quiz', description },
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
 };
 
 export const viewport: Viewport = {
