@@ -179,12 +179,12 @@ describe('identity and authorisation', () => {
 
 describe('request hardening', () => {
   const request = (headers: Record<string, string>, method = 'POST') =>
-    new NextRequest('http://anillion.test/api/game/answer', { method, headers });
+    new NextRequest('http://animellion.test/api/game/answer', { method, headers });
 
   it('blocks cross-site state-changing requests', () => {
-    expect(() => assertSameOrigin(request({ host: 'anillion.test', origin: 'http://anillion.test' }))).not.toThrow();
-    expect(() => assertSameOrigin(request({ host: 'anillion.test', origin: 'https://evil.test' }))).toThrow();
-    expect(() => assertSameOrigin(request({ host: 'anillion.test', origin: 'null' }))).toThrow();
+    expect(() => assertSameOrigin(request({ host: 'animellion.test', origin: 'http://animellion.test' }))).not.toThrow();
+    expect(() => assertSameOrigin(request({ host: 'animellion.test', origin: 'https://evil.test' }))).toThrow();
+    expect(() => assertSameOrigin(request({ host: 'animellion.test', origin: 'null' }))).toThrow();
   });
 
   it('strips score fields a client tries to send with an answer', () => {
@@ -207,14 +207,14 @@ describe('request hardening', () => {
       await query('select * from table_that_does_not_exist');
     });
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const res = await boom(request({ host: 'anillion.test' }, 'GET'), { params: Promise.resolve({}) });
+    const res = await boom(request({ host: 'animellion.test' }, 'GET'), { params: Promise.resolve({}) });
     spy.mockRestore();
     expect(res.status).toBe(500);
     const body = JSON.stringify(await res.json());
     expect(body).not.toMatch(/table_that_does_not_exist|select|relation/i);
 
     const cross = api(async () => ({ ok: true }));
-    const blocked = await cross(request({ host: 'anillion.test', origin: 'https://evil.test' }), {
+    const blocked = await cross(request({ host: 'animellion.test', origin: 'https://evil.test' }), {
       params: Promise.resolve({}),
     });
     expect(blocked.status).toBe(403);

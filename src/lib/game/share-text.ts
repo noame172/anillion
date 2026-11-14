@@ -9,5 +9,5 @@ export function shareText(state: Pick<GameState, 'gameNumber' | 'date' | 'score'
     const a = state.answers.find((x) => x.position === i);
     return SQUARES[a?.tier ?? 'miss'];
   }).join('');
-  return `Anillion #${state.gameNumber} · ${state.date}\n${state.score} pts · ${FORM_LABELS[state.form]}\n${grid}`;
+  return `Animellion #${state.gameNumber} · ${state.date}\n${state.score} pts · ${FORM_LABELS[state.form]}\n${grid}`;
 }

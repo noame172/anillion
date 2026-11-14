@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy policy',
-  description: 'What data Anillion collects, why, and the choices you have.',
+  description: 'What data Animellion collects, why, and the choices you have.',
   alternates: { canonical: '/privacy' },
 };
 
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <h1>Privacy policy</h1>
       <p className="hint">Last updated: 13 November 2026</p>
       <p>
-        This policy explains what Anillion collects when you play and what we do with it. The site operator should
+        This policy explains what Animellion collects when you play and what we do with it. The site operator should
         review this page with a legal adviser before launch and add their legal name and address.
       </p>
 
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
       </ul>
 
       <h2>Children</h2>
-      <p>Anillion is not directed at children under 13, and we do not knowingly collect their personal data.</p>
+      <p>Animellion is not directed at children under 13, and we do not knowingly collect their personal data.</p>
 
       <h2>Changes</h2>
       <p>If this policy changes in a meaningful way we will update the date above and note the change here.</p>

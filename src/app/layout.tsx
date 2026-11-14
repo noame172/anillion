@@ -11,16 +11,16 @@ const body = Rubik({ subsets: ['latin'], variable: '--font-body', display: 'swap
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const description =
-  'Anillion is the daily anime guessing game. Seven prompts, thirty seconds each. The rarer your answer, the more power you gain.';
+  'Animellion is the daily anime guessing game. Seven prompts, thirty seconds each. The rarer your answer, the more power you gain.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: 'Anillion — the daily anime power-up', template: '%s · Anillion' },
+  title: { default: 'Animellion — the daily anime power-up', template: '%s · Animellion' },
   description,
-  applicationName: 'Anillion',
+  applicationName: 'Animellion',
   keywords: ['anime game', 'daily game', 'anime quiz', 'anime trivia', 'guessing game'],
-  openGraph: { type: 'website', siteName: 'Anillion', title: 'Anillion — the daily anime power-up', description, url: siteUrl },
-  twitter: { card: 'summary_large_image', title: 'Anillion — the daily anime power-up', description },
+  openGraph: { type: 'website', siteName: 'Animellion', title: 'Animellion — the daily anime power-up', description, url: siteUrl },
+  twitter: { card: 'summary_large_image', title: 'Animellion — the daily anime power-up', description },
   alternates: { canonical: '/' },
 };
 
@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link href="/terms">Terms</Link>
               <Link href="/contact">Contact</Link>
               <div style={{ marginTop: 8 }}>
-                Anillion is a fan-made game and is not affiliated with any anime studio or publisher.
+                Animellion is a fan-made game and is not affiliated with any anime studio or publisher.
               </div>
             </footer>
           </div>

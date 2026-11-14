@@ -1,4 +1,4 @@
-# Anillion design (approved 2026-11-13)
+# Animellion design (approved 2026-11-13)
 
 ## Intent
 A daily anime guessing game ready for public launch. Everyone gets the same

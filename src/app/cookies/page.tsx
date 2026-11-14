@@ -4,7 +4,7 @@ import { CookieSettingsButton } from '@/components/Consent';
 
 export const metadata: Metadata = {
   title: 'Cookie policy',
-  description: 'Which cookies Anillion uses, what each one is for, and how to change your choice.',
+  description: 'Which cookies Animellion uses, what each one is for, and how to change your choice.',
   alternates: { canonical: '/cookies' },
 };
 
@@ -17,7 +17,7 @@ export default function CookiePolicyPage() {
       <h1>Cookie policy</h1>
       <p className="hint">Last updated: 14 November 2026</p>
       <p>
-        Cookies are small files a website stores in your browser. This page lists every cookie Anillion uses, in plain
+        Cookies are small files a website stores in your browser. This page lists every cookie Animellion uses, in plain
         words, so you can decide what to allow. The site operator should review it with a legal adviser before launch
         and add their legal name and address.
       </p>
@@ -28,7 +28,7 @@ export default function CookiePolicyPage() {
       <h2>Your choice</h2>
       <ul>
         <li>
-          The first time you visit, a banner asks you to <strong>Reject all</strong>, <strong>Accept all</strong> or{' '}
+          The first time you visit, a banner asks you to <strong>Accept all</strong>, <strong>Reject all</strong> or{' '}
           <strong>Choose</strong>. The buttons are the same size on purpose.
         </li>
         <li>

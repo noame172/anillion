@@ -65,7 +65,7 @@ describe('cookie consent', () => {
   });
 
   it('lists the domains a cookie may have been set on', () => {
-    expect(cookieDomains('www.anillion.example')).toEqual(['www.anillion.example', '.www.anillion.example', '.anillion.example']);
+    expect(cookieDomains('www.animellion.example')).toEqual(['www.animellion.example', '.www.animellion.example', '.animellion.example']);
     expect(cookieDomains('localhost')).toEqual(['localhost']);
     expect(cookieDomains('127.0.0.1')).toEqual(['127.0.0.1']);
   });

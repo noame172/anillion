@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of service',
-  description: 'The rules for using Anillion.',
+  description: 'The rules for using Animellion.',
   alternates: { canonical: '/terms' },
 };
 
@@ -13,13 +13,13 @@ export default function TermsPage() {
       <h1>Terms of service</h1>
       <p className="hint">Last updated: 13 November 2026</p>
       <p>
-        By using Anillion you agree to these terms. The site operator should review this page with a legal adviser
+        By using Animellion you agree to these terms. The site operator should review this page with a legal adviser
         before launch and add their legal name and governing law.
       </p>
 
       <h2>The game</h2>
       <p>
-        Anillion is a free daily guessing game provided as is, for entertainment. Questions, accepted answers and
+        Animellion is a free daily guessing game provided as is, for entertainment. Questions, accepted answers and
         rarity scores are decided by us and may be corrected at any time.
       </p>
 
@@ -40,8 +40,8 @@ export default function TermsPage() {
 
       <h2>Content and trademarks</h2>
       <p>
-        Anillion is an unofficial fan-made game. Anime titles, character names and studio names belong to their
-        respective owners and are referred to only as trivia. Anillion is not affiliated with or endorsed by any of
+        Animellion is an unofficial fan-made game. Anime titles, character names and studio names belong to their
+        respective owners and are referred to only as trivia. Animellion is not affiliated with or endorsed by any of
         them. If you are a rights holder with a concern, please <Link href="/contact">contact us</Link>.
       </p>
 

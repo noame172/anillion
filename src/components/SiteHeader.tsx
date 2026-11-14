@@ -31,8 +31,8 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <Link href="/" className="brand" aria-label="Anillion home">
-        ANILLION
+      <Link href="/" className="brand" aria-label="Animellion home">
+        ANIMELLION
       </Link>
       <nav className="nav" aria-label="Main">
         <Link href="/leaderboard">Leaderboard</Link>

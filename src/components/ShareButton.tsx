@@ -10,7 +10,7 @@ export function ShareButton({ text, url }: { text: string; url: string }) {
     const full = `${text}\n${url}`;
     if (typeof navigator.share === 'function') {
       try {
-        await navigator.share({ title: 'Anillion', text, url });
+        await navigator.share({ title: 'Animellion', text, url });
         return;
       } catch (err) {
         if ((err as Error).name === 'AbortError') return; // user closed the sheet

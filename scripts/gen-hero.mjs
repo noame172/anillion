@@ -26,7 +26,7 @@ const forms = {
   },
 };
 
-const svg = (f, name) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" role="img" aria-label="Anillion hero, ${name} form">
+const svg = (f, name) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" role="img" aria-label="Animellion hero, ${name} form">
   <defs>
     <linearGradient id="jacket" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#27346b"/><stop offset="1" stop-color="#161d45"/>

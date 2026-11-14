@@ -1,4 +1,4 @@
-# Anillion admin guide
+# Animellion admin guide
 
 The dashboard is at `/admin`. It returns "page not found" to anyone who is not an administrator.
 

@@ -4,7 +4,7 @@ import { getPublicResult } from '@/lib/share';
 
 export const size = OG_SIZE;
 export const contentType = 'image/png';
-export const alt = 'Anillion result';
+export const alt = 'Animellion result';
 export const dynamic = 'force-dynamic';
 
 const ACCENT = { base: '#f5f3ea', ascended: '#ffd23f', azure: '#2aa8ff', ultra: '#ffffff' } as const;

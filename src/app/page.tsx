@@ -57,7 +57,7 @@ export default function HomePage() {
 
   return (
     <div className="home">
-      <h1 className="wordmark">ANILLION</h1>
+      <h1 className="wordmark">ANIMELLION</h1>
       <p className="tagline display">THE DAILY POWER-UP</p>
       <p className="subline">
         {count} prompts · {limit} seconds each · rarer answers charge higher

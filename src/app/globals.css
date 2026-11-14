@@ -416,7 +416,7 @@ textarea.input {
   padding-top: 8px;
 }
 .wordmark {
-  font-size: clamp(46px, 13vw, 116px);
+  font-size: clamp(40px, 11.5vw, 108px);
   letter-spacing: 0.03em;
   background: linear-gradient(180deg, #fff3a6 0%, var(--yellow) 35%, var(--orange) 85%);
   -webkit-background-clip: text;

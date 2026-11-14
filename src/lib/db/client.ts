@@ -24,7 +24,7 @@ export interface Driver extends Queryable {
 const activeTx = new AsyncLocalStorage<Queryable>();
 
 type Holder = { driver?: Promise<Driver> };
-const holder: Holder = ((globalThis as any).__anillionDb ??= {});
+const holder: Holder = ((globalThis as any).__animellionDb ??= {});
 
 async function create(): Promise<Driver> {
   if (config.mode === 'supabase') {

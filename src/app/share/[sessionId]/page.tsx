@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!result) return { title: 'Result not found', robots: { index: false } };
   const who = result.username ?? 'A challenger';
   const title = `${who} reached ${FORM_LABELS[result.form]} with ${result.score} pts`;
-  const description = `Anillion #${result.gameNumber} · ${result.date}. Can you find rarer answers?`;
+  const description = `Animellion #${result.gameNumber} · ${result.date}. Can you find rarer answers?`;
   return { title, description, robots: { index: false }, openGraph: { title, description }, twitter: { title, description } };
 }
 
@@ -24,7 +24,7 @@ export default async function SharePage({ params }: Props) {
   return (
     <div className="narrow card stack center" style={{ justifyItems: 'center' }}>
       <span className="chip">
-        Anillion #{result.gameNumber} · {result.date}
+        Animellion #{result.gameNumber} · {result.date}
       </span>
       <Hero form={result.form} size={200} />
       <p style={{ margin: 0 }}>

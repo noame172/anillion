@@ -31,7 +31,7 @@ export function ogCard(opts: { kicker: string; headline: string; score?: number;
             display: 'flex',
           }}
         >
-          ANILLION
+          ANIMELLION
         </div>
         <div style={{ fontSize: 56, fontWeight: 800, color: accent, marginTop: 8, display: 'flex' }}>{opts.headline}</div>
         {opts.score !== undefined && (

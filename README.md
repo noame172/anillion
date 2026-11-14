@@ -1,4 +1,4 @@
-# Anillion
+# Animellion
 
 A daily anime guessing game. Every day everyone gets the same seven prompts ("Name a One Piece character"). You have 30 seconds per prompt to type one answer. Rarer answers score more, and the hero powers up to match.
 
@@ -57,7 +57,7 @@ Copy `.env.example` to `.env.local`. Never commit `.env.local`.
 
 | Variable | Needed | Purpose |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Production | Public address, e.g. `https://anillion.example`. Used for share links, the sitemap and sign-in redirects |
+| `NEXT_PUBLIC_SITE_URL` | Production | Public address, e.g. `https://animellion.example`. Used for share links, the sitemap and sign-in redirects |
 | `DATABASE_URL` | Production | Supabase Postgres connection string. Server only |
 | `NEXT_PUBLIC_SUPABASE_URL` | Production | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Production | Supabase public (anon) key |

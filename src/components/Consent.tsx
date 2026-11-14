@@ -122,11 +122,11 @@ function Banner({ onSave, onCustomise }: { onSave: (c: Consent) => void; onCusto
         <Link href="/cookies">cookie policy</Link>.
       </p>
       <div className="row">
-        <button type="button" className="btn small" onClick={() => onSave(REJECT_ALL)}>
-          Reject all
-        </button>
         <button type="button" className="btn small" onClick={() => onSave(ACCEPT_ALL)}>
           Accept all
+        </button>
+        <button type="button" className="btn small" onClick={() => onSave(REJECT_ALL)}>
+          Reject all
         </button>
         <button type="button" className="btn ghost small" onClick={onCustomise}>
           Choose

@@ -1,4 +1,4 @@
--- Anillion core schema. All timestamps are timestamptz (stored in UTC).
+-- Animellion core schema. All timestamps are timestamptz (stored in UTC).
 
 create table profiles (
   id uuid primary key references auth.users (id) on delete cascade,

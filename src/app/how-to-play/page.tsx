@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'How to play',
-  description: 'How Anillion works: seven anime prompts a day, thirty seconds each, and rarer answers score more.',
+  description: 'How Animellion works: seven anime prompts a day, thirty seconds each, and rarer answers score more.',
   alternates: { canonical: '/how-to-play' },
 };
 
@@ -12,7 +12,7 @@ export default function HowToPlayPage() {
     <article className="prose">
       <h1>How to play</h1>
       <p>
-        Every day Anillion asks everyone the same seven anime prompts, such as “Name a One Piece character”. Type one
+        Every day Animellion asks everyone the same seven anime prompts, such as “Name a One Piece character”. Type one
         answer for each. The fewer players who gave your answer, the more it is worth.
       </p>
 
