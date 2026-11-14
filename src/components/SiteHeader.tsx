@@ -38,6 +38,7 @@ export function SiteHeader() {
         <Link href="/leaderboard">Leaderboard</Link>
         <Link href="/how-to-play">How to play</Link>
         {me?.user?.role === 'admin' && <Link href="/admin">Admin</Link>}
+        {!me && <span className="nav-slot" aria-hidden="true" />}
         {me?.user ? (
           <>
             <Link href="/profile" className="pill">

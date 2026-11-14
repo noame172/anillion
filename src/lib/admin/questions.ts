@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { query, queryOne, tx } from '@/lib/db/client';
 import { uniqueViolation } from '@/lib/db/errors';
 import { AppError, badRequest, notFound } from '@/lib/errors';
+import { clearGameCache } from '@/lib/game/daily';
 import { normalizeAnswer } from '@/lib/game/normalize';
 import { computeRarity } from '@/lib/game/rarity';
 import { TIERS, type Tier } from '@/lib/game/tiers';
@@ -148,6 +149,7 @@ export async function updateQuestion(id: string, input: unknown) {
     next.type,
     next.active,
   ]);
+  clearGameCache(); // a live game shows the question text, so do not serve the old wording
 }
 
 /** Questions used by a game are deactivated rather than deleted, so history stays intact. */

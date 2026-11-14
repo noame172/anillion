@@ -24,7 +24,17 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 };
 
-export const viewport: Viewport = { themeColor: '#0c1233', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = {
+  // The colour at the very top of the page, so the phone's status bar blends into it.
+  themeColor: '#070b1f',
+  colorScheme: 'dark',
+  width: 'device-width',
+  initialScale: 1,
+  // Draw under the notch (the CSS pads content back with env(safe-area-inset-*)), and let the
+  // on-screen keyboard shrink the layout on Android the way it already does on iPhone.
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content',
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

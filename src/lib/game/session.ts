@@ -273,6 +273,11 @@ export async function nextQuestion(viewer: Viewer, now: Date = new Date()): Prom
 export async function getState(viewer: Viewer, now: Date = new Date()): Promise<GameState | null> {
   const game = await getTodayGame(now);
   if (!game) return null;
+  // Most visits find no session at all, or a finished one that can no longer change. Neither
+  // needs a lock or a transaction, so answer those with plain reads.
+  const peek = await findSession(game.id, viewer, false);
+  if (!peek) return null;
+  if (peek.status === 'completed') return buildState(game, peek, now);
   return tx(async () => {
     const found = await findSession(game.id, viewer, true);
     if (!found) return null;

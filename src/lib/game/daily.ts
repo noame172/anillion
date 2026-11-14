@@ -1,4 +1,4 @@
-import { query, queryOne, tx } from '@/lib/db/client';
+import { getDb, query, queryOne, tx } from '@/lib/db/client';
 import { getSettings, type Settings } from '@/lib/settings';
 import { buildSnapshot } from './rarity';
 import type { Thresholds } from './tiers';
@@ -103,6 +103,7 @@ export async function pickQuestions(date: string, count: number): Promise<string
 }
 
 export async function setGameQuestions(gameId: string, questionIds: string[]) {
+  clearGameCache();
   await query('delete from daily_game_questions where game_id = $1', [gameId]);
   await query(
     `insert into daily_game_questions (game_id, question_id, position)
@@ -113,16 +114,19 @@ export async function setGameQuestions(gameId: string, questionIds: string[]) {
 }
 
 async function loadGame(row: GameRow, config: FrozenConfig): Promise<DailyGame> {
-  const questions = await query<GameQuestion>(
-    `select q.id, q.text, q.category, dq.position
-       from daily_game_questions dq join questions q on q.id = dq.question_id
-      where dq.game_id = $1 order by dq.position`,
-    [row.id],
-  );
-  const n = await queryOne<{ n: number }>(
-    `select count(*)::int as n from daily_games where status = 'published' and game_date <= $1`,
-    [row.game_date],
-  );
+  // Independent reads, so they run side by side instead of one after the other.
+  const [questions, n] = await Promise.all([
+    query<GameQuestion>(
+      `select q.id, q.text, q.category, dq.position
+         from daily_game_questions dq join questions q on q.id = dq.question_id
+        where dq.game_id = $1 order by dq.position`,
+      [row.id],
+    ),
+    queryOne<{ n: number }>(
+      `select count(*)::int as n from daily_games where status = 'published' and game_date <= $1`,
+      [row.game_date],
+    ),
+  ]);
   return {
     id: row.id,
     date: row.game_date,
@@ -133,8 +137,39 @@ async function loadGame(row: GameRow, config: FrozenConfig): Promise<DailyGame> 
   };
 }
 
+// A frozen game is the same for every player all day, yet every request used to read it again
+// (three round trips). Keep it for a few seconds; concurrent requests share one read. The cache
+// belongs to one database, so swapping the database (tests) starts it afresh.
+const GAME_CACHE_MS = 15_000;
+let gameCache: { db: Promise<unknown>; entries: Map<string, { at: number; game: Promise<DailyGame | null> }> } | null = null;
+
+/** Forget cached games, after an administrator changes one. */
+export function clearGameCache() {
+  gameCache = null;
+}
+
 /** The game for a specific date, only if it has already been played/frozen. */
-export async function getGameByDate(date: string): Promise<DailyGame | null> {
+export function getGameByDate(date: string): Promise<DailyGame | null> {
+  const db = getDb();
+  if (!gameCache || gameCache.db !== db) gameCache = { db, entries: new Map() };
+  const cache = gameCache;
+  const hit = cache.entries.get(date);
+  if (hit && Date.now() - hit.at < GAME_CACHE_MS) return hit.game;
+  const game = loadGameByDate(date).then(
+    (g) => {
+      if (!g) cache.entries.delete(date); // a game that is not ready yet must be looked up again
+      return g;
+    },
+    (err) => {
+      cache.entries.delete(date);
+      throw err;
+    },
+  );
+  cache.entries.set(date, { at: Date.now(), game });
+  return game;
+}
+
+async function loadGameByDate(date: string): Promise<DailyGame | null> {
   const row = await queryOne<GameRow>(
     `select id, game_date::text as game_date, status, question_count, config_snapshot from daily_games
       where game_date = $1 and status = 'published'`,

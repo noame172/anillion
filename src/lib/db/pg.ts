@@ -39,7 +39,8 @@ export function createPgDriver(connectionString: string): Driver {
   const pool = new Pool({
     connectionString,
     max: 5,
-    idleTimeoutMillis: 10_000,
+    // A connection costs a TLS handshake and a login, so keep idle ones around a while.
+    idleTimeoutMillis: 30_000,
     ssl: sslFor(connectionString),
   });
   return {

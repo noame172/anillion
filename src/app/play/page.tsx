@@ -373,6 +373,7 @@ export default function PlayPage() {
                     maxLength={80}
                     autoComplete="off"
                     autoCapitalize="words"
+                    autoCorrect="off"
                     spellCheck={false}
                     enterKeyHint="send"
                     aria-describedby="question-text answer-feedback"

@@ -85,7 +85,9 @@ export function AuthForm({ mode, google = false }: { mode: Mode; google?: boolea
               className="input"
               type={mode === 'login' ? 'text' : 'email'}
               autoCapitalize="none"
+              autoCorrect="off"
               spellCheck={false}
+              enterKeyHint="next"
               autoComplete={mode === 'login' ? 'username' : 'email'}
               required
               value={email}
@@ -99,6 +101,10 @@ export function AuthForm({ mode, google = false }: { mode: Mode; google?: boolea
             <input
               id="username"
               className="input"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="next"
               autoComplete="username"
               required
               minLength={3}
@@ -120,6 +126,7 @@ export function AuthForm({ mode, google = false }: { mode: Mode; google?: boolea
               id="password"
               className="input"
               type="password"
+              enterKeyHint={mode === 'login' ? 'go' : 'done'}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               required
               minLength={8}

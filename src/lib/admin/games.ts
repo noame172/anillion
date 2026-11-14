@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { query, queryOne, tx } from '@/lib/db/client';
 import { isForeignKeyViolation, uniqueViolation } from '@/lib/db/errors';
 import { AppError, badRequest, notFound } from '@/lib/errors';
-import { gameDateFor, pickQuestions, setGameQuestions } from '@/lib/game/daily';
+import { clearGameCache, gameDateFor, pickQuestions, setGameQuestions } from '@/lib/game/daily';
 import { dateSchema } from '@/lib/game/schemas';
 import { getSettings } from '@/lib/settings';
 
@@ -119,6 +119,7 @@ export async function updateGame(id: string, input: unknown) {
       await query(`update daily_games set status = 'draft', published_at = null, config_snapshot = null where id = $1`, [id]);
     }
   });
+  clearGameCache();
 }
 
 export async function deleteGame(id: string) {
@@ -130,6 +131,7 @@ export async function deleteGame(id: string) {
       if (await queryOne('select 1 from game_sessions where game_id = $1 limit 1', [id])) throw locked();
       await query('delete from daily_games where id = $1', [id]);
     });
+    clearGameCache();
   } catch (err) {
     if (isForeignKeyViolation(err)) throw locked();
     throw err;

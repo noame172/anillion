@@ -67,6 +67,9 @@ function QuestionBlock({ q, date, startOpen }: { q: QuestionSummary; date: strin
               placeholder="Search answers…"
               maxLength={80}
               autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="search"
             />
             {shown.length === 0 ? (
               <p className="muted" style={{ margin: '10px 0 0' }}>

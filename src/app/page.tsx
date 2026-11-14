@@ -80,12 +80,14 @@ export default function HomePage() {
             type="button"
             className="btn power"
             onClick={error && !today ? () => setAttempt((n) => n + 1) : powerUp}
-            disabled={(!today && !error) || starting}
+            disabled={starting}
+            aria-busy={!today && !error}
           >
+            {/* Usable straight away: the play page finds today's game itself, or sends a finished player to the results. */}
             {error && !today
               ? 'TRY AGAIN'
-              : !today
-                ? 'LOADING…'
+              : starting
+                ? 'STARTING…'
                 : done
                   ? 'VIEW RESULTS'
                   : inProgress
@@ -95,7 +97,7 @@ export default function HomePage() {
         )}
         {slow && !today && !error && (
           <p className="hint" role="status">
-            Still waking up. The first start can take a few seconds…
+            Still fetching today&apos;s game. You can already press Power Up.
           </p>
         )}
 
