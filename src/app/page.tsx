@@ -26,12 +26,23 @@ export default function HomePage() {
   const [today, setToday] = useState<Today | null>(null);
   const [error, setError] = useState('');
   const [starting, setStarting] = useState(false);
+  const [slow, setSlow] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    let current = true;
+    setError('');
+    setSlow(false);
+    const slowTimer = setTimeout(() => setSlow(true), 4000);
     apiFetch<Today>('/api/game/today')
-      .then(setToday)
-      .catch((e: ApiError) => setError(e.message));
-  }, []);
+      .then((t) => current && setToday(t))
+      .catch((e: ApiError) => current && setError(e.message))
+      .finally(() => clearTimeout(slowTimer));
+    return () => {
+      current = false;
+      clearTimeout(slowTimer);
+    };
+  }, [attempt]);
 
   const state = today?.state ?? null;
   const done = Boolean(state?.completed);
@@ -65,9 +76,27 @@ export default function HomePage() {
             Today&apos;s game is not ready yet. Next game in <Countdown to={today.nextGameAt} />.
           </div>
         ) : (
-          <button type="button" className="btn power" onClick={powerUp} disabled={!today || starting}>
-            {!today ? 'LOADING…' : done ? 'VIEW RESULTS' : inProgress ? 'CONTINUE' : '⚡ POWER UP ⚡'}
+          <button
+            type="button"
+            className="btn power"
+            onClick={error && !today ? () => setAttempt((n) => n + 1) : powerUp}
+            disabled={(!today && !error) || starting}
+          >
+            {error && !today
+              ? 'TRY AGAIN'
+              : !today
+                ? 'LOADING…'
+                : done
+                  ? 'VIEW RESULTS'
+                  : inProgress
+                    ? 'CONTINUE'
+                    : '⚡ POWER UP ⚡'}
           </button>
+        )}
+        {slow && !today && !error && (
+          <p className="hint" role="status">
+            Still waking up. The first start can take a few seconds…
+          </p>
         )}
 
         <div className="home-meta">
