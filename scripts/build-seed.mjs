@@ -443,6 +443,68 @@ const FRANCHISES = [
   ['Name a Space Brothers character.', 'Space Brothers', ['Uchuu Kyoudai'], { pages: 3 }],
   ['Name a Paranoia Agent character.', 'Paranoia Agent', ['Mousou Dairinin'], { pages: 2 }],
   ['Name an Odd Taxi character.', 'Odd Taxi', ['Odd Taxi'], { pages: 2 }],
+  // Batch 5
+  ['Name a Rent-a-Girlfriend character.', 'Rent-a-Girlfriend', ['Kanojo, Okarishimasu', 'Kanojo, Okarishimasu 2nd Season', 'Kanojo, Okarishimasu 3rd Season'], { pages: 3 }],
+  ['Name a Steins;Gate character.', 'Steins;Gate', ['Steins;Gate', 'Steins;Gate 0', 'Steins;Gate: Fuka Ryouiki no Deja vu'], { pages: 2 }],
+  ['Name a character from a Makoto Shinkai film.', 'Makoto Shinkai', ['Kimi no Na wa.', 'Tenki no Ko', 'Suzume no Tojimari', 'Byousoku 5 Centimeter', 'Kotonoha no Niwa', 'Hoshi wo Ou Kodomo'], { pages: 2 }],
+  ['Name a Boruto character.', 'Boruto', ['Boruto: Naruto Next Generations'], { pages: 4 }],
+  ['Name a Studio Ghibli character.', 'Studio Ghibli', ['Sen to Chihiro no Kamikakushi', 'Tonari no Totoro', 'Mononoke Hime', 'Howl no Ugoku Shiro', 'Majo no Takkyuubin', 'Kaze no Tani no Nausicaä', 'Tenkuu no Shiro Laputa', 'Kurenai no Buta', 'Hotaru no Haka', 'Gake no Ue no Ponyo', 'Kaze Tachinu', 'Omoide no Marnie', 'Mimi wo Sumaseba'], { pages: 3 }],
+  ['Name a Higurashi: When They Cry character.', 'Higurashi', ['Higurashi no Naku Koro ni', 'Higurashi no Naku Koro ni Kai'], { pages: 2 }],
+  ['Name a Nana character.', 'Nana', ['Nana'], { pages: 3 }],
+  ["Name a Welcome to Demon School! Iruma-kun character.", 'Welcome to Demon School', ['Mairimashita! Iruma-kun', 'Mairimashita! Iruma-kun 2nd Season'], { pages: 3 }],
+  ['Name a Food Wars! character.', 'Food Wars!', ['Shokugeki no Souma', 'Shokugeki no Souma: Ni no Sara'], { pages: 4 }],
+  ['Name a Devil Is a Part-Timer! character.', 'The Devil Is a Part-Timer!', ['Hataraku Maou-sama!', 'Hataraku Maou-sama!!'], { pages: 2 }],
+];
+
+// Questions about a hand-picked group (a villain, a rank, a power). Names that are also written another
+// way carry the alias after a "/". Order is roughly most famous first.
+const GROUPS = [
+  ['Name a Hunter x Hunter villain.', 'Hunter x Hunter', [
+    'Hisoka Morow/Hisoka', 'Illumi Zoldyck/Illumi', 'Chrollo Lucilfer/Chrollo', 'Meruem', 'Neferpitou/Pitou', 'Nobunaga Hazama/Nobunaga',
+    'Feitan Portor/Feitan', 'Phinks Magcub/Phinks', 'Machi Komacine/Machi', 'Shalnark', 'Franklin Bordeau/Franklin', 'Uvogin',
+    'Pakunoda', 'Kortopi', 'Bonolenov', 'Shizuku Murasaki/Shizuku', 'Shaiapouf/Pouf', 'Menthuthuyoupi/Youpi',
+    'Gyro', 'Genthru', 
+  ]],
+  ['Name a Naruto villain.', 'Naruto', [
+    'Madara Uchiha/Madara', 'Pain/Nagato', 'Itachi Uchiha/Itachi', 'Orochimaru', 'Obito Uchiha/Tobi', 'Kisame Hoshigaki/Kisame', 'Deidara', 'Sasori',
+    'Hidan', 'Kakuzu', 'Konan', 'Zetsu', 'Kabuto Yakushi/Kabuto', 'Kaguya Otsutsuki/Kaguya', 'Danzo Shimura/Danzo', 'Zabuza Momochi/Zabuza',
+    'Haku', 'Kimimaro', 'Black Zetsu', 'Isshiki Otsutsuki/Isshiki', 'Momoshiki Otsutsuki/Momoshiki', 'Kinshiki Otsutsuki/Kinshiki', 'Tayuya',
+  ]],
+  ['Name a One Piece Yonko, Warlord or Admiral.', 'One Piece', [
+    'Kaido', 'Charlotte Linlin/Big Mom', 'Shanks', 'Marshall D. Teach/Blackbeard', 'Edward Newgate/Whitebeard', 'Monkey D. Luffy/Luffy', 'Buggy',
+    'Dracule Mihawk/Mihawk', 'Donquixote Doflamingo/Doflamingo', 'Crocodile', 'Gecko Moria/Moria', 'Bartholomew Kuma/Kuma', 'Jinbe', 'Trafalgar Law/Law',
+    'Boa Hancock/Hancock', 'Sakazuki/Akainu', 'Kuzan/Aokiji', 'Borsalino/Kizaru', 'Issho/Fujitora', 'Ryokugyu/Aramaki', 'Sengoku', 
+    
+  ]],
+  ['Name a Dragon Ball villain.', 'Dragon Ball', [
+    'Frieza', 'Cell', 'Majin Buu/Buu', 'Raditz', 'Nappa', 'Vegeta', 'Dr. Gero/Gero', 'Broly', 'Beerus', 'Goku Black', 'Zamasu', 'Jiren', 'Hit',
+    'Android 17', 'Android 18', 'Dabura', 'Bojack', 'Turles', 'Cooler', 'Janemba', 'King Piccolo', 'Garlic Jr.', 'Moro', 'Gas', 'Granolah',
+    'Pilaf', 'General Blue', 'Commander Red', 'Tao Pai Pai/Mercenary Tao', 'Zarbon', 'Dodoria', 'Ginyu', 'Recoome', 'Android 19', 'Babidi', 
+  ]],
+  ['Name a Bleach Captain or Espada.', 'Bleach', [
+    'Kenpachi Zaraki/Kenpachi', 'Byakuya Kuchiki/Byakuya', 'Toshiro Hitsugaya/Toshiro', 'Shunsui Kyoraku/Shunsui', 'Jushiro Ukitake/Ukitake', 'Mayuri Kurotsuchi/Mayuri',
+    'Sosuke Aizen/Aizen', 'Gin Ichimaru/Gin', 'Kaname Tosen/Tosen', 'Genryusai Yamamoto/Yamamoto', 'Soi Fon', 'Retsu Unohana/Unohana', 'Sajin Komamura/Komamura',
+    'Ulquiorra Cifer/Ulquiorra', 'Grimmjow Jaegerjaquez/Grimmjow', 'Coyote Starrk/Starrk', 'Baraggan Louisenbairn/Barragan',
+    'Nnoitra Gilga/Nnoitra', 'Szayelaporro Granz/Szayel', 'Tier Harribel/Harribel', 'Zommari Rureaux/Zommari', 'Aaroniero Arruruerie/Aaroniero', 'Yammy Llargo/Yammy',
+    'Nelliel Tu Odelschwanck/Nel', 'Shinji Hirako/Shinji', 'Kisuke Urahara/Urahara', 'Yoruichi Shihoin/Yoruichi', 
+  ]],
+  ['Name a JoJo Stand.', "JoJo's Bizarre Adventure", [
+    'Star Platinum', 'The World', 'Crazy Diamond', 'Gold Experience', 'Killer Queen', 'King Crimson', 'Silver Chariot', "Magician's Red", 'Hierophant Green',
+    'Hermit Purple', 'Stone Free', 'Made in Heaven', 'Purple Haze', 'Sticky Fingers', 'Echoes', 'Beach Boy', 'Aerosmith', "Heaven's Door", 'Gold Experience Requiem',
+    'Soft & Wet', 'Tusk', 'Spice Girl', 'Moody Blues', 'Bad Company', 'The Hand', 'Cream', 'Anubis', 'Tohth', 'Death Thirteen', 'Dirty Deeds Done Dirt Cheap', 'Wonder of U',
+    'Love Train', 'Weather Report', 'Whitesnake', 'C-Moon', 'Cheap Trick', 'Notorious B.I.G.', 'Paisley Park', 'Yellow Temperance', 'Tower of Gray', 'The Fool', 'Mandom',
+  ]],
+  ['Name a Demon Slayer Hashira or Demon.', 'Demon Slayer', [
+    'Giyu Tomioka', 'Shinobu Kocho', 'Kyojuro Rengoku', 'Tengen Uzui', 'Mitsuri Kanroji', 'Muichiro Tokito', 'Gyomei Himejima', 'Sanemi Shinazugawa', 'Obanai Iguro',
+    'Muzan Kibutsuji/Muzan', 'Kokushibo', 'Doma', 'Akaza', 'Gyokko', 'Hantengu', 'Gyutaro', 'Daki', 'Enmu', 'Rui', 'Kaigaku', 'Nakime', 'Kagaya Ubuyashiki/Kagaya',
+    'Yushiro', 'Tamayo', 'Susamaru', 'Yahaba', 'Kyogai', 'Hand Demon/Manjiro', 'Nezuko Kamado/Nezuko', 'Zohakuten', 'Karaku', 'Urogi', 'Sekido', 'Aizetsu', 'Kyogai',
+  ]],
+  ['Name an Attack on Titan Survey Corps member.', 'Attack on Titan', [
+    'Levi Ackerman/Levi', 'Hange Zoe/Hange', 'Erwin Smith/Erwin', 'Mikasa Ackerman/Mikasa', 'Armin Arlert/Armin', 'Eren Yeager/Eren', 'Jean Kirstein/Jean',
+    'Connie Springer/Connie', 'Sasha Blouse/Sasha', 'Historia Reiss/Historia', 'Moblit Berner/Moblit', 'Mike Zacharias/Mike', 'Nanaba', 'Gelgar', 'Petra Ral/Petra',
+    'Oluo Bozado/Oluo', 'Eld Jinn/Eld', 'Gunther Schultz/Gunther', 'Auruo Bossard/Auruo', 'Floch Forster/Floch', 
+    'Ymir', 
+  ]],
 ];
 
 const STUDIO_QUESTIONS = [
@@ -452,6 +514,8 @@ const STUDIO_QUESTIONS = [
   'Studio Ghibli',
   // Batch 3
   'Bandai Namco Pictures', 'Tatsunoko Production', 'Science SARU', 'White Fox', 'Kinema Citrus',
+  // Batch 5
+  'Pierrot Plus', '4°C', 'Telecom Animation Film', 'OLM', 'Zexcs',
 ];
 
 const LISTS = [
@@ -541,6 +605,34 @@ const LISTS = [
   ['Name an anime with exactly 12 episodes.', 'Length', 'episodes:12, format:TV, sort:POPULARITY_DESC', { pages: 5 }],
   ['Name a summer 2024 anime.', 'Era', 'season:SUMMER, seasonYear:2024, format:TV, sort:POPULARITY_DESC', { pages: 2 }],
   ['Name a manga series.', 'Manga', 'sort:POPULARITY_DESC', { pages: 8, type: 'MANGA' }],
+  // Batch 5
+  ['Name a harem anime.', 'Genre', 'tag:"Harem", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an ecchi anime.', 'Genre', 'genre:"Ecchi", sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name a shoujo anime.', 'Genre', 'tag:"Shoujo", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name a josei anime.', 'Genre', 'tag:"Josei", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a gory anime.', 'Genre', 'tag:"Gore", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime about school clubs.', 'Genre', 'tag:"Club Activities", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime about swordplay.', 'Genre', 'tag:"Swordplay", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime about gods.', 'Genre', 'tag:"Gods", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name an anime with an anti-hero protagonist.', 'Genre', 'tag:"Anti-Hero", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name an anime about cars.', 'Genre', 'tag:"Cars", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name an anime about drawing or art.', 'Genre', 'tag:"Drawing", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name an anime set in the countryside.', 'Genre', 'tag:"Rural", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a tragic anime.', 'Genre', 'tag:"Tragedy", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime with a time loop.', 'Genre', 'tag:"Time Loop", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 2 }],
+  ['Name an anime with robots.', 'Genre', 'tag:"Robots", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a dystopian anime.', 'Genre', 'tag:"Dystopian", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name a war anime.', 'Genre', 'tag:"War", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime that aired in 2013.', 'Era', 'startDate_greater:20130000, startDate_lesser:20140000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2012.', 'Era', 'startDate_greater:20120000, startDate_lesser:20130000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2011.', 'Era', 'startDate_greater:20110000, startDate_lesser:20120000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2010.', 'Era', 'startDate_greater:20100000, startDate_lesser:20110000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name a winter 2025 anime.', 'Era', 'season:WINTER, seasonYear:2025, format:TV, sort:POPULARITY_DESC', { pages: 2 }],
+  ['Name an anime based on a web novel.', 'Source', 'source:WEB_NOVEL, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime based on a 4-koma manga.', 'Source', 'source:FOUR_KOMA_MANGA, sort:POPULARITY_DESC', { pages: 3 }],
+  ['Name an anime based on a manga.', 'Source', 'source:MANGA, sort:POPULARITY_DESC', { pages: 8 }],
+  ['Name a light novel series.', 'Light Novels', 'format:NOVEL, sort:POPULARITY_DESC', { pages: 6, type: 'MANGA' }],
+  ['Name an anime with exactly 25 episodes.', 'Length', 'episodes:25, format:TV, sort:POPULARITY_DESC', { pages: 4 }],
 ];
 
 // People: [question, AniList job title, options, tier cut-offs]
@@ -635,6 +727,15 @@ for (const studio of STUDIO_QUESTIONS.filter((s) => s !== 'Studio Ghibli')) {
   }
   const label = studio.replace(/\.$/, '');
   add(`Name an anime made by ${label}.`, `Studio: ${label}`, cands, TIERS_TITLES);
+}
+
+for (const [text, category, names] of GROUPS) {
+  console.log(`> ${text}`);
+  const cands = names.map((n) => {
+    const [name, ...aliases] = n.split('/');
+    return { name, aliases };
+  });
+  add(text, category, cands, [6, 14, 30]);
 }
 
 for (const [text, category, args, opts] of LISTS) {

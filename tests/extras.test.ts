@@ -133,7 +133,9 @@ describe('starter catalogue', () => {
     expect(await seed(db, data)).toBe(0);
     await query(`delete from answers where norm = 'naruto uzumaki'`);
     await seed(db, data);
-    expect(await query(`select 1 from answers where norm = 'naruto uzumaki'`)).toHaveLength(1);
+    // The same character can answer several questions (Naruto, Boruto), once per question.
+    const withNaruto = data.filter((q) => q.answers.some((a) => a[0] === 'Naruto Uzumaki')).length;
+    expect(await query(`select 1 from answers where norm = 'naruto uzumaki'`)).toHaveLength(withNaruto);
     const [{ n: after }] = await query<{ n: number }>(`select count(*)::int as n from answers`);
     expect(after).toBe(n);
   });
