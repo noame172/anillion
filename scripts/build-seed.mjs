@@ -137,11 +137,12 @@ function titleCandidate(m) {
 const MEDIA = 'id title{romaji english} synonyms popularity';
 const FILTER = 'type:ANIME, isAdult:false';
 
-async function listMedia(args, { pages = 4, per = 50 } = {}) {
+async function listMedia(args, { pages = 4, per = 50, type = 'ANIME' } = {}) {
   const seen = new Set();
   const out = [];
+  const filter = `type:${type}, isAdult:false`; // type MANGA lists manga series instead of anime
   for (let p = 1; p <= pages; p++) {
-    const d = await gql(`{ Page(page:${p}, perPage:${per}){ pageInfo{hasNextPage} media(${FILTER}, ${args}){ ${MEDIA} } } }`);
+    const d = await gql(`{ Page(page:${p}, perPage:${per}){ pageInfo{hasNextPage} media(${filter}, ${args}){ ${MEDIA} } } }`);
     for (const m of d?.Page?.media ?? []) {
       if (seen.has(m.id)) continue;
       seen.add(m.id);
@@ -194,6 +195,58 @@ async function characters(searches, { pages = 4, keep = 120 } = {}) {
     if (out.length >= keep) break;
   }
   return out;
+}
+
+/**
+ * People from AniList's staff list, most popular first, with one job title ("Voice Actor", "Mangaka",
+ * "Director"). A person is also accepted by surname or in Japanese order ("Kamiya Hiroshi").
+ */
+async function staff(occupation, { pages = 10, keep = 200 } = {}) {
+  const byId = new Map();
+  for (let p = 1; p <= pages; p++) {
+    const d = await gql(`{ Page(page:${p}, perPage:50){ staff(sort:FAVOURITES_DESC){ id favourites primaryOccupations name{ full first last alternative } } } }`);
+    for (const s of d?.Page?.staff ?? []) if ((s.primaryOccupations ?? []).includes(occupation)) byId.set(s.id, s);
+  }
+  const out = [];
+  for (const s of [...byId.values()].sort((a, b) => (b.favourites ?? 0) - (a.favourites ?? 0))) {
+    const full = s.name?.full && clean(s.name.full);
+    if (!full || !isLatin(full)) continue;
+    const { first, last } = s.name;
+    const aliases = [];
+    if (last && isLatin(last) && last.length >= 3) aliases.push(last);
+    if (first && last && isLatin(first) && isLatin(last)) aliases.push(`${last} ${first}`);
+    for (const a of s.name.alternative ?? []) if (isLatin(a) && clean(a).length <= 40) aliases.push(clean(a));
+    out.push({ name: full, aliases: [...new Set(aliases)].slice(0, 5) });
+    if (out.length >= keep) break;
+  }
+  return out;
+}
+
+/** Every Pokémon species, in Pokédex order, with its proper English name. Cached after the first run. */
+async function pokemon() {
+  const file = path.join(CACHE, 'pokemon-names.json');
+  if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, 'utf8'));
+  const list = await (await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=2000')).json();
+  const names = new Array(list.results.length);
+  let next = 0;
+  async function worker() {
+    while (next < list.results.length) {
+      const i = next++;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          const s = await (await fetch(list.results[i].url, { signal: AbortSignal.timeout(20_000) })).json();
+          names[i] = s.names.find((n) => n.language.name === 'en')?.name ?? list.results[i].name;
+          break;
+        } catch {
+          await new Promise((r) => setTimeout(r, 1500));
+        }
+      }
+      names[i] ??= list.results[i].name;
+    }
+  }
+  await Promise.all(Array.from({ length: 8 }, worker));
+  fs.writeFileSync(file, JSON.stringify(names));
+  return names;
 }
 
 async function studioMedia(search, { pages = 3, movieOnly = false } = {}) {
@@ -377,6 +430,17 @@ const FRANCHISES = [
   ['Name a Yuri!!! on Ice character.', 'Yuri!!! on Ice', ['Yuri!!! on Ice'], { pages: 2 }],
   ["Name a Komi Can't Communicate character.", "Komi Can't Communicate", ['Komi-san wa, Komyushou desu.', 'Komi-san wa, Komyushou desu. 2nd Season'], { pages: 3 }],
   ['Name a Goblin Slayer character.', 'Goblin Slayer', ['Goblin Slayer', 'Goblin Slayer II'], { pages: 2 }],
+  // Batch 4
+  ['Name a Darker than Black character.', 'Darker than Black', ['DARKER THAN BLACK: Kuro no Keiyakusha', 'Darker than Black: Ryuusei no Gemini'], { pages: 3 }],
+  ['Name a Eureka Seven character.', 'Eureka Seven', ['Koukyoushihen Eureka Seven', 'Eureka Seven AO'], { pages: 3 }],
+  ['Name a Dororo character.', 'Dororo', ['Dororo'], { pages: 2 }],
+  ['Name a Classroom of the Elite character.', 'Classroom of the Elite', ['Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e', 'Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season'], { pages: 3 }],
+  ['Name a Zatch Bell character.', 'Zatch Bell', ['Konjiki no Gash!!'], { pages: 4 }],
+  ['Name a Chihayafuru character.', 'Chihayafuru', ['Chihayafuru', 'Chihayafuru 2'], { pages: 3 }],
+  ["Name a Natsume's Book of Friends character.", "Natsume's Book of Friends", ['Natsume Yuujinchou', 'Natsume Yuujinchou Shi'], { pages: 3 }],
+  ['Name a Space Brothers character.', 'Space Brothers', ['Uchuu Kyoudai'], { pages: 3 }],
+  ['Name a Paranoia Agent character.', 'Paranoia Agent', ['Mousou Dairinin'], { pages: 2 }],
+  ['Name an Odd Taxi character.', 'Odd Taxi', ['Odd Taxi'], { pages: 2 }],
 ];
 
 const STUDIO_QUESTIONS = [
@@ -463,6 +527,35 @@ const LISTS = [
   ['Name an anime that aired in 2016.', 'Era', 'startDate_greater:20160000, startDate_lesser:20170000, sort:POPULARITY_DESC', { pages: 5 }],
   ['Name an anime that aired in 2017.', 'Era', 'startDate_greater:20170000, startDate_lesser:20180000, sort:POPULARITY_DESC', { pages: 5 }],
   ['Name an anime that aired in 2018.', 'Era', 'startDate_greater:20180000, startDate_lesser:20190000, sort:POPULARITY_DESC', { pages: 5 }],
+  // Batch 4
+  ['Name a police anime.', 'Genre', 'tag:"Police", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime about ghosts.', 'Genre', 'tag:"Ghost", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime about reincarnation.', 'Genre', 'tag:"Reincarnation", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name a survival anime.', 'Genre', 'tag:"Survival", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime about witches.', 'Genre', 'tag:"Witch", minimumTagRank:60, sort:POPULARITY_DESC', { pages: 4 }],
+  ['Name an anime that aired in 2015.', 'Era', 'startDate_greater:20150000, startDate_lesser:20160000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2014.', 'Era', 'startDate_greater:20140000, startDate_lesser:20150000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime that aired in 2025.', 'Era', 'startDate_greater:20250000, startDate_lesser:20260000, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name an anime with exactly 12 episodes.', 'Length', 'episodes:12, format:TV, sort:POPULARITY_DESC', { pages: 5 }],
+  ['Name a summer 2024 anime.', 'Era', 'season:SUMMER, seasonYear:2024, format:TV, sort:POPULARITY_DESC', { pages: 2 }],
+  ['Name a manga series.', 'Manga', 'sort:POPULARITY_DESC', { pages: 8, type: 'MANGA' }],
+];
+
+// People: [question, AniList job title, options, tier cut-offs]
+const PEOPLE = [
+  ['Name a Japanese voice actor.', 'Voice Actor', { pages: 12, keep: 250 }, [10, 40, 120]],
+  ['Name a manga artist.', 'Mangaka', { pages: 12, keep: 120 }, [8, 20, 45]],
+  ['Name an anime director.', 'Director', { pages: 12, keep: 80 }, [5, 12, 25]],
+];
+
+// The best-known Pokémon, in rough order of fame. Everyone else follows in Pokédex order, so the
+// newest ones end up rarest. Tiers are only a starting guess until real players have answered.
+const POKEMON_COMMON = ['Pikachu', 'Charizard', 'Bulbasaur', 'Squirtle', 'Charmander', 'Eevee', 'Mewtwo', 'Gengar', 'Snorlax', 'Jigglypuff', 'Psyduck', 'Meowth'];
+const POKEMON_RARE = [
+  'Mew', 'Lucario', 'Greninja', 'Gyarados', 'Dragonite', 'Blastoise', 'Venusaur', 'Arcanine', 'Raichu', 'Lapras', 'Umbreon', 'Espeon',
+  'Vaporeon', 'Jolteon', 'Flareon', 'Gardevoir', 'Rayquaza', 'Garchomp', 'Togepi', 'Ditto', 'Magikarp', 'Onix', 'Machamp', 'Alakazam',
+  'Ninetales', 'Vulpix', 'Cubone', 'Slowpoke', 'Mimikyu', 'Lugia', 'Ho-Oh', 'Mudkip', 'Torchic', 'Treecko', 'Piplup', 'Chimchar',
+  'Turtwig', 'Sylveon', 'Wobbuffet', 'Zubat',
 ];
 
 // ---------------------------------------------------------------- run
@@ -545,6 +638,21 @@ for (const studio of STUDIO_QUESTIONS.filter((s) => s !== 'Studio Ghibli')) {
 for (const [text, category, args, opts] of LISTS) {
   console.log(`> ${text}`);
   add(text, category, await listMedia(args, opts), TIERS_TITLES);
+}
+
+for (const [text, occupation, opts, tiers] of PEOPLE) {
+  console.log(`> ${text}`);
+  add(text, 'People', await staff(occupation, opts), tiers);
+}
+
+console.log('> Pokémon');
+{
+  const names = await pokemon();
+  const byNorm = new Map(names.map((n) => [norm(n), n]));
+  const famous = [...POKEMON_COMMON, ...POKEMON_RARE].map((n) => byNorm.get(norm(n))).filter(Boolean);
+  const taken = new Set(famous.map(norm));
+  const ordered = [...famous, ...names.filter((n) => !taken.has(norm(n)))];
+  add('Name a Pokémon.', 'Pokémon', ordered.map((name) => ({ name, aliases: [] })), [POKEMON_COMMON.length, POKEMON_COMMON.length + POKEMON_RARE.length, 800]);
 }
 
 // Curated questions that AniList did not rebuild (kept exactly as they were).
