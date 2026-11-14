@@ -1,4 +1,5 @@
 import { query, tx } from '@/lib/db/client';
+import { advisoryLock, playerLock } from '@/lib/db/locks';
 import { getSettings } from '@/lib/settings';
 import { gameDateFor } from './daily';
 import { recomputeProfileStats } from './streak';
@@ -10,6 +11,8 @@ import { recomputeProfileStats } from './streak';
  */
 export async function mergeGuestIntoUser(guestId: string, userId: string, now: Date = new Date()): Promise<number> {
   return tx(async () => {
+    // The account may be starting today's game in another tab right now: take turns.
+    await advisoryLock(playerLock(userId));
     const moved = await query(
       `update game_sessions g set user_id = $2
         where g.guest_id = $1 and g.user_id is null

@@ -21,6 +21,16 @@ function shareLine(row: AnsweredRow) {
   return `${row.share < 0.1 ? '<0.1' : row.share}% of players gave this answer.`;
 }
 
+// React Strict Mode runs effects twice in development. Two parallel starts from a browser with no
+// cookie would mint two guest ids, so concurrent callers share one in-flight request.
+let startInFlight: Promise<GameState> | null = null;
+function startGame(): Promise<GameState> {
+  startInFlight ??= apiFetch<GameState>('/api/game/start', { method: 'POST', body: {} }).finally(() => {
+    startInFlight = null;
+  });
+  return startInFlight;
+}
+
 export default function PlayPage() {
   const router = useRouter();
   const [state, setState] = useState<GameState | null>(null);
@@ -31,6 +41,8 @@ export default function PlayPage() {
   // "Did you mean": what the player typed and the accepted answer it is close to.
   const [suggest, setSuggest] = useState<{ typed: string; name: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  // State updates are asynchronous, so a double Enter or click could pass the `busy` check twice.
+  const sending = useRef(false);
   const [shake, setShake] = useState(false);
   const [leftMs, setLeftMs] = useState(0);
   const [timeUp, setTimeUp] = useState(false);
@@ -60,7 +72,7 @@ export default function PlayPage() {
   // Power up: start (or resume) today's session.
   useEffect(() => {
     let alive = true;
-    apiFetch<GameState>('/api/game/start', { method: 'POST', body: {} })
+    startGame()
       .then((s) => {
         if (!alive) return;
         if (s.completed) router.replace('/results');
@@ -130,7 +142,8 @@ export default function PlayPage() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     let answer = text.trim();
-    if (!answer || busy || !state?.current || timeUp) return;
+    if (!answer || sending.current || !state?.current || timeUp) return;
+    sending.current = true;
     // Enter on a pending suggestion takes it: the bar changes to the suggested name and that is sent.
     if (suggest && suggest.typed === answer) {
       answer = suggest.name;
@@ -177,11 +190,13 @@ export default function PlayPage() {
       }
     } finally {
       setBusy(false);
+      sending.current = false;
     }
   }
 
   async function next() {
-    if (!state || busy) return;
+    if (!state || sending.current) return;
+    sending.current = true;
     if (state.completed) {
       router.push('/results');
       return;
@@ -198,6 +213,7 @@ export default function PlayPage() {
       setFatal((err as ApiError).message);
     } finally {
       setBusy(false);
+      sending.current = false;
     }
   }
 

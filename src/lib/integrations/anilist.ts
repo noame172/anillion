@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { query } from '@/lib/db/client';
 import { AppError } from '@/lib/errors';
-import { addAnswer } from '@/lib/admin/questions';
+import { addAnswers } from '@/lib/admin/questions';
 
 const ENDPOINT = 'https://graphql.anilist.co';
 
@@ -66,23 +66,17 @@ export async function fetchAniList(title: string, kind: 'characters' | 'studios'
 export async function importFromAniList(input: unknown) {
   const { questionId, title, kind } = anilistImportSchema.parse(input);
   const found = await fetchAniList(title, kind);
-  let added = 0;
-  let skipped = 0;
-  for (const item of found.items) {
-    try {
-      await addAnswer(questionId, {
-        canonical: item.name.slice(0, 80),
-        aliases: item.aliases.map((a) => a.slice(0, 80)),
-        provisionalTier: 'ultra',
-        verified: false,
-        externalRef: item.ref,
-      });
-      added++;
-    } catch (err) {
-      if (err instanceof AppError && (err.code === 'NAME_TAKEN' || err.status === 400)) skipped++;
-      else throw err;
-    }
-  }
+  // One bulk insert, not one transaction per name.
+  const { added, skipped } = await addAnswers(
+    questionId,
+    found.items.map((item) => ({
+      canonical: item.name.slice(0, 80),
+      aliases: item.aliases.map((a) => a.slice(0, 80)).slice(0, 30),
+      provisionalTier: 'ultra',
+      verified: false,
+      externalRef: item.ref,
+    })),
+  );
   await query(`update questions set source = 'anilist' where id = $1 and source = 'manual'`, [questionId]);
   return { title: found.title, found: found.items.length, added, skipped };
 }

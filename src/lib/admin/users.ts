@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { query, queryOne } from '@/lib/db/client';
+import { query, queryOne, tx } from '@/lib/db/client';
 import { badRequest, notFound } from '@/lib/errors';
 import { addDays } from '@/lib/game/daily';
 import { todayDate } from './games';
@@ -20,15 +20,26 @@ export async function updateUser(actorId: string, userId: string, input: unknown
   const patch = updateUserSchema.parse(input);
   // Guard against an admin locking themselves (and possibly everyone) out.
   if (actorId === userId) throw badRequest('You cannot change your own role or suspension.');
-  const current = await queryOne<{ role: string; suspended: boolean }>('select role, suspended from profiles where id = $1', [
-    userId,
-  ]);
-  if (!current) throw notFound('User not found.');
-  await query('update profiles set role = $2, suspended = $3 where id = $1', [
-    userId,
-    patch.role ?? current.role,
-    patch.suspended ?? current.suspended,
-  ]);
+  await tx(async () => {
+    // Lock every administrator (in a fixed order) plus the target. Two admins demoting each
+    // other at the same moment then take turns, and the second sees the first one's change.
+    await query(`select id from profiles where role = 'admin' or id = $1 order by id for update`, [userId]);
+    const current = await queryOne<{ role: string; suspended: boolean }>('select role, suspended from profiles where id = $1', [
+      userId,
+    ]);
+    if (!current) throw notFound('User not found.');
+    const role = patch.role ?? current.role;
+    const suspended = patch.suspended ?? current.suspended;
+    const losesAdmin = current.role === 'admin' && !current.suspended && (role !== 'admin' || suspended);
+    if (losesAdmin) {
+      const others = await queryOne<{ n: number }>(
+        `select count(*)::int as n from profiles where role = 'admin' and not suspended and id <> $1`,
+        [userId],
+      );
+      if (!others?.n) throw badRequest('This is the last active administrator. Make someone else an administrator first.');
+    }
+    await query('update profiles set role = $2, suspended = $3 where id = $1', [userId, role, suspended]);
+  });
 }
 
 /** Sessions that look automated, and identities that keep hitting rate limits. */

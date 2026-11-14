@@ -69,9 +69,13 @@ export function AllAnswers({ date }: { date: string }) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    let current = true;
     apiFetch<{ questions: QuestionAnswers[] }>(`/api/game/answers?date=${date}`)
-      .then((r) => setQuestions(r.questions))
-      .catch(() => setFailed(true));
+      .then((r) => current && setQuestions(r.questions))
+      .catch(() => current && setFailed(true));
+    return () => {
+      current = false;
+    };
   }, [date]);
 
   if (failed) return null;

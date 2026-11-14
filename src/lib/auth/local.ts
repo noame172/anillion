@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { promisify } from 'node:util';
 import { query, queryOne, tx } from '@/lib/db/client';
+import { uniqueViolation } from '@/lib/db/errors';
 import { AppError } from '@/lib/errors';
 import { emailSchema, ensureProfile, passwordSchema, usernameSchema, usernameTaken } from './profile';
 
@@ -33,6 +34,20 @@ export async function registerLocal(input: { email: string; password: string; us
   const password = passwordSchema.parse(input.password);
   const username = usernameSchema.parse(input.username);
   const password_hash = await hashPassword(password);
+  try {
+    return await registerTx(email, password_hash, username);
+  } catch (err) {
+    // Two sign-ups with the same email or username at the same moment: the database picks the winner.
+    const clash = uniqueViolation(err);
+    if (clash) {
+      if (clash.includes('username')) throw new AppError(409, 'USERNAME_TAKEN', 'That username is taken.');
+      throw new AppError(409, 'EMAIL_TAKEN', 'An account with that email already exists.');
+    }
+    throw err;
+  }
+}
+
+async function registerTx(email: string, password_hash: string, username: string): Promise<string> {
   return tx(async () => {
     if (await queryOne('select 1 from local_credentials where lower(email) = $1', [email])) {
       throw new AppError(409, 'EMAIL_TAKEN', 'An account with that email already exists.');

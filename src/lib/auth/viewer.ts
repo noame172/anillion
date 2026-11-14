@@ -42,14 +42,21 @@ export async function readGuestId(): Promise<string | null> {
   return verifyToken(store.get(GUEST_COOKIE)?.value, 'guest');
 }
 
-/** The current player: a signed-in user, or a guest identified by a signed cookie. */
-export async function getViewer(): Promise<Viewer> {
+/**
+ * The current player: a signed-in user, or a guest identified by a signed cookie.
+ *
+ * Only a request that creates a game (`create: true`, the start route) may issue a new
+ * guest cookie. If every first request minted one, parallel requests from a new browser
+ * would each set a different id and the browser would keep whichever answered last,
+ * orphaning the game that had just been started.
+ */
+export async function getViewer({ create = false }: { create?: boolean } = {}): Promise<Viewer> {
   const user = await getUserViewer();
   if (user) return user;
   let guestId = await readGuestId();
   if (!guestId) {
     guestId = crypto.randomUUID();
-    (await cookies()).set(GUEST_COOKIE, await signToken('guest', guestId, 365), cookieOptions(365));
+    if (create) (await cookies()).set(GUEST_COOKIE, await signToken('guest', guestId, 365), cookieOptions(365));
   }
   return { kind: 'guest', id: guestId };
 }

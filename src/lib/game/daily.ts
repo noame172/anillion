@@ -184,7 +184,8 @@ export async function getTodayGame(now: Date = new Date()): Promise<DailyGame | 
       }
     }
     if (!row || row.status !== 'published') return null;
-    const config = parseConfig(row.config_snapshot) ?? (await freeze(row, settings, now));
+    // Freeze with the settings as they are now, not as they were when this request started.
+    const config = parseConfig(row.config_snapshot) ?? (await freeze(row, await getSettings({ fresh: true }), now));
     return loadGame(row, config);
   });
 }

@@ -27,6 +27,8 @@ export function streakFromDates(dates: string[], today: string): { current: numb
 
 /** Rebuild a profile's totals and streaks from its completed sessions. */
 export async function recomputeProfileStats(userId: string, today: string): Promise<void> {
+  // Lock first, read second: whoever recomputes next sees every session committed before it.
+  await query('select 1 from profiles where id = $1 for update', [userId]);
   const rows = await query<{ d: string; score: number }>(
     `select g.game_date::text as d, s.total_score as score
        from game_sessions s join daily_games g on g.id = s.game_id

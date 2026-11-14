@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { query, queryOne, tx } from '@/lib/db/client';
+import { uniqueViolation } from '@/lib/db/errors';
 import { AppError, badRequest, notFound } from '@/lib/errors';
 import { normalizeAnswer } from '@/lib/game/normalize';
 import { computeRarity } from '@/lib/game/rarity';
@@ -33,15 +34,26 @@ export async function audit(actorId: string | null, action: string, detail: unkn
 }
 
 export async function listQuestions(search = '') {
+  // Each count is computed once for all questions and joined, not once per question row.
   return query(
     `select q.id, q.text, q.category, q.active, q.source, q.created_at,
-            (select count(*)::int from answers a where a.question_id = q.id and a.verified) as answers,
-            (select count(*)::int from answers a where a.question_id = q.id and not a.verified) as unverified,
-            (select count(*)::int from unknown_answers u where u.question_id = q.id and u.status = 'pending') as unknown,
-            (select coalesce(sum(valid_count), 0)::int from answer_stats st where st.question_id = q.id) as submissions,
-            (select max(g.game_date)::text from daily_game_questions dq join daily_games g on g.id = dq.game_id
-              where dq.question_id = q.id) as last_used
+            coalesce(a.verified, 0) as answers,
+            coalesce(a.unverified, 0) as unverified,
+            coalesce(u.pending, 0) as unknown,
+            coalesce(st.submissions, 0) as submissions,
+            lu.last_used
        from questions q
+       left join (select question_id,
+                         (count(*) filter (where verified))::int as verified,
+                         (count(*) filter (where not verified))::int as unverified
+                    from answers group by question_id) a on a.question_id = q.id
+       left join (select question_id, count(*)::int as pending
+                    from unknown_answers where status = 'pending' group by question_id) u on u.question_id = q.id
+       left join (select question_id, sum(valid_count)::int as submissions
+                    from answer_stats group by question_id) st on st.question_id = q.id
+       left join (select dq.question_id, max(g.game_date)::text as last_used
+                    from daily_game_questions dq join daily_games g on g.id = dq.game_id
+                   group by dq.question_id) lu on lu.question_id = q.id
       where ($1 = '' or q.text ilike '%' || $1 || '%' or q.category ilike '%' || $1 || '%')
       order by q.active desc, q.category, q.text
       limit 500`,
@@ -80,6 +92,12 @@ export async function getQuestion(id: string) {
     settings.minSample,
   );
   const total = verified.reduce((sum, a) => sum + a.count, 0);
+  const aliasesByAnswer = new Map<string, { id: string; alias: string }[]>();
+  for (const al of aliases) {
+    const list = aliasesByAnswer.get(al.answer_id) ?? [];
+    list.push({ id: al.id, alias: al.alias });
+    aliasesByAnswer.set(al.answer_id, list);
+  }
   // How each answer's frozen share moved across past games.
   const history = await query(
     `select g.game_date::text as date, rs.answer_id, rs.share::float8 as share, rs.tier, rs.provisional
@@ -102,7 +120,7 @@ export async function getQuestion(id: string) {
       share: total ? Math.round((a.count / total) * 10000) / 100 : null,
       liveTier: rarity.get(a.id)?.tier ?? null,
       liveProvisional: rarity.get(a.id)?.provisional ?? true,
-      aliases: aliases.filter((al) => al.answer_id === a.id).map((al) => ({ id: al.id, alias: al.alias })),
+      aliases: aliasesByAnswer.get(a.id) ?? [],
     })),
     history,
   };
@@ -134,18 +152,35 @@ export async function updateQuestion(id: string, input: unknown) {
 
 /** Questions used by a game are deactivated rather than deleted, so history stays intact. */
 export async function removeQuestion(id: string): Promise<'deleted' | 'deactivated'> {
-  const used = await queryOne(
-    `select 1 from daily_game_questions where question_id = $1
-     union all select 1 from submissions where question_id = $1 limit 1`,
-    [id],
-  );
-  if (used) {
-    await query('update questions set active = false where id = $1', [id]);
-    return 'deactivated';
-  }
-  await query('delete from questions where id = $1', [id]);
-  return 'deleted';
+  return tx(async () => {
+    // Locking the question makes a game that is being built with it wait, so the check below stays true.
+    await query('select 1 from questions where id = $1 for update', [id]);
+    const used = await queryOne(
+      `select 1 from daily_game_questions where question_id = $1
+       union all select 1 from submissions where question_id = $1 limit 1`,
+      [id],
+    );
+    if (used) {
+      await query('update questions set active = false where id = $1', [id]);
+      return 'deactivated' as const;
+    }
+    await query('delete from questions where id = $1', [id]);
+    return 'deleted' as const;
+  });
 }
+
+/**
+ * Serialise every change to one question's names. Without this, two administrators
+ * (or two approvals) adding "X" as an answer and as another answer's alias at the
+ * same moment would both pass the "name is free" check and leave an ambiguous name.
+ */
+async function lockQuestion(questionId: string) {
+  if (!(await queryOne('select 1 from questions where id = $1 for update', [questionId]))) {
+    throw notFound('Question not found.');
+  }
+}
+
+const nameTaken = () => new AppError(409, 'NAME_TAKEN', 'Another answer already uses that name.');
 
 /** A name may belong to only one answer per question, whether as canonical or alias. */
 async function assertNameFree(questionId: string, norm: string, exceptAnswerId?: string) {
@@ -160,29 +195,112 @@ async function assertNameFree(questionId: string, norm: string, exceptAnswerId?:
   if (clash) throw new AppError(409, 'NAME_TAKEN', `"${clash.canonical}" already uses that name.`);
 }
 
+/** Insert aliases in one statement, skipping any name another answer already owns. */
+async function insertAliases(answerId: string, questionId: string, ownNorm: string, aliases: string[]) {
+  const rows: { alias: string; norm: string }[] = [];
+  const seen = new Set([ownNorm]);
+  for (const alias of aliases) {
+    const norm = normalizeAnswer(alias);
+    if (!norm || seen.has(norm)) continue;
+    seen.add(norm);
+    rows.push({ alias, norm });
+  }
+  if (!rows.length) return;
+  await query(
+    `insert into answer_aliases (answer_id, question_id, alias, norm)
+     select $1, $2, x.alias, x.norm from jsonb_to_recordset($3::jsonb) as x(alias text, norm text)
+      where not exists (select 1 from answers a where a.question_id = $2 and a.norm = x.norm)
+     on conflict (question_id, norm) do nothing`,
+    [answerId, questionId, JSON.stringify(rows)],
+  );
+}
+
 export async function addAnswer(questionId: string, input: unknown): Promise<string> {
   const a = answerSchema.parse(input);
-  return tx(async () => {
-    if (!(await queryOne('select 1 from questions where id = $1', [questionId]))) throw notFound('Question not found.');
-    const norm = normalizeAnswer(a.canonical);
-    await assertNameFree(questionId, norm);
-    const [{ id }] = await query<{ id: string }>(
-      `insert into answers (question_id, canonical, norm, verified, provisional_tier, external_ref)
-       values ($1, $2, $3, $4, $5, $6) returning id`,
-      [questionId, a.canonical, norm, a.verified, a.provisionalTier, a.externalRef ?? null],
-    );
-    for (const alias of a.aliases) {
-      const aliasNorm = normalizeAnswer(alias);
-      if (!aliasNorm || aliasNorm === norm) continue;
-      await query(
-        `insert into answer_aliases (answer_id, question_id, alias, norm)
-         select $1, $2, $3, $4 where not exists (select 1 from answers where question_id = $2 and norm = $4)
-         on conflict (question_id, norm) do nothing`,
-        [id, questionId, alias, aliasNorm],
+  try {
+    return await tx(async () => {
+      await lockQuestion(questionId);
+      const norm = normalizeAnswer(a.canonical);
+      await assertNameFree(questionId, norm);
+      const [{ id }] = await query<{ id: string }>(
+        `insert into answers (question_id, canonical, norm, verified, provisional_tier, external_ref)
+         values ($1, $2, $3, $4, $5, $6) returning id`,
+        [questionId, a.canonical, norm, a.verified, a.provisionalTier, a.externalRef ?? null],
       );
-    }
-    return id;
+      await insertAliases(id, questionId, norm, a.aliases);
+      return id;
+    });
+  } catch (err) {
+    if (uniqueViolation(err)) throw nameTaken();
+    throw err;
+  }
+}
+
+/**
+ * Add many answers to one question with a handful of statements, however many there are.
+ * Names that are invalid or already used are skipped and counted. Used by imports.
+ */
+export async function addAnswers(questionId: string, items: unknown[]): Promise<{ added: number; skipped: number }> {
+  const parsed = items.flatMap((i) => {
+    const r = answerSchema.safeParse(i);
+    return r.success ? [r.data] : [];
   });
+  let skipped = items.length - parsed.length;
+  const CHUNK = 500;
+  const added = await tx(async () => {
+    await lockQuestion(questionId);
+    const taken = new Set(
+      (
+        await query<{ norm: string }>(
+          `select norm from answers where question_id = $1 union select norm from answer_aliases where question_id = $1`,
+          [questionId],
+        )
+      ).map((r) => r.norm),
+    );
+    const fresh: { canonical: string; norm: string; tier: string; verified: boolean; ref: string | null; aliases: string[] }[] = [];
+    for (const a of parsed) {
+      const norm = normalizeAnswer(a.canonical);
+      if (!norm || taken.has(norm)) {
+        skipped++;
+        continue;
+      }
+      taken.add(norm);
+      fresh.push({ canonical: a.canonical, norm, tier: a.provisionalTier, verified: a.verified, ref: a.externalRef ?? null, aliases: a.aliases });
+    }
+    let count = 0;
+    for (let i = 0; i < fresh.length; i += CHUNK) {
+      const slice = fresh.slice(i, i + CHUNK);
+      const ids = await query<{ id: string; norm: string }>(
+        `insert into answers (question_id, canonical, norm, verified, provisional_tier, external_ref)
+         select $1, x.canonical, x.norm, x.verified, x.tier, x.ref
+           from jsonb_to_recordset($2::jsonb) as x(canonical text, norm text, verified boolean, tier text, ref text)
+         returning id, norm`,
+        [questionId, JSON.stringify(slice)],
+      );
+      count += ids.length;
+      const idByNorm = new Map(ids.map((r) => [r.norm, r.id]));
+      const aliasRows: { answer_id: string; alias: string; norm: string }[] = [];
+      for (const a of slice) {
+        for (const alias of a.aliases) {
+          const norm = normalizeAnswer(alias);
+          if (!norm || taken.has(norm)) continue;
+          taken.add(norm);
+          aliasRows.push({ answer_id: idByNorm.get(a.norm)!, alias, norm });
+        }
+      }
+      if (aliasRows.length) {
+        await query(
+          `insert into answer_aliases (answer_id, question_id, alias, norm)
+           select x.answer_id, $1, x.alias, x.norm
+             from jsonb_to_recordset($2::jsonb) as x(answer_id uuid, alias text, norm text)
+           on conflict (question_id, norm) do nothing`,
+          [questionId, JSON.stringify(aliasRows)],
+        );
+      }
+    }
+    return count;
+  });
+  return { added, skipped };
 }
 
 export async function updateAnswer(id: string, input: unknown) {
@@ -190,7 +308,11 @@ export async function updateAnswer(id: string, input: unknown) {
     .object({ canonical: z.string().trim().min(1).max(80), provisionalTier: tierSchema, verified: z.boolean() })
     .partial()
     .parse(input);
-  await tx(async () => {
+  try {
+    await tx(async () => {
+    const owner = await queryOne<{ question_id: string }>('select question_id from answers where id = $1', [id]);
+    if (!owner) throw notFound('Answer not found.');
+    await lockQuestion(owner.question_id);
     const current = await queryOne<{ question_id: string; canonical: string; verified: boolean; provisional_tier: Tier }>(
       'select question_id, canonical, verified, provisional_tier from answers where id = $1 for update',
       [id],
@@ -209,7 +331,11 @@ export async function updateAnswer(id: string, input: unknown) {
       patch.verified ?? current.verified,
       patch.provisionalTier ?? current.provisional_tier,
     ]);
-  });
+    });
+  } catch (err) {
+    if (uniqueViolation(err)) throw nameTaken();
+    throw err;
+  }
 }
 
 export async function deleteAnswer(id: string) {
@@ -221,6 +347,7 @@ export async function addAlias(answerId: string, aliasRaw: string): Promise<stri
   return tx(async () => {
     const answer = await queryOne<{ question_id: string }>('select question_id from answers where id = $1', [answerId]);
     if (!answer) throw notFound('Answer not found.');
+    await lockQuestion(answer.question_id);
     const norm = normalizeAnswer(alias);
     await assertNameFree(answer.question_id, norm, answerId);
     const existing = await queryOne<{ id: string }>('select id from answer_aliases where question_id = $1 and norm = $2', [

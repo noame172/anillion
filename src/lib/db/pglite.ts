@@ -14,7 +14,12 @@ export async function createPgliteDriver(dataDir?: string): Promise<Driver> {
     },
     async tx(fn) {
       return (await db.transaction(async (t) =>
-        fn({ query: async (sql, params = []) => (await t.query(sql, params as any[])).rows as any[] }),
+        fn({
+          query: async (sql, params = []) => (await t.query(sql, params as any[])).rows as any[],
+          exec: async (sql) => {
+            await t.exec(sql);
+          },
+        }),
       )) as any;
     },
     async close() {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { config } from '@/lib/config';
 import { tx } from '@/lib/db/client';
 import { AppError } from '@/lib/errors';
-import { addAnswer, createQuestion } from '@/lib/admin/questions';
+import { addAnswers, createQuestion } from '@/lib/admin/questions';
 import { rateLimit } from '@/lib/security/ratelimit';
 
 /**
@@ -89,13 +89,10 @@ export async function saveSuggestionAsDraft(input: unknown): Promise<string> {
       },
       'ai',
     );
-    for (const a of s.answers) {
-      await addAnswer(id, { canonical: a.canonical, aliases: a.aliases, verified: false, provisionalTier: 'common' }).catch(
-        (err) => {
-          if (!(err instanceof AppError)) throw err;
-        },
-      );
-    }
+    await addAnswers(
+      id,
+      s.answers.map((a) => ({ canonical: a.canonical, aliases: a.aliases, verified: false, provisionalTier: 'common' })),
+    );
     return id;
   });
 }

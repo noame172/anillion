@@ -44,13 +44,19 @@ function Results() {
   }, [finalForm, ascend]);
 
   useEffect(() => {
+    let current = true;
     const load = /^\d{4}-\d{2}-\d{2}$/.test(date ?? '')
       ? apiFetch(`/api/game/result?date=${date}`).then((r) => ({ state: r.state as GameState, streak: r.streak, guest: false }))
       : apiFetch('/api/game/today').then((r) => {
           if (!r.state) throw Object.assign(new Error('none'), { code: 'NOT_FOUND' });
           return { state: r.state as GameState, streak: r.streak, guest: r.viewer.kind === 'guest' };
         });
-    load.then(setData).catch((e: ApiError) => (e.code === 'NOT_FOUND' ? setMissing(true) : setError(e.message)));
+    load
+      .then((d) => current && setData(d))
+      .catch((e: ApiError) => current && (e.code === 'NOT_FOUND' ? setMissing(true) : setError(e.message)));
+    return () => {
+      current = false;
+    };
   }, [date]);
 
   if (missing) {

@@ -7,10 +7,15 @@ export interface Queryable {
   query<T = Row>(sql: string, params?: unknown[]): Promise<T[]>;
 }
 
+export interface TxQueryable extends Queryable {
+  /** Run several statements with no parameters (migrations). */
+  exec(sql: string): Promise<void>;
+}
+
 export interface Driver extends Queryable {
   /** Run several statements with no parameters (migrations). */
   exec(sql: string): Promise<void>;
-  tx<T>(fn: (q: Queryable) => Promise<T>): Promise<T>;
+  tx<T>(fn: (q: TxQueryable) => Promise<T>): Promise<T>;
   close(): Promise<void>;
 }
 

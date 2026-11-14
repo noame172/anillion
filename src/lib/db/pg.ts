@@ -25,6 +25,9 @@ export function createPgDriver(connectionString: string): Driver {
         await client.query('begin');
         const out = await fn({
           query: async (sql, params = []) => (await client.query(sql, params as any[])).rows,
+          exec: async (sql) => {
+            await client.query(sql);
+          },
         });
         await client.query('commit');
         return out;

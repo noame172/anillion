@@ -132,10 +132,14 @@ describe('identity and authorisation', () => {
   });
 
   it('gives guests a stable signed identity', async () => {
-    const first = await getViewer();
+    // Reads never issue an identity: parallel first requests would each mint a different one.
+    expect((await getViewer()).kind).toBe('guest');
+    expect(jar.has(GUEST_COOKIE)).toBe(false);
+    const first = await getViewer({ create: true });
     expect(first.kind).toBe('guest');
     expect(jar.has(GUEST_COOKIE)).toBe(true);
     expect((await getViewer()).id).toBe(first.id);
+    expect((await getViewer({ create: true })).id).toBe(first.id);
   });
 
   it('lets only administrators through requireAdmin, using the role stored in the database', async () => {

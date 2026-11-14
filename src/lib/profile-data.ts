@@ -29,9 +29,13 @@ async function today(now: Date) {
 export async function getHistory(viewer: Viewer, limit = 60): Promise<HistoryRow[]> {
   const col = viewer.kind === 'user' ? 'user_id' : 'guest_id';
   const rows = await query<{ d: string; total_score: number; status: string; n: number }>(
-    `select g.game_date::text as d, s.total_score, s.status,
-            (select count(*)::int from daily_games x where x.status = 'published' and x.game_date <= g.game_date) as n
-       from game_sessions s join daily_games g on g.id = s.game_id
+    `with numbered as (
+       select id, (row_number() over (order by game_date))::int as n from daily_games where status = 'published'
+     )
+     select g.game_date::text as d, s.total_score, s.status, coalesce(n.n, 0) as n
+       from game_sessions s
+       join daily_games g on g.id = s.game_id
+       left join numbered n on n.id = g.id
       where s.${col} = $1
       order by g.game_date desc limit $2`,
     [viewer.id, limit],

@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { query, queryOne } from '@/lib/db/client';
+import { query, queryOne, tx } from '@/lib/db/client';
+import { uniqueViolation } from '@/lib/db/errors';
 import { config } from '@/lib/config';
 import { AppError, forbidden } from '@/lib/errors';
 import type { Viewer } from '@/lib/game/session';
@@ -41,12 +42,20 @@ export async function ensureProfile(
 ): Promise<void> {
   const existing = await queryOne('select 1 from profiles where id = $1', [userId]);
   if (!existing) {
-    let username = cleanUsername(wantedUsername);
-    for (let i = 0; i < 8 && (await usernameTaken(username)); i++) {
-      username = `${username.slice(0, 14)}${randomDigits()}`;
+    // Parallel first requests (or two people picking the same name) can race here. A bare
+    // "on conflict do nothing" absorbs a clash on either the id or the username; if the
+    // profile still is not there afterwards the name was taken, so try another.
+    const base = cleanUsername(wantedUsername);
+    let username = base;
+    for (let i = 0; i < 10; i++) {
+      await query('insert into profiles (id, username) values ($1, $2) on conflict do nothing', [userId, username]);
+      if (await queryOne('select 1 from profiles where id = $1', [userId])) break;
+      username = `${base.slice(0, 14)}${randomDigits()}`;
     }
-    if (await usernameTaken(username)) username = `p_${userId.replace(/-/g, '').slice(0, 16)}`;
-    await query('insert into profiles (id, username) values ($1, $2) on conflict (id) do nothing', [userId, username]);
+    await query('insert into profiles (id, username) values ($1, $2) on conflict do nothing', [
+      userId,
+      `p_${userId.replace(/-/g, '').slice(0, 16)}`,
+    ]);
   }
   // First-admin bootstrap: emails listed in ADMIN_EMAILS (server-only) are promoted on sign-in.
   // Local accounts have no email verification, so they are never promoted on a production server.
@@ -70,16 +79,23 @@ export async function loadUserViewer(userId: string): Promise<(Viewer & { kind: 
 export async function changeUsername(userId: string, raw: string): Promise<string> {
   const username = usernameSchema.parse(raw);
   if (await usernameTaken(username, userId)) throw new AppError(409, 'USERNAME_TAKEN', 'That username is taken.');
-  await query('update profiles set username = $2 where id = $1', [userId, username]);
+  try {
+    await query('update profiles set username = $2 where id = $1', [userId, username]);
+  } catch (err) {
+    // Someone else took it between the check and the update.
+    if (uniqueViolation(err)) throw new AppError(409, 'USERNAME_TAKEN', 'That username is taken.');
+    throw err;
+  }
   return username;
 }
 
 /** Delete an account. Past game rows are kept for statistics but detached from the person. */
 export async function deleteAccount(userId: string): Promise<void> {
-  await query(
-    `update game_sessions set user_id = null, guest_id = gen_random_uuid() where user_id = $1`,
-    [userId],
-  );
-  // Cascades to profiles and local_credentials. In Supabase this removes the auth user itself.
-  await query('delete from auth.users where id = $1', [userId]);
+  // One transaction: a failure part-way must not leave sessions detached from a surviving account.
+  await tx(async () => {
+    await query('select 1 from profiles where id = $1 for update', [userId]);
+    await query(`update game_sessions set user_id = null, guest_id = gen_random_uuid() where user_id = $1`, [userId]);
+    // Cascades to profiles and local_credentials. In Supabase this removes the auth user itself.
+    await query('delete from auth.users where id = $1', [userId]);
+  });
 }

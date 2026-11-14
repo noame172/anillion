@@ -103,3 +103,33 @@ describe('starter questions', () => {
     expect(findSeedCollisions(loadSeedFile())).toEqual([]);
   });
 });
+
+describe('starter catalogue', () => {
+  it('is large, loads in a few bulk statements, and tops up an older database', async () => {
+    const { loadSeedFile, seed } = await import('@/lib/db/seed');
+    const { query } = await import('@/lib/db/client');
+    const data = loadSeedFile();
+    await freshDb();
+    const started = Date.now();
+    expect(await seed(await (await import('@/lib/db/client')).getDb(), data)).toBe(data.length);
+    expect(Date.now() - started).toBeLessThan(20_000);
+
+    const [{ n }] = await query<{ n: number }>(`select count(*)::int as n from answers`);
+    expect(n).toBeGreaterThan(10_000);
+    const long = await query<{ n: number }>(
+      `select count(a.id)::int as n from questions q join answers a on a.question_id = q.id
+        where q.text = 'Name an anime with more than 100 episodes.'`,
+    );
+    expect(long[0].n).toBeGreaterThan(250);
+    for (const q of data) expect(q.answers.length, q.text).toBeGreaterThanOrEqual(15);
+
+    // Running it again changes nothing; deleting some answers and running again restores them.
+    const db = await (await import('@/lib/db/client')).getDb();
+    expect(await seed(db, data)).toBe(0);
+    await query(`delete from answers where norm = 'naruto uzumaki'`);
+    await seed(db, data);
+    expect(await query(`select 1 from answers where norm = 'naruto uzumaki'`)).toHaveLength(1);
+    const [{ n: after }] = await query<{ n: number }>(`select count(*)::int as n from answers`);
+    expect(after).toBe(n);
+  });
+});

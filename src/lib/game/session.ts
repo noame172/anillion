@@ -1,4 +1,5 @@
 import { query, queryOne, tx } from '@/lib/db/client';
+import { advisoryLock, playerLock } from '@/lib/db/locks';
 import { AppError, conflict } from '@/lib/errors';
 import { getTodayGame, getGameByDate, nextGameAt, type DailyGame } from './daily';
 import { formForScore, progressToNext, type Form, type Progress } from './forms';
@@ -209,6 +210,19 @@ async function buildState(game: DailyGame, session: SessionRow, now: Date): Prom
   };
 }
 
+/**
+ * Take a shared lock on the game row and confirm it is still live. An administrator
+ * unpublishing or deleting a game locks the same row exclusively, so a player can
+ * never start a session on a game that is being pulled at that moment.
+ */
+export async function lockLiveGame(gameId: string): Promise<void> {
+  const g = await queryOne<{ live: boolean }>(
+    `select (status = 'published' and config_snapshot is not null) as live from daily_games where id = $1 for share`,
+    [gameId],
+  );
+  if (!g?.live) throw new AppError(404, 'NO_GAME', "Today's game is not available yet.");
+}
+
 async function requireTodayGame(now: Date): Promise<DailyGame> {
   const game = await getTodayGame(now);
   if (!game) throw new AppError(404, 'NO_GAME', "Today's game is not available yet.");
@@ -222,6 +236,9 @@ async function requireTodayGame(now: Date): Promise<DailyGame> {
 export async function startSession(viewer: Viewer, now: Date = new Date()): Promise<GameState> {
   const game = await requireTodayGame(now);
   return tx(async () => {
+    await lockLiveGame(game.id);
+    // Starting a game and merging a guest game into the account both create this player's session.
+    if (viewer.kind === 'user') await advisoryLock(playerLock(viewer.id));
     const col = viewer.kind === 'user' ? 'user_id' : 'guest_id';
     await query(
       `insert into game_sessions (game_id, ${col}, started_at, current_started_at)
@@ -311,7 +328,13 @@ export async function submitAnswer(
     const question = game.questions[session.position];
     if (question.id !== input.questionId) throw conflict('NOT_CURRENT_QUESTION', 'That is not the current question.');
 
-    const match = await matchAnswer(question.id, input.text);
+    let match = await matchAnswer(question.id, input.text);
+    if (match) {
+      // An administrator may have deleted or unverified this answer a moment ago. Hold a shared
+      // lock on it so it cannot change before the points are recorded, and re-check it.
+      const stillValid = await queryOne('select 1 from answers where id = $1 and verified for share', [match.answerId]);
+      if (!stillValid) match = null;
+    }
     if (!match) {
       await recordUnknown(question.id, input.text);
       return { status: 'unrecognised', timeLeftMs: Math.max(0, deadlineMs(session, game)! - now.getTime()) };

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { query } from '@/lib/db/client';
+import { getDb, query, tx } from '@/lib/db/client';
 import { DEFAULT_THRESHOLDS } from '@/lib/game/tiers';
 
 function validTimezone(tz: string) {
@@ -45,7 +45,12 @@ export const DEFAULT_SETTINGS: Settings = {
   autoGenerate: true,
 };
 
-export async function getSettings(): Promise<Settings> {
+// Every game request needs the settings several times (date, timer, rollover, next game).
+// They change rarely, so keep them for a couple of seconds instead of asking the database each time.
+const CACHE_MS = 2000;
+let cached: { db: unknown; at: number; value: Settings } | null = null;
+
+async function readSettings(): Promise<Settings> {
   const rows = await query<{ value: unknown }>(`select value from settings where key = 'game'`);
   if (!rows.length) return DEFAULT_SETTINGS;
   const stored = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
@@ -53,12 +58,30 @@ export async function getSettings(): Promise<Settings> {
   return parsed.success ? parsed.data : DEFAULT_SETTINGS;
 }
 
+/**
+ * Current settings. `fresh` skips the short cache: use it where a stale value would be
+ * wrong (saving settings, freezing a game's rules).
+ */
+export async function getSettings({ fresh = false }: { fresh?: boolean } = {}): Promise<Settings> {
+  const db = await getDb();
+  const now = Date.now();
+  if (!fresh && cached && cached.db === db && now - cached.at < CACHE_MS) return cached.value;
+  const value = await readSettings();
+  if (!fresh) cached = { db, at: now, value };
+  return value;
+}
+
 export async function updateSettings(patch: Partial<Settings>): Promise<Settings> {
-  const next = settingsSchema.parse({ ...(await getSettings()), ...patch });
-  await query(
-    `insert into settings (key, value) values ('game', $1::jsonb)
-     on conflict (key) do update set value = excluded.value`,
-    [JSON.stringify(next)],
-  );
-  return next;
+  return tx(async () => {
+    // Make sure the row exists, then lock it: two administrators saving at once take turns
+    // instead of one silently overwriting the other's change.
+    await query(`insert into settings (key, value) values ('game', $1::jsonb) on conflict (key) do nothing`, [
+      JSON.stringify(DEFAULT_SETTINGS),
+    ]);
+    await query(`select 1 from settings where key = 'game' for update`);
+    const next = settingsSchema.parse({ ...(await getSettings({ fresh: true })), ...patch });
+    await query(`update settings set value = $1::jsonb where key = 'game'`, [JSON.stringify(next)]);
+    cached = null;
+    return next;
+  });
 }

@@ -129,7 +129,9 @@ No scheduled job is needed: the day's game is created the first time someone ope
 - A question needs verified answers before it can be used. Each answer has a canonical name, any number of aliases, and a provisional tier used until 100 players have answered.
 - Players' unrecognised guesses are collected in **Admin → Unknown answers**, where you can approve them as new answers or as aliases.
 - AniList import and AI suggestions always arrive unverified, for you to review.
-- To add starter content in bulk, edit `data/seed.json`. Each answer is `["Canonical name", "tier", "alias", ...]`.
+- The starter catalogue in `data/seed.json` has about 120 questions and about 14,800 answers: characters from 90+ franchises, anime by genre, era and studio, every anime AniList lists with more than 100 episodes, studios, and Studio Ghibli films. It is built from AniList's public data, with provisional tiers from popularity (and the hand-checked answers from the first version kept as they were).
+- To refresh or extend it, edit the lists at the bottom of `scripts/build-seed.mjs` and run `node scripts/build-seed.mjs` (takes a few minutes: it stays under AniList's rate limit and caches responses in `scripts/.cache`). Review the diff, then run `npm run db:seed`. Seeding adds new questions and fills in missing answers on questions the seed created earlier; it never touches questions you made yourself. An answer you deleted from a seeded question comes back the next time you run it, so set it to unverified instead.
+- To add answers by hand in bulk, edit `data/seed.json`. Each answer is `["Canonical name", "tier", "alias", ...]`.
 
 See [docs/admin-guide.md](docs/admin-guide.md) for the dashboard in detail.
 

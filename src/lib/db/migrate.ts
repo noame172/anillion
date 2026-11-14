@@ -20,19 +20,24 @@ end $$;
 `;
 
 export async function migrate(db: Driver, opts: { stubSupabase?: boolean; dir?: string } = {}) {
-  if (opts.stubSupabase) await db.exec(SUPABASE_STUB);
-  await db.exec(
-    'create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())',
-  );
   const dir = opts.dir ?? path.join(process.cwd(), 'supabase', 'migrations');
   const files = fs
     .readdirSync(dir)
     .filter((f) => f.endsWith('.sql'))
     .sort();
-  const done = new Set((await db.query<{ name: string }>('select name from _migrations')).map((r) => r.name));
-  for (const file of files) {
-    if (done.has(file)) continue;
-    await db.exec(fs.readFileSync(path.join(dir, file), 'utf8'));
-    await db.query('insert into _migrations (name) values ($1)', [file]);
-  }
+  // One transaction behind an advisory lock: two deploys migrating at once take turns
+  // instead of both applying the same file, and a failed file leaves nothing half-applied.
+  await db.tx(async (q) => {
+    await q.query('select pg_advisory_xact_lock($1)', [727_274_001]);
+    if (opts.stubSupabase) await q.exec(SUPABASE_STUB);
+    await q.exec(
+      'create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())',
+    );
+    const done = new Set((await q.query<{ name: string }>('select name from _migrations')).map((r) => r.name));
+    for (const file of files) {
+      if (done.has(file)) continue;
+      await q.exec(fs.readFileSync(path.join(dir, file), 'utf8'));
+      await q.query('insert into _migrations (name) values ($1)', [file]);
+    }
+  });
 }
