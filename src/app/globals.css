@@ -1533,3 +1533,39 @@ table.table {
     grid-template-columns: 90px 1fr 44px;
   }
 }
+
+/* Show / hide password */
+.pw-wrap {
+  position: relative;
+}
+.pw-input {
+  padding-right: 76px;
+}
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-height: 40px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pw-toggle:active {
+  transform: translateY(-50%) scale(0.96);
+}
+.pw-toggle:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 1px;
+}

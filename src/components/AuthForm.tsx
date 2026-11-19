@@ -30,6 +30,7 @@ export function AuthForm({ mode, google = false, hideGoogle = false }: { mode: M
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -122,18 +123,29 @@ export function AuthForm({ mode, google = false, hideGoogle = false }: { mode: M
         {needsPassword && (
           <div className="field">
             <label htmlFor="password">{mode === 'new-password' ? 'New password' : 'Password'}</label>
-            <input
-              id="password"
-              className="input"
-              type="password"
-              enterKeyHint={mode === 'login' ? 'go' : 'done'}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              required
-              minLength={8}
-              aria-describedby={mode === 'login' ? undefined : 'password-hint'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="pw-wrap">
+              <input
+                id="password"
+                className="input pw-input"
+                type={showPassword ? 'text' : 'password'}
+                enterKeyHint={mode === 'login' ? 'go' : 'done'}
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                required
+                minLength={8}
+                aria-describedby={mode === 'login' ? undefined : 'password-hint'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="pw-toggle"
+                aria-pressed={showPassword}
+                aria-controls="password"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
             {mode !== 'login' && (
               <span id="password-hint" className="hint">
                 At least 8 characters.
