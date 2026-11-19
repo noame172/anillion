@@ -55,6 +55,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </main>
             <footer className="site-footer">
               <Link href="/how-to-play">How to play</Link>
+              <Link href="/tips">Tips</Link>
+              <Link href="/anime-quiz-questions">Quiz questions</Link>
+              <Link href="/faq">FAQ</Link>
               <Link href="/privacy">Privacy</Link>
               <Link href="/cookies">Cookies</Link>
               <CookieSettingsButton />

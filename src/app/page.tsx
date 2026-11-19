@@ -86,7 +86,7 @@ export default function HomePage() {
         <p>
           Animellion tests how well you know anime, and how differently you think from everyone else. Each day there are
           seven prompts, and the rarer your answer, the more power you gain.{' '}
-          <Link href="/how-to-play">Read how to play</Link> or check the <Link href="/leaderboard">leaderboard</Link>.
+          <Link href="/how-to-play">Read how to play</Link>, see <Link href="/tips">tips for scoring higher</Link>, browse the <Link href="/anime-quiz-questions">anime quiz questions</Link> or check the <Link href="/leaderboard">leaderboard</Link>.
         </p>
         {FAQ.map((f) => (
           <div key={f.q}>

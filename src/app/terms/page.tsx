@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'Terms of service',
   description: 'The rules for using Animellion.',
   alternates: { canonical: '/terms' },
+  robots: { index: false, follow: true },
 };
 
 export default function TermsPage() {

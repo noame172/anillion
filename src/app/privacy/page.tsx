@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'Privacy policy',
   description: 'What data Animellion collects, why, and the choices you have.',
   alternates: { canonical: '/privacy' },
+  robots: { index: false, follow: true },
 };
 
 const adsOn = Boolean(process.env.NEXT_PUBLIC_ADSENSE_CLIENT);

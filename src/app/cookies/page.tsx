@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: 'Cookie policy',
   description: 'Which cookies Animellion uses, what each one is for, and how to change your choice.',
   alternates: { canonical: '/cookies' },
+  robots: { index: false, follow: true },
 };
 
 const gaOn = Boolean(process.env.NEXT_PUBLIC_GA_ID);

@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: 'Contact',
   description: 'How to reach the Animellion team.',
   alternates: { canonical: '/contact' },
+  robots: { index: false, follow: true },
 };
 
 export default function ContactPage() {
