@@ -14,6 +14,7 @@ const connectHosts = [
   supabaseUrl,
   gaOn ? 'https://*.google-analytics.com https://*.analytics.google.com' : '',
   adsOn ? 'https://*.googlesyndication.com https://*.doubleclick.net' : '',
+  'https://va.vercel-scripts.com',
 ].join(' ');
 const frameHosts = adsOn ? 'https://*.doubleclick.net https://*.googlesyndication.com https://www.google.com' : '';
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Bungee, Rubik } from 'next/font/google';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Analytics } from '@vercel/analytics/next';
 import { ConsentProvider, CookieSettingsButton } from '@/components/Consent';
 import { SiteHeader } from '@/components/SiteHeader';
 import './globals.css';
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </footer>
           </div>
         </ConsentProvider>
+        <Analytics />
       </body>
     </html>
   );
