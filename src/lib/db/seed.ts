@@ -118,7 +118,7 @@ export type SyncPlan = {
   /** Existing questions whose answers differ from the file (answers added, removed or re-rated). */
   topUp: string[];
   /** Totals over all existing questions: answers added, removed, given another rarity, and aliases removed. */
-  answers: { added: number; removed: number; retiered: number; aliasesRemoved: number };
+  answers: { added: number; removed: number; retiered: number; aliasesAdded: number; aliasesRemoved: number };
 };
 
 /** Bring one question's answers and aliases in line with the file. Returns what differed. */
@@ -145,8 +145,11 @@ async function mirrorAnswers(q: Queryable, questionId: string, item: SeedQuestio
   const retiered = have.filter((a) => want.has(a.norm) && want.get(a.norm)!.tier !== a.provisional_tier);
   const added = [...want.keys()].filter((n) => !haveNorms.has(n)).length;
   const staleAliases = haveAliases.filter((a) => !wantAlias.has(a.norm));
-  const diff = { added, removed: removed.length, retiered: retiered.length, aliasesRemoved: staleAliases.length };
-  const changed = added + removed.length + retiered.length + staleAliases.length > 0;
+  const haveAliasNorms = new Set(haveAliases.map((a) => a.norm));
+  // Aliases the file has that the database lacks (an alias nobody else owns, so it can be added).
+  const aliasesAdded = [...wantAlias].filter((n) => !haveAliasNorms.has(n) && !haveNorms.has(n)).length;
+  const diff = { added, removed: removed.length, retiered: retiered.length, aliasesAdded, aliasesRemoved: staleAliases.length };
+  const changed = added + removed.length + retiered.length + aliasesAdded + staleAliases.length > 0;
   if (apply && changed) {
     for (const a of removed) await q.query('delete from answers where id = $1', [a.id]);
     if (staleAliases.length) {
@@ -173,7 +176,7 @@ export async function syncSeed(db: Driver, data: SeedQuestion[], { apply }: { ap
     reactivate: [],
     recategorise: [],
     topUp: [],
-    answers: { added: 0, removed: 0, retiered: 0, aliasesRemoved: 0 },
+    answers: { added: 0, removed: 0, retiered: 0, aliasesAdded: 0, aliasesRemoved: 0 },
   };
   // Step 1: read the database and work out the plan. Nothing is written here.
   // Step 2 (apply only): carry the plan out one question at a time, each in its own short transaction.
@@ -223,6 +226,7 @@ export async function syncSeed(db: Driver, data: SeedQuestion[], { apply }: { ap
       plan.answers.added += diff.added;
       plan.answers.removed += diff.removed;
       plan.answers.retiered += diff.retiered;
+      plan.answers.aliasesAdded += diff.aliasesAdded;
       plan.answers.aliasesRemoved += diff.aliasesRemoved;
       steps.push(async (q) => void (await mirrorAnswers(q, row.id, item, true)));
     }

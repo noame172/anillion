@@ -16,6 +16,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { addSharedNames, isCharacterQuestion } from './shared-names.mjs';
 import { countUltra, ensureUltra, ULTRAS_PER_QUESTION } from './ultra.mjs';
 
 const SEED = path.join('data', 'seed.json');
@@ -164,15 +165,23 @@ function report(d) {
   show(`Questions with fewer than ${ULTRAS_PER_QUESTION} ultra answers (apply fixes these)`, noUltra, (q) => `${q.text} (${countUltra(q.answers)})`);
 }
 
-/** Give every question its ultra answers. Returns the fixed list and how many questions were changed. */
+/** Give every question its ultra answers, and accept shared character names. Returns the fixed list and counts. */
 function withUltras(questions) {
   let fixed = 0;
+  let shared = 0;
   const out = questions.map((q) => {
-    const { answers, promoted } = ensureUltra(q.answers);
-    if (promoted) fixed++;
-    return promoted ? { ...q, answers } : q;
+    let answers = q.answers;
+    const ultra = ensureUltra(answers);
+    answers = ultra.answers;
+    if (isCharacterQuestion(q.text)) {
+      const names = addSharedNames(answers);
+      answers = names.answers;
+      shared += names.added;
+    }
+    if (ultra.promoted) fixed++;
+    return answers === q.answers ? q : { ...q, answers };
   });
-  return { questions: out, fixed };
+  return { questions: out, fixed, shared };
 }
 
 const cmd = process.argv[2];
@@ -189,17 +198,17 @@ if (cmd === 'export') {
   }
   report(d);
   if (cmd === 'apply') {
-    const { questions, fixed } = withUltras(d.questions);
+    const { questions, fixed, shared } = withUltras(d.questions);
     writeSeed(questions);
-    if (fixed) writeList(questions); // keep the list file in step with the ultras that were added
-    console.log(`\nUpdated ${SEED}: ${questions.length} questions.${fixed ? ` ${fixed} question(s) got ultra answers added (the least popular answers).` : ''} Now run: npm run db:sync`);
+    if (fixed || shared) writeList(questions); // keep the list file in step with the ultras that were added
+    console.log(`\nUpdated ${SEED}: ${questions.length} questions.${fixed ? ` ${fixed} question(s) got ultra answers added (the least popular answers).` : ''}${shared ? ` ${shared} shared name(s) added (a surname or first name several characters share counts as the one worth the fewest points).` : ''} Now run: npm run db:sync`);
   }
 } else if (cmd === 'ultra') {
   // Give every question in data/seed.json its ultra answers, then rewrite the list file.
-  const { questions, fixed } = withUltras(readSeed());
+  const { questions, fixed, shared } = withUltras(readSeed());
   writeSeed(questions);
   writeList(questions);
-  console.log(`${fixed} question(s) got ultra answers added. Now run: npm run db:sync -- --apply`);
+  console.log(`${fixed} question(s) got ultra answers added, ${shared} shared name(s) added. Now run: npm run db:sync -- --apply`);
 } else {
   console.log('Usage: npm run questions export | check | apply | ultra');
   process.exit(1);

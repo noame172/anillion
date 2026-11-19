@@ -12,6 +12,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { addSharedNames, isCharacterQuestion } from './shared-names.mjs';
 import { ensureUltra } from './ultra.mjs';
 
 const ENDPOINT = 'https://graphql.anilist.co';
@@ -660,7 +661,9 @@ const TIERS_TITLES = [10, 40, 120];
 const TIERS_CHARS = [8, 20, 45];
 
 function add(text, category, cands, tiers, description) {
-  const answers = assemble(cands, tiers, curatedFor(text));
+  let answers = assemble(cands, tiers, curatedFor(text));
+  // A surname or first name shared by several characters is accepted as the one worth the fewest points.
+  if (isCharacterQuestion(text)) answers = addSharedNames(answers).answers;
   console.log(`${text} -> ${answers.length} answers`);
   // A question needs enough answers to be worth asking; never write an empty one by accident.
   if (answers.length < 15) {

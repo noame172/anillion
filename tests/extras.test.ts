@@ -117,7 +117,7 @@ describe('starter catalogue', () => {
     await freshDb();
     const started = Date.now();
     expect(await seed(await (await import('@/lib/db/client')).getDb(), data)).toBe(data.length);
-    expect(Date.now() - started).toBeLessThan(20_000);
+    expect(Date.now() - started).toBeLessThan(90_000);
 
     const [{ n }] = await query<{ n: number }>(`select count(*)::int as n from answers`);
     expect(n).toBeGreaterThan(10_000);

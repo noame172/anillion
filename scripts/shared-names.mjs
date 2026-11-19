@@ -1,0 +1,61 @@
+/**
+ * Shared names. In a character question several characters often share a surname or a first name
+ * ("Hori" for Kyouko, Kyousuke, Souta and Yuriko Hori). Typing just that name is accepted and counts as
+ * the character who is worth the FEWEST points; when several are worth the same, the one listed first
+ * (the most popular) wins. So "Hori" scores like Kyouko Hori, a Common answer.
+ *
+ * `answers` is a question's list of [name, tier, ...aliases], most popular first.
+ * Only a name that is a word of at least two answers' names is added, and never one that is already
+ * an answer or an alias in the question.
+ */
+const RANK = { common: 0, rare: 1, epic: 2, ultra: 3 };
+const SKIP = new Set(['the', 'and', 'von', 'van', 'der', 'del', 'san', 'sama', 'kun', 'chan', 'sensei', 'jr', 'sr', 'mrs', 'miss', 'lord', 'king', 'queen', 'dr', 'mr', 'captain', 'general', 'prince', 'princess']);
+
+// Descriptions, not names ("mother", "student", "police officer", species and objects). Never accepted alone.
+const GENERIC = new Set(`haha chichi otoko onna onnanoko seito shounen shougakusei koukousei kankoukyaku keikan hakase josei danshi dansei dansi obaa
+  sobo sofu souryo senin kenshi majutsushi mensetsukan musume shokuin shinjin taiin yuujin youkai yousei zoku kaijuu jinzouningen hanzaisha kagaku kanbu
+  kankoshi rouyakunin tsuma tsumibito murabito senpai enshutsu haiyuu gakki saibou producer operator announcer coach classmate couple pet radio host man
+  mask metal tank tanktop top knight goblin orc gorilla zombie parasite mosquito devil oni kumo fan flash flower star killer might gallery eye glass crown
+  emperor slayer armored android majo majin kaiou kaioushin iii all will wise pot hitotsume kamen hatter trinity crossroad forger darlian mercury
+  sailor mob`.split(/\s+/));
+
+export const norm = (s) =>
+  String(s)
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/** True for the character questions this rule applies to ("Name a Horimiya character."). */
+export const isCharacterQuestion = (text) =>
+  / character\.$/.test(text) || /^Name an? .* (member|Hashira)/.test(text) || /^Name an? (Japanese voice actor|manga artist|anime director)\.$/.test(text);
+
+/** Returns { answers, added }: a new list with the shared names added, and how many were added. */
+export function addSharedNames(answers) {
+  const taken = new Set();
+  for (const [name, , ...aliases] of answers) for (const n of [name, ...aliases]) taken.add(norm(n));
+  // word -> indexes of the answers whose own name contains it
+  const owners = new Map();
+  answers.forEach(([name], i) => {
+    const words = norm(name).split(' ');
+    if (words.length < 2) return;
+    for (const w of new Set(words)) {
+      if (w.length < 3 || SKIP.has(w) || GENERIC.has(w) || !/^\p{L}+$/u.test(w)) continue;
+      if (!owners.has(w)) owners.set(w, []);
+      owners.get(w).push(i);
+    }
+  });
+  const out = answers.map((a) => [...a]);
+  let added = 0;
+  for (const [word, idx] of owners) {
+    if (idx.length < 2 || taken.has(word)) continue;
+    // fewest points first, then the most popular (earliest in the list)
+    const best = idx.reduce((a, b) => (RANK[out[b][1]] < RANK[out[a][1]] ? b : a));
+    out[best].push(word.replace(/^./u, (c) => c.toUpperCase()));
+    taken.add(word);
+    added++;
+  }
+  return { answers: out, added };
+}

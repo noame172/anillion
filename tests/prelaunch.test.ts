@@ -100,8 +100,21 @@ describe('syncing the question file to the database', () => {
       reactivate: [],
       recategorise: [],
       topUp: [],
-      answers: { added: 0, removed: 0, retiered: 0, aliasesRemoved: 0 },
+      answers: { added: 0, removed: 0, retiered: 0, aliasesAdded: 0, aliasesRemoved: 0 },
     });
+  });
+
+  it('notices an alias that was only added to an answer already in the database', async () => {
+    const db = await getDb();
+    await syncSeed(db, [{ text: 'Name a thing.', category: 'Test', answers: [['Kyouko Hori', 'common', 'Kyouko'], ['Souta Hori', 'rare']] as [string, string, ...string[]][] }], { apply: true });
+    const edited = [{ text: 'Name a thing.', category: 'Test', answers: [['Kyouko Hori', 'common', 'Kyouko', 'Hori'], ['Souta Hori', 'rare']] as [string, string, ...string[]][] }];
+    const dry = await syncSeed(db, edited, { apply: false });
+    expect(dry.topUp).toEqual(['Name a thing.']);
+    expect(dry.answers.aliasesAdded).toBe(1);
+    await syncSeed(db, edited, { apply: true });
+    const hori = await query<{ canonical: string }>(`select a.canonical from answer_aliases al join answers a on a.id = al.answer_id where al.norm = 'hori'`);
+    expect(hori).toEqual([{ canonical: 'Kyouko Hori' }]);
+    expect((await syncSeed(db, edited, { apply: false })).topUp).toEqual([]);
   });
 
   it('mirrors edits to a question’s answers: added, removed and re-rated', async () => {
@@ -115,7 +128,7 @@ describe('syncing the question file to the database', () => {
       },
     ];
     const plan = await syncSeed(db, edited, { apply: true });
-    expect(plan.answers).toEqual({ added: 1, removed: 1, retiered: 1, aliasesRemoved: 1 });
+    expect(plan.answers).toEqual({ added: 1, removed: 1, retiered: 1, aliasesAdded: 1, aliasesRemoved: 1 });
     const rows = await query<{ canonical: string; provisional_tier: string }>('select canonical, provisional_tier from answers order by canonical');
     expect(rows).toEqual([
       { canonical: 'Alpha', provisional_tier: 'epic' },

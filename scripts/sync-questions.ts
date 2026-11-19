@@ -41,7 +41,7 @@ async function main() {
   list('Answers changed in', plan.topUp);
   const a = plan.answers;
   if (plan.topUp.length) {
-    console.log(`  (answers: +${a.added}, -${a.removed}, ${a.retiered} re-rated, ${a.aliasesRemoved} aliases removed)`);
+    console.log(`  (answers: +${a.added}, -${a.removed}, ${a.retiered} re-rated, +${a.aliasesAdded} aliases, -${a.aliasesRemoved} aliases)`);
   }
 
   const changes = plan.add.length + plan.remove.length + plan.reactivate.length + plan.recategorise.length + plan.topUp.length;
