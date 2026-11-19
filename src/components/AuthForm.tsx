@@ -25,7 +25,7 @@ function GoogleMark() {
   );
 }
 
-export function AuthForm({ mode, google = false }: { mode: Mode; google?: boolean }) {
+export function AuthForm({ mode, google = false, hideGoogle = false }: { mode: Mode; google?: boolean; hideGoogle?: boolean }) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -156,7 +156,7 @@ export function AuthForm({ mode, google = false }: { mode: Mode; google?: boolea
         </button>
       </form>
 
-      {(mode === 'login' || mode === 'register') && (
+      {(mode === 'login' || mode === 'register') && !hideGoogle && (
         <>
           <div className="or" aria-hidden="true">
             <span>or</span>

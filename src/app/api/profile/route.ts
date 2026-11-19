@@ -5,7 +5,7 @@ import { clearLocalSession, requireUser } from '@/lib/auth/viewer';
 import { config } from '@/lib/config';
 import { query } from '@/lib/db/client';
 import { badRequest } from '@/lib/errors';
-import { getHistory, getProfile } from '@/lib/profile-data';
+import { getHistory, getPlayerStats, getProfile } from '@/lib/profile-data';
 import { api, parseBody } from '@/lib/security/http';
 import { limitFor } from '@/lib/security/ratelimit';
 
@@ -14,7 +14,9 @@ export const dynamic = 'force-dynamic';
 export const GET = api(async () => {
   const user = await requireUser();
   // Everything is looked up by the verified session's user id; there is no id parameter to tamper with.
-  return { profile: await getProfile(user.id), history: await getHistory(user), mode: config.mode };
+  const [profile, history] = await Promise.all([getProfile(user.id), getHistory(user)]);
+  const stats = profile ? await getPlayerStats(user.id, profile) : null;
+  return { profile, history, stats, mode: config.mode };
 });
 
 const patchSchema = z.object({

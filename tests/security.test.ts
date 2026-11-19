@@ -25,8 +25,8 @@ import { mergeGuestIntoUser } from '@/lib/game/merge';
 import { answerBodySchema } from '@/lib/game/schemas';
 import { getResultForDate, nextQuestion, startSession, submitAnswer, type Viewer } from '@/lib/game/session';
 import { matchAnswer } from '@/lib/game/validate';
-import { allTimeLeaderboard, dailyLeaderboard } from '@/lib/leaderboard';
-import { getHistory, getProfile } from '@/lib/profile-data';
+import { allTimeLeaderboard, dailyLeaderboard, periodLeaderboard } from '@/lib/leaderboard';
+import { getHistory, getPlayerStats, getProfile, streakInfo } from '@/lib/profile-data';
 import { api, assertSameOrigin } from '@/lib/security/http';
 import { rateLimit } from '@/lib/security/ratelimit';
 import { at, freshDb, guest, makeStandardQuestions, makeUser, plus } from './helpers';
@@ -283,8 +283,36 @@ describe('player data separation', () => {
       [2, 'mid', 350, 'azure'],
     ]);
     expect((await allTimeLeaderboard()).map((r) => r.username)).toEqual(['top', 'mid']);
+    for (const period of ['weekly', 'monthly'] as const) {
+      const board = await periodLeaderboard(period, '2026-03-10');
+      expect(board.rows.map((r) => [r.rank, r.username, r.score, r.games])).toEqual([
+        [1, 'top', 700, 1],
+        [2, 'mid', 350, 1],
+      ]);
+    }
+    // A different week or month holds none of today's games.
+    expect((await periodLeaderboard('weekly', '2026-03-20')).rows).toEqual([]);
+    expect((await periodLeaderboard('monthly', '2026-04-02')).rows).toEqual([]);
     // Rows expose public fields only.
     expect(Object.keys(daily[0]).sort()).toEqual(['avatarUrl', 'form', 'rank', 'score', 'username']);
+  });
+
+  it('works out a player’s own stats, badges and streak from their stored games', async () => {
+    const user = await makeUser('statsy');
+    await finish(user, 'u'); // every answer is an Ultra
+    const other = await makeUser('someone_else');
+    await finish(other, 'c');
+    const profile = (await getProfile(user.id, DAY1))!;
+    const stats = await getPlayerStats(user.id, profile);
+    expect(stats.tiers.ultra).toBeGreaterThan(0);
+    expect(stats.answered).toBe(stats.tiers.common + stats.tiers.rare + stats.tiers.epic + stats.tiers.ultra);
+    expect(stats.ultraAnswers.length).toBeGreaterThan(0);
+    expect(stats.badges.filter((b) => b.earned).map((b) => b.id)).toEqual(
+      expect.arrayContaining(['first-steps', 'ultra-hunter', 'ultra-form']),
+    );
+    // Another player's answers never count towards this player.
+    expect((await getPlayerStats(other.id, (await getProfile(other.id, DAY1))!)).tiers.ultra).toBe(0);
+    expect(await streakInfo(user, DAY1)).toMatchObject({ current: 1, freezes: 0, frozen: false });
   });
 });
 
@@ -333,6 +361,11 @@ describe('administration', () => {
     expect(a.totals).toEqual({ users: 1, gamesStarted: 2, gamesCompleted: 1, averageScore: 350, completionRate: 50 });
     expect(a).toMatchObject({ dau: 2, mau: 2 });
     expect(a.topAnswers).toHaveLength(7);
+    // One account and one guest device played; the account's profile counts as a sign-up.
+    expect(a.playerMix).toEqual({ accounts: 1, guests: 1 });
+    expect(a.signups.reduce((n, r) => n + r.n, 0)).toBe(1);
+    expect(a.tierMix).toEqual([{ tier: 'rare', n: 7 }]);
+    expect(a.skipped).toEqual([]); // too few plays of any prompt to judge
     const s = await suspiciousActivity();
     expect(s.fastSessions).toHaveLength(1); // 7 answers in ~10 simulated seconds
   });

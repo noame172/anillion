@@ -5,11 +5,13 @@ import { apiFetch, type ApiError } from '@/lib/client/api';
 import { FORM_LABELS } from '@/lib/game/forms';
 import type { LeaderboardRow } from '@/lib/leaderboard';
 
-type Scope = 'daily' | 'alltime';
+type Scope = 'daily' | 'weekly' | 'monthly' | 'alltime';
+const LABELS: Record<Scope, string> = { daily: 'Today', weekly: 'This week', monthly: 'This month', alltime: 'All time' };
+const fmt = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' });
 
 export default function LeaderboardPage() {
   const [scope, setScope] = useState<Scope>('daily');
-  const [data, setData] = useState<{ rows: LeaderboardRow[]; date?: string } | null>(null);
+  const [data, setData] = useState<{ rows: LeaderboardRow[]; date?: string; from?: string; to?: string } | null>(null);
   const [me, setMe] = useState<string | null>(null);
   const [error, setError] = useState('');
 
@@ -31,9 +33,9 @@ export default function LeaderboardPage() {
     <div className="stack">
       <h1 style={{ fontSize: 'clamp(28px, 6vw, 44px)', color: 'var(--yellow)' }}>Leaderboard</h1>
       <div className="tabs" role="tablist" aria-label="Leaderboard range">
-        {(['daily', 'alltime'] as const).map((s) => (
+        {(['daily', 'weekly', 'monthly', 'alltime'] as const).map((s) => (
           <button key={s} type="button" role="tab" className="tab" aria-selected={scope === s} onClick={() => setScope(s)}>
-            {s === 'daily' ? 'Today' : 'All time'}
+            {LABELS[s]}
           </button>
         ))}
       </div>
@@ -52,14 +54,21 @@ export default function LeaderboardPage() {
           <p className="muted center">
             {scope === 'daily'
               ? 'No registered player has finished today’s game yet. Be the first!'
-              : 'No games on record yet.'}
+              : scope === 'alltime'
+                ? 'No games on record yet.'
+                : `No registered player has finished a game ${scope === 'weekly' ? 'this week' : 'this month'} yet. Be the first!`}
+          </p>
+        )}
+        {data && data.from && data.to && (
+          <p className="hint" style={{ marginBottom: 10 }}>
+            {fmt(data.from)} to {fmt(data.to)}. Points from every game finished in this period, so everyone can catch up.
           </p>
         )}
         {data && data.rows.length > 0 && (
           <div className="table-wrap">
             <table className="table">
               <caption className="sr-only">
-                {scope === 'daily' ? `Top scores for ${data.date}` : 'Top total points of all time'}
+                {scope === 'daily' ? `Top scores for ${data.date}` : scope === 'alltime' ? 'Top total points of all time' : `Top total points, ${LABELS[scope].toLowerCase()}`}
               </caption>
               <thead>
                 <tr>

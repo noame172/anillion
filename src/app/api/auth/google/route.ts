@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(req: NextRequest) {
   const fail = (reason: string) => NextResponse.redirect(new URL(`/login?error=${reason}`, config.siteUrl));
-  if (config.mode !== 'supabase') return fail('google-off');
+  if (!config.googleLogin) return fail('google-off');
   try {
     await limitFor('loginIp', clientIp(req));
     const supabase = await supabaseServer();

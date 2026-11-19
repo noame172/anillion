@@ -2,7 +2,7 @@ import { getViewer } from '@/lib/auth/viewer';
 import { notFound } from '@/lib/errors';
 import { dateSchema } from '@/lib/game/schemas';
 import { getResultForDate } from '@/lib/game/session';
-import { getStreak } from '@/lib/profile-data';
+import { streakInfo } from '@/lib/profile-data';
 import { api, clientIp } from '@/lib/security/http';
 import { limitFor } from '@/lib/security/ratelimit';
 
@@ -15,5 +15,6 @@ export const GET = api(async (req) => {
   const date = dateSchema.parse(req.nextUrl.searchParams.get('date'));
   const state = await getResultForDate(viewer, date);
   if (!state) throw notFound('No result for that day.');
-  return { state, streak: await getStreak(viewer) };
+  const streak = await streakInfo(viewer);
+  return { state, streak: streak.current, freezes: streak.freezes, frozen: streak.frozen };
 });

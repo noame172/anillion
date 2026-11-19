@@ -1,7 +1,7 @@
 import { getViewer } from '@/lib/auth/viewer';
 import { getTodayGame, nextGameAt } from '@/lib/game/daily';
 import { getState } from '@/lib/game/session';
-import { getStreak } from '@/lib/profile-data';
+import { streakInfo } from '@/lib/profile-data';
 import { api, clientIp } from '@/lib/security/http';
 import { limitFor } from '@/lib/security/ratelimit';
 
@@ -15,7 +15,7 @@ export const GET = api(async (req) => {
   const [, game, streak, nextAt] = await Promise.all([
     limitFor('gameRead', viewer.id),
     getTodayGame(),
-    getStreak(viewer),
+    streakInfo(viewer),
     nextGameAt(),
   ]);
   return {
@@ -25,7 +25,9 @@ export const GET = api(async (req) => {
     questionCount: game?.questionCount ?? null,
     timeLimitSec: game?.config.timeLimitSec ?? null,
     state: game ? await getState(viewer) : null,
-    streak,
+    streak: streak.current,
+    freezes: streak.freezes,
+    frozen: streak.frozen,
     nextGameAt: nextAt,
     viewer: viewer.kind === 'user' ? { kind: 'user', username: viewer.username, role: viewer.role } : { kind: 'guest' },
   };

@@ -117,8 +117,33 @@ export async function getAnalytics(now = new Date()) {
        from profiles where last_played_date >= $1 or streak = 0 group by 1 order by 1`,
     [addDays(today, -1)],
   );
+  // New accounts per day, and who is playing: signed-in accounts or guests on a device.
+  const signups = await query<{ date: string; n: number }>(
+    `select (created_at at time zone 'UTC')::date::text as date, count(*)::int as n
+       from profiles where created_at > $1 group by 1 order by 1 desc`,
+    [addDays(today, -14)],
+  );
+  const mix = await one<{ accounts: number; guests: number }>(
+    `select count(distinct s.user_id)::int as accounts, count(distinct s.guest_id)::int as guests
+       from game_sessions s join daily_games g on g.id = s.game_id where g.game_date > $1`,
+    [addDays(today, -30)],
+  );
+  // Prompts people most often run out of time on: too hard, or confusing.
+  const skipped = await query<{ text: string; plays: number; timeouts: number; pct: number }>(
+    `select q.text, count(*)::int as plays, count(*) filter (where s.timed_out)::int as timeouts,
+            round(100.0 * count(*) filter (where s.timed_out) / count(*))::int as pct
+       from submissions s join questions q on q.id = s.question_id
+      group by q.id, q.text having count(*) >= 5 order by pct desc, plays desc limit 8`,
+  );
+  const tierMix = await query<{ tier: string; n: number }>(
+    `select tier, count(*)::int as n from submissions where tier is not null group by tier order by n desc`,
+  );
   return {
     today,
+    signups,
+    playerMix: { accounts: mix.accounts, guests: mix.guests },
+    skipped,
+    tierMix,
     totals: {
       users: totals.users,
       gamesStarted: totals.games,

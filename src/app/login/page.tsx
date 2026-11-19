@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             : 'Google sign-in is not set up on this site yet.'}
         </p>
       )}
-      <AuthForm mode="login" google={config.mode === 'supabase'} />
+      <AuthForm mode="login" google={config.googleLogin} hideGoogle={config.mode === 'supabase' && !config.googleLogin} />
     </>
   );
 }

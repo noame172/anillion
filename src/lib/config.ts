@@ -36,6 +36,10 @@ function sessionSecret(): Uint8Array {
 }
 
 export const config = {
+  /** "Continue with Google" is shown and works only when GOOGLE_LOGIN=on and the provider is enabled in Supabase. */
+  get googleLogin(): boolean {
+    return mode() === 'supabase' && env.GOOGLE_LOGIN === 'on';
+  },
   get mode(): Mode {
     return mode();
   },

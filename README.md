@@ -97,7 +97,8 @@ Row Level Security is on for every table and the public roles have no table acce
 
 1. In Google Cloud Console create an **OAuth client ID** (type: Web application). Add the authorised redirect URI `https://YOUR-PROJECT.supabase.co/auth/v1/callback`.
 2. In Supabase open **Authentication → Providers → Google**, switch it on, and paste the client ID and secret.
-3. The "Continue with Google" button on the login and register pages now works. A profile is created on first sign-in with a neutral username such as `player4821` (changeable on the profile page), so the email address is never shown.
+3. Add the environment variable `GOOGLE_LOGIN=on` (in Vercel, then redeploy). Until it is set, the Google button is hidden, so players never see a button that does not work.
+4. The "Continue with Google" button on the login and register pages now works. A profile is created on first sign-in with a neutral username such as `player4821` (changeable on the profile page), so the email address is never shown.
 
 ### Logging in
 

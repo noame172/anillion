@@ -1,6 +1,59 @@
 import { query } from '@/lib/db/client';
 import { addDays } from './daily';
 
+/** A streak freeze is earned at every 7th day of a streak, and at most this many can be banked. */
+export const FREEZE_EVERY = 7;
+export const MAX_FREEZES = 2;
+
+function daysBetween(a: string, b: string): number {
+  const t = (d: string) => Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10));
+  return Math.round((t(b) - t(a)) / 86_400_000);
+}
+
+export type StreakInfo = {
+  /** Days in the streak that is alive today (0 if it has ended). */
+  current: number;
+  longest: number;
+  /** Freezes banked now. */
+  freezes: number;
+  /** True when yesterday was missed and a freeze will cover it as soon as today's game is played. */
+  frozen: boolean;
+  /** Missed days that a freeze has already covered. */
+  saved: string[];
+};
+
+/**
+ * Streaks with freezes, from the dates a player completed a game.
+ * Every 7th day of a streak earns one freeze (up to 2 banked). A single missed day is covered by a freeze
+ * automatically, so the streak carries on; two or more missed days in a row end it. A freeze never
+ * adds a day to the count, it only bridges the gap.
+ */
+export function streakWithFreezes(dates: string[], today: string): StreakInfo {
+  const days = [...new Set(dates)].sort();
+  let streak = 0;
+  let longest = 0;
+  let freezes = 0;
+  const saved: string[] = [];
+  days.forEach((d, i) => {
+    const gap = i === 0 ? 0 : daysBetween(days[i - 1], d);
+    if (i === 0 || gap > 2 || (gap === 2 && freezes === 0)) streak = 1;
+    else {
+      if (gap === 2) {
+        freezes--;
+        saved.push(addDays(days[i - 1], 1));
+      }
+      streak++;
+      if (streak % FREEZE_EVERY === 0) freezes = Math.min(MAX_FREEZES, freezes + 1);
+    }
+    longest = Math.max(longest, streak);
+  });
+  if (!days.length) return { current: 0, longest: 0, freezes: 0, frozen: false, saved };
+  const gapToday = daysBetween(days[days.length - 1], today);
+  const frozen = gapToday === 2 && freezes > 0;
+  const alive = gapToday <= 1 || frozen;
+  return { current: alive ? streak : 0, longest, freezes, frozen, saved };
+}
+
 /**
  * Streaks from the list of dates a player completed a game.
  * The current streak counts back from today, or from yesterday if today
@@ -35,7 +88,7 @@ export async function recomputeProfileStats(userId: string, today: string): Prom
       where s.user_id = $1 and s.status = 'completed'`,
     [userId],
   );
-  const { current, longest } = streakFromDates(
+  const { current, longest } = streakWithFreezes(
     rows.map((r) => r.d),
     today,
   );

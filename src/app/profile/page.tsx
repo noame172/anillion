@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
 import { ApiError, apiFetch } from '@/lib/client/api';
 import { FORM_LABELS } from '@/lib/game/forms';
-import type { HistoryRow, ProfileData } from '@/lib/profile-data';
+import type { HistoryRow, PlayerStats, ProfileData } from '@/lib/profile-data';
+import { TIER_LABELS } from '@/lib/game/tiers';
 
-type Data = { profile: ProfileData; history: HistoryRow[]; mode: 'supabase' | 'dev-local' };
+type Data = { profile: ProfileData; history: HistoryRow[]; stats: PlayerStats | null; mode: 'supabase' | 'dev-local' };
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -101,7 +102,7 @@ export default function ProfilePage() {
     );
   }
 
-  const { profile, history } = data;
+  const { profile, history, stats } = data;
   return (
     <div className="stack">
       <section className="card">
@@ -127,6 +128,7 @@ export default function ProfilePage() {
           {[
             ['Current streak', `🔥 ${profile.streak}`],
             ['Longest streak', profile.longestStreak],
+            ['Streak freezes', `🧊 ${profile.freezes}`],
             ['Games played', profile.gamesPlayed],
             ['Total points', profile.totalPoints],
             ['Average score', profile.averageScore],
@@ -138,7 +140,70 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
+        <p className="hint">
+          A streak freeze covers one missed day, so your streak carries on. You earn one every 7 days of a streak and can
+          bank 2.
+        </p>
       </section>
+
+
+      {stats && stats.answered > 0 && (
+        <section className="card stack">
+          <h2>Your answers</h2>
+          <div className="tier-bars" role="list">
+            {(['common', 'rare', 'epic', 'ultra'] as const).map((t) => (
+              <div className="tier-bar" role="listitem" key={t}>
+                <span>{TIER_LABELS[t]}</span>
+                <span className="track" aria-hidden="true">
+                  <span className="fill" style={{ width: `${(stats.tiers[t] / stats.answered) * 100}%`, background: `var(--tier-${t})` }} />
+                </span>
+                <span className="n">{stats.tiers[t]}</span>
+              </div>
+            ))}
+          </div>
+          <p className="hint">
+            {stats.answered} answers scored{stats.timeouts > 0 ? `, ${stats.timeouts} prompts timed out` : ''}.
+          </p>
+          {stats.ultraAnswers.length > 0 && (
+            <>
+              <h3>Your latest Ultra answers</h3>
+              <ul>
+                {stats.ultraAnswers.map((u) => (
+                  <li key={`${u.date}-${u.question}`}>
+                    <strong>{u.answer}</strong> <span className="muted">for “{u.question}” on {u.date}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </section>
+      )}
+
+      {stats && (
+        <section className="card stack">
+          <h2>
+            Badges{' '}
+            <span className="hint">
+              {stats.badges.filter((b) => b.earned).length}/{stats.badges.length}
+            </span>
+          </h2>
+          <div className="badge-grid">
+            {stats.badges.map((b) => (
+              <div key={b.id} className={`badge-card ${b.earned ? 'earned' : 'locked'}`}>
+                <span className="name">
+                  {b.earned ? '🏅' : '🔒'} {b.name}
+                </span>
+                <span className="desc">{b.description}</span>
+                {!b.earned && (
+                  <span className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={b.target} aria-valuenow={b.current} aria-label={`${b.name} progress`}>
+                    <span style={{ width: `${(b.current / b.target) * 100}%` }} />
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="card">
         <h2>Game history</h2>

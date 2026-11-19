@@ -67,7 +67,9 @@ export default function HowToPlayPage() {
 
       <h2>Streaks and leaderboards</h2>
       <p>
-        Finish a game on consecutive days to build a streak. <Link href="/register">Create an account</Link> to appear
+        Finish a game on consecutive days to build a streak. Every 7th day of a streak earns a <strong>streak freeze</strong>
+        (you can bank 2). If you miss a single day, a freeze covers it automatically and your streak carries on; missing
+        two days in a row ends it. <Link href="/register">Create an account</Link> to appear
         on the <Link href="/leaderboard">leaderboard</Link> and keep your history on every device.
       </p>
 

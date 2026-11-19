@@ -30,7 +30,7 @@ function shareCell(share: number | null, timedOut: boolean) {
 
 function Results() {
   const date = useSearchParams().get('date');
-  const [data, setData] = useState<{ state: GameState; streak: number; guest: boolean } | null>(null);
+  const [data, setData] = useState<{ state: GameState; streak: number; freezes: number; guest: boolean } | null>(null);
   const [error, setError] = useState('');
   const [missing, setMissing] = useState(false);
   // The hero climbs from base to the final form, then the numbers appear.
@@ -46,10 +46,10 @@ function Results() {
   useEffect(() => {
     let current = true;
     const load = /^\d{4}-\d{2}-\d{2}$/.test(date ?? '')
-      ? apiFetch(`/api/game/result?date=${date}`).then((r) => ({ state: r.state as GameState, streak: r.streak, guest: false }))
+      ? apiFetch(`/api/game/result?date=${date}`).then((r) => ({ state: r.state as GameState, streak: r.streak, freezes: r.freezes ?? 0, guest: false }))
       : apiFetch('/api/game/today').then((r) => {
           if (!r.state) throw Object.assign(new Error('none'), { code: 'NOT_FOUND' });
-          return { state: r.state as GameState, streak: r.streak, guest: r.viewer.kind === 'guest' };
+          return { state: r.state as GameState, streak: r.streak, freezes: r.freezes ?? 0, guest: r.viewer.kind === 'guest' };
         });
     load
       .then((d) => current && setData(d))
@@ -88,9 +88,9 @@ function Results() {
     );
   }
 
-  const { state, streak } = data;
+  const { state, streak, freezes } = data;
   const shareUrl = `${window.location.origin}/share/${state.sessionId}`;
-  const text = shareText(state);
+  const text = shareText(state, streak);
 
   return (
     <div className="stack">
@@ -138,7 +138,7 @@ function Results() {
           </div>
           <div className="stat">
             <div className="k">Streak</div>
-            <div className="v">🔥 {streak}</div>
+            <div className="v">🔥 {streak}{freezes > 0 ? ` · 🧊 ${freezes}` : ''}</div>
           </div>
           <div className="stat">
             <div className="k">Next game in</div>

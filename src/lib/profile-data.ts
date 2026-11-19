@@ -2,7 +2,8 @@ import { query, queryOne } from '@/lib/db/client';
 import { gameDateFor } from '@/lib/game/daily';
 import { formForScore, type Form } from '@/lib/game/forms';
 import type { Viewer } from '@/lib/game/session';
-import { liveStreak, streakFromDates } from '@/lib/game/streak';
+import { badgesFor, type Badge } from '@/lib/badges';
+import { streakWithFreezes, type StreakInfo } from '@/lib/game/streak';
 import { getSettings } from '@/lib/settings';
 
 export type HistoryRow = { date: string; score: number; form: Form; completed: boolean; gameNumber: number };
@@ -13,6 +14,9 @@ export type ProfileData = {
   role: 'user' | 'admin';
   createdAt: string;
   streak: number;
+  /** Streak freezes banked, and whether one is about to cover yesterday. */
+  freezes: number;
+  frozen: boolean;
   longestStreak: number;
   gamesPlayed: number;
   totalPoints: number;
@@ -69,12 +73,15 @@ export async function getProfile(userId: string, now: Date = new Date()): Promis
     [userId],
   );
   if (!p) return null;
+  const streak = await streakInfo({ kind: 'user', id: userId } as Viewer, now);
   return {
     username: p.username,
     avatarUrl: p.avatar_url,
     role: p.role,
     createdAt: new Date(p.created_at).toISOString(),
-    streak: liveStreak(p.streak, p.last_played, await today(now)),
+    streak: streak.current,
+    freezes: streak.freezes,
+    frozen: streak.frozen,
     longestStreak: p.longest_streak,
     gamesPlayed: p.games_played,
     totalPoints: p.total_points,
@@ -83,11 +90,58 @@ export async function getProfile(userId: string, now: Date = new Date()): Promis
   };
 }
 
-/** Streak for any viewer, including guests (computed from their own sessions). */
-export async function getStreak(viewer: Viewer, now: Date = new Date()): Promise<number> {
+/** Streak, freezes and longest run for any viewer, including guests (computed from their own sessions). */
+export async function streakInfo(viewer: Viewer, now: Date = new Date()): Promise<StreakInfo> {
   const history = await getHistory(viewer, 400);
-  return streakFromDates(
+  return streakWithFreezes(
     history.filter((h) => h.completed).map((h) => h.date),
     await today(now),
-  ).current;
+  );
+}
+
+/** Streak for any viewer, including guests (computed from their own sessions). */
+export async function getStreak(viewer: Viewer, now: Date = new Date()): Promise<number> {
+  return (await streakInfo(viewer, now)).current;
+}
+
+export type PlayerStats = {
+  answered: number;
+  tiers: { common: number; rare: number; epic: number; ultra: number };
+  timeouts: number;
+  /** The player's most recent Ultra answers, newest first. */
+  ultraAnswers: { answer: string; question: string; date: string }[];
+  badges: Badge[];
+};
+
+/** Lifetime numbers and badges for a registered player. Looked up by the verified user id only. */
+export async function getPlayerStats(userId: string, profile: Pick<ProfileData, 'gamesPlayed' | 'longestStreak' | 'bestScore'>): Promise<PlayerStats> {
+  const counts = await queryOne<{ common: number; rare: number; epic: number; ultra: number; timeouts: number }>(
+    `select count(*) filter (where s.tier = 'common')::int as common,
+            count(*) filter (where s.tier = 'rare')::int as rare,
+            count(*) filter (where s.tier = 'epic')::int as epic,
+            count(*) filter (where s.tier = 'ultra')::int as ultra,
+            count(*) filter (where s.timed_out)::int as timeouts
+       from submissions s join game_sessions gs on gs.id = s.session_id
+      where gs.user_id = $1`,
+    [userId],
+  );
+  const recent = await query<{ answer: string; question: string; d: string }>(
+    `select a.canonical as answer, q.text as question, g.game_date::text as d
+       from submissions s
+       join game_sessions gs on gs.id = s.session_id
+       join daily_games g on g.id = gs.game_id
+       join answers a on a.id = s.answer_id
+       join questions q on q.id = s.question_id
+      where gs.user_id = $1 and s.tier = 'ultra'
+      order by g.game_date desc, s.created_at desc limit 6`,
+    [userId],
+  );
+  const tiers = { common: counts?.common ?? 0, rare: counts?.rare ?? 0, epic: counts?.epic ?? 0, ultra: counts?.ultra ?? 0 };
+  return {
+    answered: tiers.common + tiers.rare + tiers.epic + tiers.ultra,
+    tiers,
+    timeouts: counts?.timeouts ?? 0,
+    ultraAnswers: recent.map((r) => ({ answer: r.answer, question: r.question, date: r.d })),
+    badges: badgesFor({ gamesPlayed: profile.gamesPlayed, longestStreak: profile.longestStreak, ultraAnswers: tiers.ultra, bestScore: profile.bestScore }),
+  };
 }

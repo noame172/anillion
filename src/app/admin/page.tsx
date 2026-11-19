@@ -20,7 +20,10 @@ export default function AdminAnalyticsPage() {
     ['Completion rate', show(a.totals.completionRate, '%')],
     ['Average score', show(a.totals.averageScore)],
     ['Next-day retention', show(a.retention.rate, '%')],
+    ['New sign-ups (14 days)', show(a.signups.reduce((n: number, r: any) => n + r.n, 0))],
+    ['Accounts / guests (30 days)', `${a.playerMix.accounts} / ${a.playerMix.guests}`],
   ];
+  const newAccounts = new Map<string, number>(a.signups.map((r: any) => [r.date, r.n]));
 
   return (
     <div className="stack">
@@ -52,12 +55,12 @@ export default function AdminAnalyticsPage() {
           <div className="table-wrap">
             <table className="table">
               <thead>
-                <tr><th>Date</th><th className="num">Started</th><th className="num">Completed</th><th className="num">Avg score</th></tr>
+                <tr><th>Date</th><th className="num">New accounts</th><th className="num">Started</th><th className="num">Completed</th><th className="num">Avg score</th></tr>
               </thead>
               <tbody>
                 {a.daily.map((d: any) => (
                   <tr key={d.date}>
-                    <td>{d.date}</td><td className="num">{d.started}</td><td className="num">{d.completed}</td><td className="num">{show(d.avg_score)}</td>
+                    <td>{d.date}</td><td className="num">{newAccounts.get(d.date) ?? 0}</td><td className="num">{d.started}</td><td className="num">{d.completed}</td><td className="num">{show(d.avg_score)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -71,6 +74,8 @@ export default function AdminAnalyticsPage() {
         <RankList title="Most popular answers" rows={a.topAnswers.map((x: any) => [`${x.canonical} — ${x.question}`, x.count])} />
         <RankList title="Rarest answers given" rows={a.rarestAnswers.map((x: any) => [`${x.canonical} — ${x.question}`, x.count])} />
         <RankList title="Streaks (accounts)" rows={a.streaks.map((s: any) => [`${s.bucket} days`, s.users])} />
+        <RankList title="Most skipped prompts (timed out, %)" rows={a.skipped.map((q: any) => [`${q.text} (${q.timeouts}/${q.plays})`, q.pct])} />
+        <RankList title="Answer rarity mix" rows={a.tierMix.map((t: any) => [t.tier, t.n])} />
       </div>
     </div>
   );

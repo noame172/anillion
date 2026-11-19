@@ -17,6 +17,8 @@ type Today = {
   timeLimitSec: number | null;
   state: GameState | null;
   streak: number;
+  freezes?: number;
+  frozen?: boolean;
   nextGameAt: string;
   viewer: { kind: 'user' | 'guest'; username?: string };
 };
@@ -104,6 +106,15 @@ export function HomeClient() {
         <div className="home-meta">
           <span className="chip">{today?.gameNumber ? `Game #${today.gameNumber}` : 'Daily game'}</span>
           {today && today.streak > 0 && <span className="chip hot">🔥 {today.streak}-day streak</span>}
+          {today?.frozen ? (
+            <span className="chip" title="You missed yesterday. Play today and a freeze covers it, so your streak carries on.">
+              🧊 A freeze saves your streak. Play today
+            </span>
+          ) : today && (today.freezes ?? 0) > 0 ? (
+            <span className="chip" title="A streak freeze covers one missed day. You earn one every 7 days of a streak (max 2).">
+              🧊 {today.freezes} streak {today.freezes === 1 ? 'freeze' : 'freezes'}
+            </span>
+          ) : null}
           <span className="row" style={{ gap: 8 }}>
             <Link href="/leaderboard" className="btn ghost">
               Leaderboard
