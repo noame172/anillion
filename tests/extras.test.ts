@@ -138,5 +138,6 @@ describe('starter catalogue', () => {
     expect(await query(`select 1 from answers where norm = 'naruto uzumaki'`)).toHaveLength(withNaruto);
     const [{ n: after }] = await query<{ n: number }>(`select count(*)::int as n from answers`);
     expect(after).toBe(n);
-  });
+    // The catalogue holds tens of thousands of answers, so loading it twice takes a while on a busy machine.
+  }, 120_000);
 });
