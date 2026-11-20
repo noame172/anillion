@@ -12,7 +12,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { addSharedNames, isCharacterQuestion } from './shared-names.mjs';
+import { addSeriesNames, addSharedNames, isCharacterQuestion } from './shared-names.mjs';
 import { ensureUltra } from './ultra.mjs';
 
 const ENDPOINT = 'https://graphql.anilist.co';
@@ -763,6 +763,9 @@ console.log('> Pokémon');
 
 // Curated questions that AniList did not rebuild (kept exactly as they were).
 for (const q of existing) if (!result.some((r) => r.text === q.text)) result.push(q);
+
+// A series name ('Dr. Stone') is accepted for a season of it ('Dr. STONE SCIENCE FUTURE').
+result.splice(0, result.length, ...addSeriesNames(result).questions);
 
 result.sort((a, b) => {
   const ia = order.indexOf(a.text);

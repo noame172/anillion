@@ -69,3 +69,24 @@ describe('names several characters share', () => {
     expect(owner?.[1]).toBe('common');
   });
 });
+
+describe('series names for title questions', () => {
+  const q = (text: string, category: string, answers: string[][]) => ({ text, category, answers });
+  it('accepts the series name for a season, and an optional leading "The"', async () => {
+    const { addSeriesNames } = await import('../scripts/shared-names.mjs');
+    const { questions, added } = addSeriesNames([
+      q('Name a manga series.', 'Manga', [['Dr. STONE', 'common'], ['The Seven Deadly Sins', 'common']]),
+      q('Name a winter 2025 anime.', 'Era', [['Dr. STONE SCIENCE FUTURE', 'rare'], ['Summer Time Rendering', 'rare'], ['Summer', 'common']]),
+    ]);
+    expect(added).toBeGreaterThan(0);
+    expect(questions[1].answers[0]).toEqual(['Dr. STONE SCIENCE FUTURE', 'rare', 'Dr. STONE']);
+    // "Summer" is already an answer there, so it is never taken from it.
+    expect(questions[1].answers[1]).toEqual(['Summer Time Rendering', 'rare']);
+    expect(questions[0].answers[1]).toEqual(['The Seven Deadly Sins', 'common', 'Seven Deadly Sins']);
+  });
+  it('leaves character and studio questions alone', async () => {
+    const { addSeriesNames } = await import('../scripts/shared-names.mjs');
+    const list = [q('Name a Naruto character.', 'Naruto', [['Naruto Uzumaki', 'common']])];
+    expect(addSeriesNames(list).added).toBe(0);
+  });
+});

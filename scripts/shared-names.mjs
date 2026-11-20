@@ -59,3 +59,64 @@ export function addSharedNames(answers) {
   }
   return { answers: out, added };
 }
+
+/**
+ * Series names. A player who types "Dr. Stone" for "Name a winter 2025 anime" means the series, but the
+ * list only holds the season, "Dr. STONE SCIENCE FUTURE". So for questions whose answers are anime or
+ * manga titles, the beginning of a title is accepted when it is exactly another known title ("Dr. STONE").
+ * As with shared character names, when several answers in the question share that beginning it counts
+ * as the one worth the fewest points (ties: the first, most popular one).
+ */
+const TITLE_CATEGORIES = new Set(['Genre', 'Era', 'Length', 'Source', 'Format', 'Manga', 'Light Novels', 'Anime']);
+export const isTitleQuestion = (q) => TITLE_CATEGORIES.has(q.category) || q.category.startsWith('Studio:');
+
+// Words that are titles on their own but would make a poor shortcut for a longer title.
+const TITLE_STOP = new Set(['love', 'free', 'black', 'space', 'school', 'high', 'new', 'game', 'the', 'rock', 'girl', 'girls', 'boy', 'boys', 'kiss', 'red', 'blue', 'white', 'summer', 'winter', 'spring', 'autumn', 'captain', 'scarlet', 'monster', 'magic', 'robot', 'tiger', 'dragon', 'master', 'mobile', 'kids', 'reborn']);
+
+/** Returns { questions, added }: the questions with series names added to their title answers. */
+export function addSeriesNames(questions) {
+  const known = new Set();
+  for (const q of questions) if (isTitleQuestion(q)) for (const [name] of q.answers) known.add(norm(name));
+  let added = 0;
+  const out = questions.map((q) => {
+    if (!isTitleQuestion(q)) return q;
+    const taken = new Set();
+    for (const [name, , ...aliases] of q.answers) for (const n of [name, ...aliases]) taken.add(norm(n));
+    const owners = new Map(); // norm of the series name -> { text, indexes }
+    q.answers.forEach(([name], i) => {
+      // Movies, OVAs and specials are not the series itself: "Detective Conan" must not score as a Conan movie.
+      if (/(movie|film|ova|oad|special|specials|recap|gekijouban)/i.test(name)) return;
+      const words = name.trim().split(/\s+/);
+      for (let k = words.length - 1; k >= 1; k--) {
+        const text = words.slice(0, k).join(' ').replace(/[\s:\-–,]+$/u, '').trim();
+        const n = norm(text);
+        const oneWord = n.split(' ').length === 1;
+        if (!n || n === norm(name) || taken.has(n) || !known.has(n)) continue;
+        if (oneWord && (n.length < 6 || TITLE_STOP.has(n))) continue;
+        if (!oneWord && n.length < 6) continue;
+        if (!owners.has(n)) owners.set(n, { text, indexes: [] });
+        owners.get(n).indexes.push(i);
+      }
+    });
+    const answers = q.answers.map((a) => [...a]);
+    // A leading "The" is optional: "Seven Deadly Sins" for "The Seven Deadly Sins".
+    answers.forEach((a) => {
+      const m = a[0].match(/^(?:the|a|an)\s+(.{3,})$/i);
+      if (!m) return;
+      const n = norm(m[1]);
+      if (n.length < 4 || taken.has(n)) return;
+      a.push(m[1].trim());
+      taken.add(n);
+      added++;
+    });
+    if (!owners.size) return { ...q, answers };
+    for (const [n, { text, indexes }] of owners) {
+      const best = indexes.reduce((a, b) => (RANK[answers[b][1]] < RANK[answers[a][1]] ? b : a));
+      answers[best].push(text);
+      taken.add(n);
+      added++;
+    }
+    return { ...q, answers };
+  });
+  return { questions: out, added };
+}

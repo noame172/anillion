@@ -16,7 +16,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { addSharedNames, isCharacterQuestion } from './shared-names.mjs';
+import { addSeriesNames, addSharedNames, isCharacterQuestion } from './shared-names.mjs';
 import { countUltra, ensureUltra, ULTRAS_PER_QUESTION } from './ultra.mjs';
 
 const SEED = path.join('data', 'seed.json');
@@ -181,7 +181,8 @@ function withUltras(questions) {
     if (ultra.promoted) fixed++;
     return answers === q.answers ? q : { ...q, answers };
   });
-  return { questions: out, fixed, shared };
+  const series = addSeriesNames(out);
+  return { questions: series.questions, fixed, shared: shared + series.added };
 }
 
 const cmd = process.argv[2];
