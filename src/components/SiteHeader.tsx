@@ -38,7 +38,12 @@ export function SiteHeader() {
         <Link href="/leaderboard">Leaderboard</Link>
         <Link href="/how-to-play">How to play</Link>
         {me?.user?.role === 'admin' && <Link href="/admin">Admin</Link>}
-        {!me && <span className="nav-slot" aria-hidden="true" />}
+        {/* Until we know who is signed in, offer Log in (dimmed) rather than an empty gap keyboard users cannot land on. */}
+        {!me && (
+          <Link href="/login" className="pill pending">
+            Log in
+          </Link>
+        )}
         {me?.user ? (
           <>
             <Link href="/profile" className="pill">

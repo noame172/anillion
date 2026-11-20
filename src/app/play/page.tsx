@@ -15,10 +15,31 @@ type Reveal = { kind: 'accepted' | 'timeout' | 'pass'; row: AnsweredRow | null }
 // The server allows a short grace after the buzzer; wait it out before asking for the verdict.
 const TIMEOUT_SETTLE_MS = 1700;
 
-function shareLine(row: AnsweredRow) {
-  if (row.share === null) return 'New answer — rarity is provisional until more players have answered.';
-  if (row.share === 0) return 'No one had given this answer before today.';
-  return `${row.share < 0.1 ? '<0.1' : row.share}% of players gave this answer.`;
+// Short names for the HUD box, so "Azure Ascended" is not cut off on a phone.
+const SHORT_FORM = { base: 'Base', ascended: 'Ascended', azure: 'Azure', ultra: 'Ultra' } as const;
+
+const LADDER = [
+  { tier: 'common', points: 25 },
+  { tier: 'rare', points: 50 },
+  { tier: 'epic', points: 75 },
+  { tier: 'ultra', points: 100 },
+] as const;
+
+/** One line that says how unusual the answer was, in the voice of the tier it landed in. */
+function rarityLine(row: AnsweredRow) {
+  if (row.share === null) return 'First answer of its kind. Its rarity firms up as more players answer.';
+  if (row.share === 0) return 'Nobody had given this answer before today.';
+  const pct = row.share < 0.1 ? '<0.1' : String(row.share);
+  switch (row.tier) {
+    case 'ultra':
+      return `Only ${pct}% of players said this. That is an Ultra Answer.`;
+    case 'epic':
+      return `${pct}% of players said this. Epic.`;
+    case 'rare':
+      return `${pct}% of players said this. Rare.`;
+    default:
+      return `${pct}% of players said this. Great minds think alike.`;
+  }
 }
 
 // React Strict Mode runs effects twice in development. Two parallel starts from a browser with no
@@ -93,6 +114,12 @@ export default function PlayPage() {
   }, [apply, router]);
 
   const live = state?.phase === 'question' && !reveal;
+
+  // The play screen is cramped on a phone: let the stylesheet drop the footer while a round is on.
+  useEffect(() => {
+    document.body.classList.add('playing');
+    return () => document.body.classList.remove('playing');
+  }, []);
 
   /** After the buzzer: ask the server what happened and show it. */
   const settleTimeout = useCallback(async (started: number) => {
@@ -295,7 +322,12 @@ export default function PlayPage() {
       <div className="hud">
         <div className="hud-box">
           <div className="k">FORM</div>
-          <div className="v">{FORM_LABELS[hero.form]}</div>
+          <div className="v">
+            <span className="long">{FORM_LABELS[hero.form]}</span>
+            <span className="short" aria-hidden="true">
+              {SHORT_FORM[hero.form]}
+            </span>
+          </div>
         </div>
         <div className="hud-mid">
           <div className="pips" aria-hidden="true">
@@ -317,7 +349,7 @@ export default function PlayPage() {
         </div>
       </div>
 
-      <div className="arena">
+      <div className={`arena${reveal || state.phase === 'between' ? ' revealing' : ''}`}>
         <div className="stage">
           <Hero form={hero.form} burst={hero.burst} />
           <div className="form-name display" data-form={hero.form}>
@@ -331,13 +363,21 @@ export default function PlayPage() {
           </div>
 
           {reveal ? (
-            <section className="qcard reveal" aria-live="polite">
+            <section className={`qcard reveal${row?.tier ? ` r-${row.tier}` : ''}`} aria-live="polite">
               {reveal.kind === 'accepted' && row ? (
                 <>
                   <span className={`tier-badge tier-${row.tier}`}>{row.tier ? TIER_LABELS[row.tier] : ''}</span>
                   <div className="answer">{row.answer}</div>
                   <div className="points">+{row.points}</div>
-                  <div className="qhint">{shareLine(row)}</div>
+                  <div className="rarity-line">{rarityLine(row)}</div>
+                  <ul className="ladder" aria-label="Points by rarity">
+                    {LADDER.map((s) => (
+                      <li key={s.tier} className={`step tier-${s.tier}${row.tier === s.tier ? ' on' : ''}`} aria-current={row.tier === s.tier ? 'true' : undefined}>
+                        <span className="step-name">{TIER_LABELS[s.tier]}</span>
+                        <span className="step-pts">{s.points}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </>
               ) : (
                 <>
@@ -391,10 +431,15 @@ export default function PlayPage() {
                   className={`timer${seconds <= 5 ? ' low' : ''}`}
                   style={{ '--pct': pct } as CSSProperties}
                   role="timer"
-                  aria-label={`${seconds} seconds left`}
+                  aria-label="Time left"
+                  aria-live="off"
                 >
                   <span>{seconds}</span>
                 </div>
+                {/* Screen readers hear the clock only at the moments that matter, not every second. */}
+                <span className="sr-only" role="status">
+                  {seconds === 10 || seconds === 5 ? `${seconds} seconds left` : ''}
+                </span>
                 <div>
                   <label htmlFor="answer" className="sr-only">
                     Your answer

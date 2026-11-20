@@ -47,26 +47,32 @@ export default async function QuestionsPage() {
         <Link href="/how-to-play">how to play</Link>.
       </p>
       {series.length > 0 && (
-        <section>
-          <h2>Characters from popular anime</h2>
-          <ul>
+        <details className="q-group" open>
+          <summary>
+            <h2>Characters from popular anime</h2>
+            <span className="count">{series.length}</span>
+          </summary>
+          <ul className="q-list">
             {series.map((r) => (
               <li key={r.text}>{r.text}</li>
             ))}
           </ul>
-        </section>
+        </details>
       )}
       {groups
         .filter((g) => g.items.length > 0)
         .map((g) => (
-          <section key={g.title}>
-            <h2>{g.title}</h2>
-            <ul>
+          <details key={g.title} className="q-group">
+            <summary>
+              <h2>{g.title}</h2>
+              <span className="count">{g.items.length}</span>
+            </summary>
+            <ul className="q-list">
               {g.items.map((r) => (
                 <li key={r.text}>{r.text}</li>
               ))}
             </ul>
-          </section>
+          </details>
         ))}
       <p>
         <Link href="/" className="btn">Play today&apos;s game</Link>

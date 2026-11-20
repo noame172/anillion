@@ -2,6 +2,7 @@ import { getViewer } from '@/lib/auth/viewer';
 import { notFound } from '@/lib/errors';
 import { dateSchema } from '@/lib/game/schemas';
 import { getResultForDate } from '@/lib/game/session';
+import { dayStanding } from '@/lib/leaderboard';
 import { streakInfo } from '@/lib/profile-data';
 import { api, clientIp } from '@/lib/security/http';
 import { limitFor } from '@/lib/security/ratelimit';
@@ -16,5 +17,6 @@ export const GET = api(async (req) => {
   const state = await getResultForDate(viewer, date);
   if (!state) throw notFound('No result for that day.');
   const streak = await streakInfo(viewer);
-  return { state, streak: streak.current, freezes: streak.freezes, frozen: streak.frozen };
+  const standing = state.completed ? await dayStanding(state.sessionId) : null;
+  return { state, streak: streak.current, freezes: streak.freezes, frozen: streak.frozen, standing };
 });

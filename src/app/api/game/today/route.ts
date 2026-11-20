@@ -1,6 +1,7 @@
 import { getViewer } from '@/lib/auth/viewer';
 import { getTodayGame, nextGameAt } from '@/lib/game/daily';
 import { getState } from '@/lib/game/session';
+import { dayStanding } from '@/lib/leaderboard';
 import { streakInfo } from '@/lib/profile-data';
 import { api, clientIp } from '@/lib/security/http';
 import { limitFor } from '@/lib/security/ratelimit';
@@ -18,13 +19,16 @@ export const GET = api(async (req) => {
     streakInfo(viewer),
     nextGameAt(),
   ]);
+  const state = game ? await getState(viewer) : null;
+  const standing = state?.completed ? await dayStanding(state.sessionId) : null;
   return {
     available: Boolean(game),
     date: game?.date ?? null,
     gameNumber: game?.number ?? null,
     questionCount: game?.questionCount ?? null,
     timeLimitSec: game?.config.timeLimitSec ?? null,
-    state: game ? await getState(viewer) : null,
+    state,
+    standing,
     streak: streak.current,
     freezes: streak.freezes,
     frozen: streak.frozen,

@@ -7,6 +7,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/how-to-play' },
 };
 
+const FORM_STEPS = [
+  { form: 'base', name: 'Base Form', range: '0 to 199 points' },
+  { form: 'ascended', name: 'Ascended', range: '200 to 349' },
+  { form: 'azure', name: 'Azure Ascended', range: '350 to 499' },
+  { form: 'ultra', name: 'Ultra Form', range: '500 and up' },
+] as const;
+
 export default function HowToPlayPage() {
   return (
     <article className="prose">
@@ -27,23 +34,28 @@ export default function HowToPlayPage() {
       </ul>
 
       <h2>Points</h2>
-      <div className="table-wrap">
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">Rarity</th>
-              <th scope="col">Share of players who said it</th>
-              <th scope="col" className="num">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><span className="tier-badge tier-common">Common</span></td><td>More than 10%</td><td className="num">25</td></tr>
-            <tr><td><span className="tier-badge tier-rare">Rare</span></td><td>More than 3%, up to 10%</td><td className="num">50</td></tr>
-            <tr><td><span className="tier-badge tier-epic">Epic</span></td><td>More than 1%, up to 3%</td><td className="num">75</td></tr>
-            <tr><td><span className="tier-badge tier-ultra">Ultra Answer</span></td><td>1% or less</td><td className="num">100</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <ul className="tier-list">
+        <li>
+          <span className="tier-badge tier-common">Common</span>
+          <span className="share">More than 10% of players said it</span>
+          <span className="pts">25</span>
+        </li>
+        <li>
+          <span className="tier-badge tier-rare">Rare</span>
+          <span className="share">More than 3%, up to 10%</span>
+          <span className="pts">50</span>
+        </li>
+        <li>
+          <span className="tier-badge tier-epic">Epic</span>
+          <span className="share">More than 1%, up to 3%</span>
+          <span className="pts">75</span>
+        </li>
+        <li>
+          <span className="tier-badge tier-ultra">Ultra Answer</span>
+          <span className="share">1% of players or fewer</span>
+          <span className="pts">100</span>
+        </li>
+      </ul>
       <p>
         Rarity comes from what earlier players actually answered. It is frozen when the day&apos;s game opens, so an
         answer is worth the same to everyone all day. A prompt that is still new shows “New” instead of a percentage:
@@ -52,19 +64,16 @@ export default function HowToPlayPage() {
 
       <h2>Power levels</h2>
       <p>Your hero powers up as your total score climbs:</p>
-      <div className="table-wrap">
-        <table className="table">
-          <thead>
-            <tr><th scope="col">Form</th><th scope="col" className="num">Total score</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Base Form</td><td className="num">0 – 199</td></tr>
-            <tr><td>Ascended</td><td className="num">200 – 349</td></tr>
-            <tr><td>Azure Ascended</td><td className="num">350 – 499</td></tr>
-            <tr><td>Ultra Form</td><td className="num">500+</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <ol className="form-ladder">
+        {FORM_STEPS.map((f) => (
+          <li key={f.form}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/hero/${f.form}/hero.svg`} alt="" width={60} height={80} loading="lazy" />
+            <strong>{f.name}</strong>
+            <span>{f.range}</span>
+          </li>
+        ))}
+      </ol>
 
       <h2>Streaks and leaderboards</h2>
       <p>

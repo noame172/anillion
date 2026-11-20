@@ -1,18 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { apiFetch, type ApiError } from '@/lib/client/api';
 import { FORM_LABELS } from '@/lib/game/forms';
 import type { LeaderboardRow } from '@/lib/leaderboard';
 
 type Scope = 'daily' | 'weekly' | 'monthly' | 'alltime';
 const LABELS: Record<Scope, string> = { daily: 'Today', weekly: 'This week', monthly: 'This month', alltime: 'All time' };
+const SCOPES = ['daily', 'weekly', 'monthly', 'alltime'] as const;
+const MEDALS = [
+  { icon: '🥇', name: 'First place' },
+  { icon: '🥈', name: 'Second place' },
+  { icon: '🥉', name: 'Third place' },
+];
 const fmt = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' });
 
 export default function LeaderboardPage() {
   const [scope, setScope] = useState<Scope>('daily');
   const [data, setData] = useState<{ rows: LeaderboardRow[]; date?: string; from?: string; to?: string } | null>(null);
   const [me, setMe] = useState<string | null>(null);
+  const [known, setKnown] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -26,20 +34,46 @@ export default function LeaderboardPage() {
   useEffect(() => {
     apiFetch('/api/me')
       .then((m) => setMe(m.user?.username ?? null))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setKnown(true));
   }, []);
+
+  /** Arrow keys, Home and End move between the tabs, as in a native tab list. */
+  function onTabKey(e: KeyboardEvent<HTMLButtonElement>) {
+    const i = SCOPES.indexOf(scope);
+    let n = -1;
+    if (e.key === 'ArrowRight') n = (i + 1) % SCOPES.length;
+    else if (e.key === 'ArrowLeft') n = (i + SCOPES.length - 1) % SCOPES.length;
+    else if (e.key === 'Home') n = 0;
+    else if (e.key === 'End') n = SCOPES.length - 1;
+    if (n < 0) return;
+    e.preventDefault();
+    setScope(SCOPES[n]);
+    document.getElementById(`tab-${SCOPES[n]}`)?.focus();
+  }
 
   return (
     <div className="stack">
       <h1 style={{ fontSize: 'clamp(28px, 6vw, 44px)', color: 'var(--yellow)' }}>Leaderboard</h1>
       <div className="tabs" role="tablist" aria-label="Leaderboard range">
-        {(['daily', 'weekly', 'monthly', 'alltime'] as const).map((s) => (
-          <button key={s} type="button" role="tab" className="tab" aria-selected={scope === s} onClick={() => setScope(s)}>
+        {SCOPES.map((s) => (
+          <button
+            key={s}
+            id={`tab-${s}`}
+            type="button"
+            role="tab"
+            className="tab"
+            aria-selected={scope === s}
+            aria-controls="board-panel"
+            tabIndex={scope === s ? 0 : -1}
+            onClick={() => setScope(s)}
+            onKeyDown={onTabKey}
+          >
             {LABELS[s]}
           </button>
         ))}
       </div>
-      <section className="card" role="tabpanel">
+      <section className="card" role="tabpanel" id="board-panel" aria-labelledby={`tab-${scope}`}>
         {error && (
           <p className="error" role="alert">
             {error}
@@ -51,13 +85,25 @@ export default function LeaderboardPage() {
           </div>
         )}
         {data && data.rows.length === 0 && (
-          <p className="muted center">
-            {scope === 'daily'
-              ? 'No registered player has finished today’s game yet. Be the first!'
-              : scope === 'alltime'
-                ? 'No games on record yet.'
-                : `No registered player has finished a game ${scope === 'weekly' ? 'this week' : 'this month'} yet. Be the first!`}
-          </p>
+          <div className="empty-board center stack">
+            <p className="muted" style={{ margin: 0 }}>
+              {scope === 'daily'
+                ? 'Nobody is on the board for today yet. The top spot is empty.'
+                : scope === 'alltime'
+                  ? 'No games on record yet. The first name on the board stays there until someone beats it.'
+                  : `Nobody has finished a game ${scope === 'weekly' ? 'this week' : 'this month'} yet. The top spot is empty.`}
+            </p>
+            <div className="row" style={{ justifyContent: 'center' }}>
+              <Link href="/" className="btn">
+                Play today&apos;s game
+              </Link>
+              {known && !me && (
+                <Link href="/register" className="btn ghost">
+                  Create an account to be listed
+                </Link>
+              )}
+            </div>
+          </div>
         )}
         {data && data.from && data.to && (
           <p className="hint" style={{ marginBottom: 10 }}>
@@ -83,7 +129,15 @@ export default function LeaderboardPage() {
               <tbody>
                 {data.rows.map((r) => (
                   <tr key={r.rank} className={r.username === me ? 'me' : undefined}>
-                    <td>{r.rank <= 3 ? ['🥇', '🥈', '🥉'][r.rank - 1] : r.rank}</td>
+                    <td>
+                      {r.rank <= 3 ? (
+                        <span role="img" aria-label={MEDALS[r.rank - 1].name}>
+                          {MEDALS[r.rank - 1].icon}
+                        </span>
+                      ) : (
+                        r.rank
+                      )}
+                    </td>
                     <td>
                       <strong>{r.username}</strong>
                       {r.username === me && <span className="tag" style={{ marginLeft: 8 }}>you</span>}
@@ -100,6 +154,12 @@ export default function LeaderboardPage() {
         )}
         <p className="hint" style={{ marginTop: 14 }}>
           Leaderboards list registered players only. Ties are broken by the faster finish.
+          {known && !me && (
+            <>
+              {' '}
+              Playing as a guest? <Link href="/register">Create an account</Link> and your scores count here.
+            </>
+          )}
         </p>
       </section>
     </div>

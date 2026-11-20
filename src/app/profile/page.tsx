@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { ApiError, apiFetch } from '@/lib/client/api';
+import { whatYouWouldLose } from '@/lib/delete-summary';
 import { FORM_LABELS } from '@/lib/game/forms';
 import type { HistoryRow, PlayerStats, ProfileData } from '@/lib/profile-data';
 import { TIER_LABELS } from '@/lib/game/tiers';
@@ -21,7 +22,15 @@ export default function ProfilePage() {
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [pwMsg, setPwMsg] = useState('');
-  const [confirm, setConfirm] = useState('');
+  // Deleting asks one more question first: what you would lose, and a yes or no.
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const keepRef = useRef<HTMLButtonElement>(null);
+  const askRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (confirming) keepRef.current?.focus();
+  }, [confirming]);
 
   useEffect(() => {
     apiFetch<Data>('/api/profile')
@@ -60,15 +69,26 @@ export default function ProfilePage() {
     }
   }
 
-  async function deleteAccount(e: FormEvent) {
-    e.preventDefault();
+  async function deleteAccount() {
+    setDeleting(true);
+    setError('');
     try {
-      await apiFetch('/api/profile', { method: 'DELETE', body: { confirm } });
+      await apiFetch('/api/profile', { method: 'DELETE', body: { confirm: 'DELETE' } });
       router.push('/');
       router.refresh();
     } catch (err) {
       setError((err as ApiError).message);
+      setDeleting(false);
     }
+  }
+
+  function closeConfirm() {
+    setConfirming(false);
+    askRef.current?.focus();
+  }
+
+  function onConfirmKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') closeConfirm();
   }
 
   if (guest) {
@@ -341,23 +361,39 @@ export default function ProfilePage() {
           This permanently removes your account, username, streak and leaderboard entries. Anonymous game statistics
           are kept. This cannot be undone.
         </p>
-        <form onSubmit={deleteAccount} className="row">
-          <label htmlFor="confirm" className="sr-only">
-            Type DELETE to confirm
-          </label>
-          <input
-            id="confirm"
-            className="input"
-            style={{ maxWidth: 220 }}
-            placeholder="Type DELETE"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            autoComplete="off"
-          />
-          <button type="submit" className="btn danger" disabled={confirm !== 'DELETE'}>
+        {!confirming ? (
+          <button ref={askRef} type="button" className="btn danger" onClick={() => setConfirming(true)}>
             Delete my account
           </button>
-        </form>
+        ) : (
+          <div className="confirm-delete" role="group" aria-labelledby="confirm-title" onKeyDown={onConfirmKey}>
+            <h3 id="confirm-title">Leaving already?</h3>
+            {(() => {
+              const loss = whatYouWouldLose(data.profile, data.stats);
+              return loss.length > 0 ? (
+                <>
+                  <p>You&apos;ll lose:</p>
+                  <ul>
+                    {loss.map((l) => (
+                      <li key={l}>{l}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p>You haven&apos;t played yet, so this only removes your username.</p>
+              );
+            })()}
+            <p>This can&apos;t be undone. Do you want to delete your account?</p>
+            <div className="row">
+              <button ref={keepRef} type="button" className="btn" onClick={closeConfirm} disabled={deleting}>
+                No, keep my account
+              </button>
+              <button type="button" className="btn danger" onClick={deleteAccount} disabled={deleting}>
+                {deleting ? 'Deleting…' : 'Yes, delete it'}
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

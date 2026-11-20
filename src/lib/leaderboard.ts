@@ -51,6 +51,33 @@ export async function allTimeLeaderboard(limit = 50): Promise<LeaderboardRow[]> 
   }));
 }
 
+/** Below this many finished games a percentage says nothing, so none is shown. */
+export const MIN_STANDING_SAMPLE = 5;
+
+/**
+ * Where a finished game lands among everyone who finished the same day (guests included), as a
+ * "top N%" figure. Ties share the better place. `null` while too few people have finished.
+ */
+export async function dayStanding(sessionId: string): Promise<{ top: number; total: number } | null> {
+  const rows = await query<{ total: number; higher: number }>(
+    `with me as (select game_id, total_score from game_sessions where id = $1 and status = 'completed')
+     select count(*)::int as total,
+            count(*) filter (where s.total_score > me.total_score)::int as higher
+       from me
+       join game_sessions s on s.game_id = me.game_id and s.status = 'completed'
+       left join profiles p on p.id = s.user_id
+      where p.id is null or not p.suspended`,
+    [sessionId],
+  );
+  return standingFrom(rows[0]?.total ?? 0, rows[0]?.higher ?? 0);
+}
+
+/** Pure part of `dayStanding`: turns "how many finished, how many beat me" into a top-N% figure. */
+export function standingFrom(total: number, higher: number): { top: number; total: number } | null {
+  if (total < MIN_STANDING_SAMPLE) return null;
+  return { top: Math.min(100, Math.max(1, Math.ceil(((higher + 1) / total) * 100))), total };
+}
+
 export type Period = 'weekly' | 'monthly';
 
 /** First and last game date of the week (Monday to Sunday) or calendar month that contains `date`. */

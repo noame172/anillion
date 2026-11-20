@@ -25,6 +25,26 @@ export default function TipsPage() {
         a villain from a single arc or a side character earns far more.
       </p>
 
+      <figure className="demo" aria-label="Example prompt">
+        <figcaption>A worked example</figcaption>
+        <p className="demo-q">Name a One Piece character.</p>
+        <ul className="demo-answers">
+          <li>
+            <span className="tier-badge tier-common">Common</span> Luffy <b>25</b>
+          </li>
+          <li>
+            <span className="tier-badge tier-rare">Rare</span> Usopp <b>50</b>
+          </li>
+          <li>
+            <span className="tier-badge tier-epic">Epic</span> Kuro <b>75</b>
+          </li>
+          <li>
+            <span className="tier-badge tier-ultra">Ultra Answer</span> Dr. Hogback <b>100</b>
+          </li>
+        </ul>
+        <p className="demo-note">Illustrative tiers only. Real ones come from what players actually answer each day.</p>
+      </figure>
+
       <h2>Think one step past the first name that comes to mind</h2>
       <ul>
         <li>For a series, skip the lead and the main rival. Think of a character from the middle of the cast.</li>

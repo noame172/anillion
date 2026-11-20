@@ -22,6 +22,8 @@ const VERDICT = {
   ultra: 'Ultra Form. That was a legendary run.',
 } as const;
 
+type Standing = { top: number; total: number } | null;
+
 function shareCell(share: number | null, timedOut: boolean) {
   if (timedOut) return '—';
   if (share === null) return 'New';
@@ -30,7 +32,7 @@ function shareCell(share: number | null, timedOut: boolean) {
 
 function Results() {
   const date = useSearchParams().get('date');
-  const [data, setData] = useState<{ state: GameState; streak: number; freezes: number; guest: boolean } | null>(null);
+  const [data, setData] = useState<{ state: GameState; streak: number; freezes: number; guest: boolean; standing: Standing } | null>(null);
   const [error, setError] = useState('');
   const [missing, setMissing] = useState(false);
   // The hero climbs from base to the final form, then the numbers appear.
@@ -46,10 +48,10 @@ function Results() {
   useEffect(() => {
     let current = true;
     const load = /^\d{4}-\d{2}-\d{2}$/.test(date ?? '')
-      ? apiFetch(`/api/game/result?date=${date}`).then((r) => ({ state: r.state as GameState, streak: r.streak, freezes: r.freezes ?? 0, guest: false }))
+      ? apiFetch(`/api/game/result?date=${date}`).then((r) => ({ state: r.state as GameState, streak: r.streak, freezes: r.freezes ?? 0, guest: false, standing: (r.standing ?? null) as Standing }))
       : apiFetch('/api/game/today').then((r) => {
           if (!r.state) throw Object.assign(new Error('none'), { code: 'NOT_FOUND' });
-          return { state: r.state as GameState, streak: r.streak, freezes: r.freezes ?? 0, guest: r.viewer.kind === 'guest' };
+          return { state: r.state as GameState, streak: r.streak, freezes: r.freezes ?? 0, guest: r.viewer.kind === 'guest', standing: (r.standing ?? null) as Standing };
         });
     load
       .then((d) => current && setData(d))
@@ -88,7 +90,7 @@ function Results() {
     );
   }
 
-  const { state, streak, freezes } = data;
+  const { state, streak, freezes, standing } = data;
   const shareUrl = `${window.location.origin}/share/${state.sessionId}`;
   const text = shareText(state, streak);
 
@@ -140,6 +142,12 @@ function Results() {
             <div className="k">Streak</div>
             <div className="v">🔥 {streak}{freezes > 0 ? ` · 🧊 ${freezes}` : ''}</div>
           </div>
+          {state.completed && standing && (
+            <div className="stat">
+              <div className="k">{data.guest ? 'You’d rank' : 'Today’s rank'}</div>
+              <div className="v">Top {standing.top}%</div>
+            </div>
+          )}
           <div className="stat">
             <div className="k">Next game in</div>
             <div className="v" style={{ fontSize: 18 }}>
@@ -147,6 +155,17 @@ function Results() {
             </div>
           </div>
         </div>
+        {state.completed && standing && (
+          <p className="hint" style={{ marginTop: 12 }}>
+            Ranked against the {standing.total} players who finished today’s game, guests included.
+            {data.guest && (
+              <>
+                {' '}
+                <Link href="/register">Create an account</Link> to appear on the leaderboard.
+              </>
+            )}
+          </p>
+        )}
       </section>
 
       <section className="card">

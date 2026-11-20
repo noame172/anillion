@@ -38,6 +38,21 @@ export default function FaqPage() {
         <div key={f.q}>
           <h2>{f.q}</h2>
           <p>{f.a}</p>
+          {f.q === 'How do I score points?' && (
+            <figure className="demo" aria-label="Example prompt">
+              <figcaption>A worked example</figcaption>
+              <p className="demo-q">Name a One Piece character.</p>
+              <ul className="demo-answers">
+                <li>
+                  <span className="tier-badge tier-common">Common</span> Luffy <b>25</b>
+                </li>
+                <li>
+                  <span className="tier-badge tier-ultra">Ultra Answer</span> Dr. Hogback <b>100</b>
+                </li>
+              </ul>
+              <p className="demo-note">Illustrative tiers only. Real ones come from what players actually answer each day.</p>
+            </figure>
+          )}
         </div>
       ))}
       <p>
