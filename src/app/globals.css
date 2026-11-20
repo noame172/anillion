@@ -1899,55 +1899,6 @@ table.table {
   color: var(--muted);
 }
 
-/* The prompt catalogue: one collapsible group per kind, listed in columns on a wide screen. */
-.q-group {
-  margin: 14px 0;
-  border: 2px solid var(--line);
-  border-radius: 14px;
-  background: rgba(10, 15, 44, 0.6);
-}
-.q-group summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 48px;
-  padding: 6px 16px;
-  cursor: pointer;
-  list-style: none;
-}
-.q-group summary::-webkit-details-marker {
-  display: none;
-}
-.q-group summary h2 {
-  margin: 0;
-}
-.q-group .count {
-  font-family: var(--font-display), Impact, sans-serif;
-  font-size: 16px;
-  color: var(--yellow);
-}
-.q-group summary::after {
-  content: '+';
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--blue);
-  margin-left: 4px;
-}
-.q-group[open] summary::after {
-  content: '−';
-}
-.q-list {
-  margin: 0;
-  padding: 4px 16px 14px 36px;
-  columns: 2 280px;
-  column-gap: 28px;
-}
-.q-list li {
-  break-inside: avoid;
-  padding: 2px 0;
-}
-
 .empty-board {
   padding: 8px 0;
 }

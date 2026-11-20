@@ -20,7 +20,7 @@ const FAQ: { q: string; a: string }[] = [
   { q: 'My answer was right but was not accepted. What now?', a: 'Answers are checked against a reviewed list. Unrecognised answers are logged for review, and correct ones are added for future games.' },
   { q: 'Do I need an account?', a: 'An account is needed to appear on the leaderboard and to keep your history on every device.' },
   { q: 'What are the power levels?', a: 'Your hero powers up as your total score grows: Base Form, Ascended, Azure Ascended and Ultra Form.' },
-  { q: 'What kind of prompts will I get?', a: 'Characters from popular series, anime studios, genres, release years, movies and more. See the list on the anime quiz questions page.' },
+  { q: 'What kind of prompts will I get?', a: 'Characters from popular series, anime studios, genres, release years, movies and more.' },
 ];
 
 export default function FaqPage() {
@@ -56,8 +56,7 @@ export default function FaqPage() {
         </div>
       ))}
       <p>
-        More detail: <Link href="/how-to-play">how to play</Link>, <Link href="/tips">tips for scoring higher</Link>,{' '}
-        <Link href="/anime-quiz-questions">anime quiz questions</Link>.
+        More detail: <Link href="/how-to-play">how to play</Link> and <Link href="/tips">tips for scoring higher</Link>.
       </p>
     </article>
   );

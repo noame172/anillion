@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ['/how-to-play', 'monthly', 0.6],
     ['/tips', 'monthly', 0.6],
     ['/faq', 'monthly', 0.6],
-    ['/anime-quiz-questions', 'weekly', 0.6],
   ];
   return pages.map(([path, changeFrequency, priority]) => ({ url: `${siteUrl}${path}`, changeFrequency, priority }));
 }
