@@ -162,7 +162,7 @@ export default function ProfilePage() {
             ))}
           </div>
           <p className="hint">
-            {stats.answered} answers scored{stats.timeouts > 0 ? `, ${stats.timeouts} prompts timed out` : ''}.
+            {stats.answered} answers scored{stats.timeouts > 0 ? `, ${stats.timeouts} prompts timed out or passed` : ''}.
           </p>
           {stats.ultraAnswers.length > 0 && (
             <>

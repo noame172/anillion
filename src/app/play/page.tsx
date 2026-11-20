@@ -7,10 +7,10 @@ import { Hero } from '@/components/Hero';
 import { useAscend } from '@/components/useAscend';
 import { ApiError, apiFetch } from '@/lib/client/api';
 import { FORM_LABELS, FORMS, formForTier } from '@/lib/game/forms';
-import type { AnsweredRow, GameState, SubmitResult } from '@/lib/game/session';
+import type { AnsweredRow, GameState, PassResult, SubmitResult } from '@/lib/game/session';
 import { TIER_LABELS } from '@/lib/game/tiers';
 
-type Reveal = { kind: 'accepted' | 'timeout'; row: AnsweredRow | null };
+type Reveal = { kind: 'accepted' | 'timeout' | 'pass'; row: AnsweredRow | null };
 
 // The server allows a short grace after the buzzer; wait it out before asking for the verdict.
 const TIMEOUT_SETTLE_MS = 1700;
@@ -46,6 +46,8 @@ export default function PlayPage() {
   const [shake, setShake] = useState(false);
   const [leftMs, setLeftMs] = useState(0);
   const [timeUp, setTimeUp] = useState(false);
+  // Passing needs a second tap, so a stray tap cannot throw a prompt away.
+  const [confirmPass, setConfirmPass] = useState(false);
 
   // The hero shows the rarity of the answer just given, then drops back to base.
   const hero = useAscend();
@@ -66,6 +68,7 @@ export default function PlayPage() {
     deadline.current = next.current ? performance.now() + next.current.timeLeftMs : null;
     setLeftMs(next.current?.timeLeftMs ?? 0);
     setTimeUp(false);
+    setConfirmPass(false);
     setState(next);
   }, []);
 
@@ -194,6 +197,42 @@ export default function PlayPage() {
     }
   }
 
+  /** Skip this prompt: it scores 0, like running out of time, but without waiting for the timer. */
+  async function pass() {
+    if (!state?.current || sending.current || timeUp) return;
+    if (!confirmPass) {
+      setConfirmPass(true);
+      setTimeout(() => setConfirmPass(false), 4000);
+      return;
+    }
+    sending.current = true;
+    setConfirmPass(false);
+    setSuggest(null);
+    setBusy(true);
+    setFeedback('');
+    try {
+      const res = await apiFetch<PassResult>('/api/game/pass', { body: { questionId: state.current.id } });
+      apply(res.state);
+      setReveal({ kind: res.status === 'passed' ? 'pass' : 'timeout', row: res.state.answers[res.state.answers.length - 1] ?? null });
+      setText('');
+    } catch (err) {
+      const e2 = err as ApiError;
+      if (e2.code === 'RATE_LIMITED' || e2.code === 'NETWORK') setFeedback(e2.message);
+      else if (e2.code === 'GAME_ENDED' || e2.code === 'NO_GAME') setFatal(e2.message);
+      else {
+        // Out of step with the server (another tab, a double tap): resync.
+        const today = await apiFetch<{ state: GameState | null }>('/api/game/today').catch(() => null);
+        if (today?.state) {
+          if (today.state.completed) router.replace('/results');
+          else apply(today.state);
+        } else setFeedback(e2.message);
+      }
+    } finally {
+      setBusy(false);
+      sending.current = false;
+    }
+  }
+
   async function next() {
     if (!state || sending.current) return;
     sending.current = true;
@@ -302,8 +341,8 @@ export default function PlayPage() {
                 </>
               ) : (
                 <>
-                  <span className="tier-badge tier-miss">TIME&apos;S UP</span>
-                  <div className="answer">No valid answer</div>
+                  <span className="tier-badge tier-miss">{reveal.kind === 'pass' ? 'PASSED' : 'TIME’S UP'}</span>
+                  <div className="answer">{reveal.kind === 'pass' ? 'You passed' : 'No valid answer'}</div>
                   <div className="points">+0</div>
                   <div className="qhint">{row?.question}</div>
                 </>
@@ -386,6 +425,20 @@ export default function PlayPage() {
               </form>
               <div id="answer-feedback" className="feedback error" role="status" aria-live="polite">
                 {timeUp ? 'Time’s up!' : feedback}
+              </div>
+              <div className="pass-row">
+                <button
+                  type="button"
+                  className={`btn ghost pass-btn${confirmPass ? ' confirm' : ''}`}
+                  onClick={pass}
+                  disabled={busy || timeUp}
+                  aria-describedby="pass-hint"
+                >
+                  {confirmPass ? 'Tap again to pass (+0)' : 'Pass'}
+                </button>
+                <span id="pass-hint" className="hint">
+                  Don&apos;t know this one? Skip it for 0 points. It&apos;s the same as running out of time, without the wait.
+                </span>
               </div>
             </>
           )}

@@ -23,6 +23,7 @@ export default function HowToPlayPage() {
         <li>Wrong or unrecognised guesses cost nothing. Keep trying until the time runs out.</li>
         <li>Your first valid answer scores and locks the prompt. You cannot change it afterwards.</li>
         <li>If the timer runs out, the prompt scores 0 and you move on.</li>
+        <li>Don&apos;t know one? Press <strong>Pass</strong> (and tap again to confirm) to skip it. It scores 0, the same as running out of time, without the wait.</li>
       </ul>
 
       <h2>Points</h2>

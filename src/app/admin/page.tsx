@@ -74,7 +74,7 @@ export default function AdminAnalyticsPage() {
         <RankList title="Most popular answers" rows={a.topAnswers.map((x: any) => [`${x.canonical} — ${x.question}`, x.count])} />
         <RankList title="Rarest answers given" rows={a.rarestAnswers.map((x: any) => [`${x.canonical} — ${x.question}`, x.count])} />
         <RankList title="Streaks (accounts)" rows={a.streaks.map((s: any) => [`${s.bucket} days`, s.users])} />
-        <RankList title="Most skipped prompts (timed out, %)" rows={a.skipped.map((q: any) => [`${q.text} (${q.timeouts}/${q.plays})`, q.pct])} />
+        <RankList title="Most skipped prompts (timed out or passed, %)" rows={a.skipped.map((q: any) => [`${q.text} (${q.timeouts}/${q.plays})`, q.pct])} />
         <RankList title="Answer rarity mix" rows={a.tierMix.map((t: any) => [t.tier, t.n])} />
       </div>
     </div>

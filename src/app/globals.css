@@ -1569,3 +1569,25 @@ table.table {
   outline: 3px solid var(--yellow);
   outline-offset: 1px;
 }
+
+/* Pass button under the answer bar */
+.pass-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.pass-btn {
+  min-height: 44px;
+  padding: 8px 18px;
+  font-size: 14px;
+}
+.pass-btn.confirm {
+  border-color: var(--red);
+  color: var(--red);
+}
+.pass-row .hint {
+  flex: 1 1 200px;
+  margin: 0;
+}

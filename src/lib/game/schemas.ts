@@ -10,4 +10,7 @@ export const answerBodySchema = z.object({
   text: z.string().trim().min(1, 'Type an answer first.').max(MAX_ANSWER_LENGTH, 'That answer is too long.'),
 });
 
+/** Passing a prompt only names the prompt: there is no answer, score or tier to send. */
+export const passBodySchema = z.object({ questionId: z.uuid() });
+
 export const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date.');

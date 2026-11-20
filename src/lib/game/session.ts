@@ -53,6 +53,9 @@ export type SubmitResult =
   | { status: 'suggestion'; suggestion: string; timeLeftMs: number }
   | { status: 'timeout'; state: GameState };
 
+/** The result of passing a prompt: it scored 0 and the game moved on (or time had already run out). */
+export type PassResult = { status: 'passed' | 'timeout'; state: GameState };
+
 type SessionRow = {
   id: string;
   user_id: string | null;
@@ -137,6 +140,9 @@ const TIMEOUT: Resolution = {
   provisional: false,
   timedOut: true,
 };
+
+/** A prompt the player chose to skip: 0 points, like running out of time, without the wait. */
+const PASS: Resolution = { ...TIMEOUT, rawText: '[pass]' };
 
 /** Close the current question at 0 points if its timer has run out. */
 async function expireIfLate(session: SessionRow, game: DailyGame, now: Date): Promise<{ session: SessionRow; expired: boolean }> {
@@ -381,5 +387,30 @@ export async function submitAnswer(
     }
     const state = await buildState(game, updated, now);
     return { status: 'accepted', result: state.answers[state.answers.length - 1], state };
+  });
+}
+
+/**
+ * Pass the prompt whose timer is running: it scores 0 (the same as running out of time) and the game
+ * moves on. Only the current prompt can be passed, and only once: the same unique
+ * (session, question) record that stops a double score stops a double pass.
+ */
+export async function passQuestion(viewer: Viewer, input: { questionId: string }, now: Date = new Date()): Promise<PassResult> {
+  const game = await requireTodayGame(now);
+  return tx(async () => {
+    const found = await findSession(game.id, viewer, true);
+    if (!found) throw conflict('NO_SESSION', 'Start the game first.');
+    if (found.status === 'completed') throw conflict('GAME_OVER', "You have already finished today's game.");
+
+    const { session, expired } = await expireIfLate(found, game, now);
+    if (expired) return { status: 'timeout', state: await buildState(game, session, now) };
+    const index = game.questions.findIndex((q) => q.id === input.questionId);
+    if (index !== -1 && index < session.position) throw conflict('ALREADY_ANSWERED', 'That question is already answered.');
+    if (!session.current_started_at) throw conflict('NOT_STARTED', 'The next question has not started yet.');
+    if (game.questions[session.position].id !== input.questionId) {
+      throw conflict('NOT_CURRENT_QUESTION', 'That is not the current question.');
+    }
+    const updated = await resolveCurrent(session, game, PASS, now);
+    return { status: 'passed', state: await buildState(game, updated, now) };
   });
 }

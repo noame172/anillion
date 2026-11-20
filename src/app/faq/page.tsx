@@ -15,6 +15,7 @@ const FAQ: { q: string; a: string }[] = [
   { q: 'How do I score points?', a: 'The fewer players who gave the same answer as you, the more it is worth: 25 points for a common answer, 50 for rare, 75 for epic and 100 for an Ultra Answer.' },
   { q: 'What is an Ultra Answer?', a: 'An answer given by 1% of players or fewer. It is the most valuable answer you can give, worth 100 points.' },
   { q: 'What happens if I type a wrong answer?', a: 'Nothing is lost. Wrong or unrecognised guesses cost no points, so you can keep trying until the thirty seconds run out.' },
+  { q: 'Can I skip a prompt I do not know?', a: 'Yes. Press Pass, then tap again to confirm. The prompt scores 0, the same as running out of time, but you do not have to wait for the timer. You cannot come back to it.' },
   { q: 'Can I change an answer after I submit it?', a: 'No. Your first valid answer scores and locks that prompt.' },
   { q: 'My answer was right but was not accepted. What now?', a: 'Answers are checked against a reviewed list. Unrecognised answers are logged for review, and correct ones are added for future games.' },
   { q: 'Do I need an account?', a: 'An account is needed to appear on the leaderboard and to keep your history on every device.' },
