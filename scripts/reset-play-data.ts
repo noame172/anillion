@@ -7,7 +7,7 @@
  * Deletes: every game session and submission, the rarity statistics, review-queue entries from
  * players, rate-limit counters, and the daily games that were already served. Games scheduled for
  * the future and not yet served stay. Every profile's streak, points and games played go back to 0.
- * Accounts themselves are kept.
+ * Accounts themselves are kept, and everyone registered who played gets the Beta tester badge first.
  */
 import fs from 'node:fs';
 import { createPgDriver } from '../src/lib/db/pg';
@@ -37,6 +37,10 @@ async function main() {
     process.exit(0);
   }
   await db.tx(async (q) => {
+    // Before the history goes: everyone who played during the beta keeps the Beta tester badge.
+    await q.query(
+      'update profiles set beta_tester = true where id in (select user_id from game_sessions where user_id is not null)',
+    );
     await q.query('delete from submissions');
     await q.query('delete from game_sessions');
     await q.query('delete from answer_stats');

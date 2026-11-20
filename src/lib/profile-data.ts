@@ -22,6 +22,7 @@ export type ProfileData = {
   totalPoints: number;
   averageScore: number;
   bestScore: number;
+  betaTester: boolean;
 };
 
 async function today(now: Date) {
@@ -65,10 +66,12 @@ export async function getProfile(userId: string, now: Date = new Date()): Promis
     games_played: number;
     total_points: number;
     best: number | null;
+    beta_tester: boolean;
   }>(
     `select p.username, p.avatar_url, p.role, p.created_at, p.streak, p.longest_streak,
             p.last_played_date::text as last_played, p.games_played, p.total_points,
-            (select max(total_score) from game_sessions where user_id = p.id and status = 'completed') as best
+            (select max(total_score) from game_sessions where user_id = p.id and status = 'completed') as best,
+            p.beta_tester
        from profiles p where p.id = $1`,
     [userId],
   );
@@ -87,6 +90,7 @@ export async function getProfile(userId: string, now: Date = new Date()): Promis
     totalPoints: p.total_points,
     averageScore: p.games_played ? Math.round(p.total_points / p.games_played) : 0,
     bestScore: p.best ?? 0,
+    betaTester: p.beta_tester,
   };
 }
 
@@ -114,7 +118,7 @@ export type PlayerStats = {
 };
 
 /** Lifetime numbers and badges for a registered player. Looked up by the verified user id only. */
-export async function getPlayerStats(userId: string, profile: Pick<ProfileData, 'gamesPlayed' | 'longestStreak' | 'bestScore'>): Promise<PlayerStats> {
+export async function getPlayerStats(userId: string, profile: Pick<ProfileData, 'gamesPlayed' | 'longestStreak' | 'bestScore' | 'betaTester'>): Promise<PlayerStats> {
   const counts = await queryOne<{ common: number; rare: number; epic: number; ultra: number; timeouts: number }>(
     `select count(*) filter (where s.tier = 'common')::int as common,
             count(*) filter (where s.tier = 'rare')::int as rare,
@@ -142,6 +146,6 @@ export async function getPlayerStats(userId: string, profile: Pick<ProfileData, 
     tiers,
     timeouts: counts?.timeouts ?? 0,
     ultraAnswers: recent.map((r) => ({ answer: r.answer, question: r.question, date: r.d })),
-    badges: badgesFor({ gamesPlayed: profile.gamesPlayed, longestStreak: profile.longestStreak, ultraAnswers: tiers.ultra, bestScore: profile.bestScore }),
+    badges: badgesFor({ gamesPlayed: profile.gamesPlayed, longestStreak: profile.longestStreak, ultraAnswers: tiers.ultra, bestScore: profile.bestScore, betaTester: profile.betaTester }),
   };
 }

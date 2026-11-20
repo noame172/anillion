@@ -1,9 +1,11 @@
-/** Badges are worked out from a player's totals each time, so there is nothing extra to store or migrate. */
+/** Badges are worked out from a player's totals each time. The one exception is Beta tester, which is stored on the profile. */
 export type BadgeInput = {
   gamesPlayed: number;
   longestStreak: number;
   ultraAnswers: number;
   bestScore: number;
+  /** Played while the site was in beta. Stored on the profile, so it outlives the launch reset. */
+  betaTester?: boolean;
 };
 
 export type Badge = {
@@ -34,8 +36,13 @@ const RULES: Rule[] = [
 ];
 
 export function badgesFor(input: BadgeInput): Badge[] {
-  return RULES.map((r) => {
+  const badges = RULES.map((r) => {
     const v = r.value(input);
     return { id: r.id, name: r.name, description: r.description, earned: v >= r.target, current: Math.min(v, r.target), target: r.target };
   });
+  // Cannot be earned any more once the beta is over, so it is only listed for those who have it.
+  if (input.betaTester) {
+    badges.unshift({ id: 'beta-tester', name: 'Beta tester', description: 'Played Animellion during the beta', earned: true, current: 1, target: 1 });
+  }
+  return badges;
 }

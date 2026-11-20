@@ -127,7 +127,11 @@ async function resolveCurrent(session: SessionRow, game: DailyGame, r: Resolutio
       finished ? formForScore(score) : null,
     ],
   );
-  if (finished && session.user_id) await recomputeProfileStats(session.user_id, game.date);
+  if (finished && session.user_id) {
+    await recomputeProfileStats(session.user_id, game.date);
+    // Finishing a game while the site is still in beta earns the Beta tester badge for good.
+    if ((await getSettings()).prelaunch) await query('update profiles set beta_tester = true where id = $1', [session.user_id]);
+  }
   return updated!;
 }
 

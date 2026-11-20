@@ -307,7 +307,7 @@ describe('migrations', () => {
     const fresh = await createPgliteDriver();
     await Promise.all([migrate(fresh, { stubSupabase: true }), migrate(fresh, { stubSupabase: true })]);
     const rows = await fresh.query<{ name: string }>('select name from _migrations order by name');
-    expect(rows.map((r) => r.name)).toEqual(['0001_schema.sql', '0002_rls.sql', '0003_migrations_rls.sql']);
+    expect(rows.map((r) => r.name)).toEqual(['0001_schema.sql', '0002_rls.sql', '0003_migrations_rls.sql', '0004_beta_tester.sql']);
     await fresh.close();
   });
 });

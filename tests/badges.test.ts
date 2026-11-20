@@ -21,3 +21,12 @@ describe('badges', () => {
     expect(badgesFor({ gamesPlayed: 500, longestStreak: 0, ultraAnswers: 0, bestScore: 0 }).find((b) => b.id === 'veteran')).toMatchObject({ earned: true, current: 100, target: 100 });
   });
 });
+
+describe('beta tester badge', () => {
+  const base = { gamesPlayed: 0, longestStreak: 0, ultraAnswers: 0, bestScore: 0 };
+
+  it('is listed, and earned, only for players who took part in the beta', () => {
+    expect(badgesFor(base).some((b) => b.id === 'beta-tester')).toBe(false);
+    expect(badgesFor({ ...base, betaTester: true })[0]).toMatchObject({ id: 'beta-tester', earned: true });
+  });
+});
