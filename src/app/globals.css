@@ -765,7 +765,7 @@ textarea.input {
 
 .answer-bar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 10px;
   align-items: center;
   margin-top: 16px;
@@ -1528,10 +1528,10 @@ table.table {
   .hud-box {
     padding: 6px 10px;
   }
-  /* Timer, answer and FIRE share one row, so the prompt and the input stay on screen with the keyboard up. */
+  /* Timer, answer, Pass and FIRE share one row, so the prompt and the input stay on screen with the keyboard up. */
   .answer-bar {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    gap: 7px;
     margin-top: 10px;
   }
   .answer-bar .btn {
@@ -1598,8 +1598,12 @@ table.table {
   .suggest:empty {
     display: none;
   }
-  .pass-row .hint {
+  .pass-hint {
     display: none;
+  }
+  .answer-bar .pass-btn {
+    padding: 10px 11px;
+    font-size: 12px;
   }
   /* A live round needs the whole screen: the footer waits until it is over. */
   body.playing .site-footer {
@@ -1741,26 +1745,20 @@ table.table {
   outline-offset: 1px;
 }
 
-/* Pass button under the answer bar */
-.pass-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
+/* Pass button: sits between the answer box and FIRE, quieter than FIRE so it is not tapped by mistake */
 .pass-btn {
   min-height: 44px;
-  padding: 8px 18px;
-  font-size: 14px;
+  padding: 8px 14px;
+  font-size: 13px;
+  box-shadow: none;
 }
 .pass-btn.confirm {
   border-color: var(--red);
   color: var(--red);
+  min-width: 4.5em;
 }
-.pass-row .hint {
-  flex: 1 1 200px;
-  margin: 0;
+.pass-hint {
+  margin: 8px 0 0;
 }
 
 /* ---------- content pages that share the game's look ---------- */

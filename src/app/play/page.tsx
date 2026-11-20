@@ -464,6 +464,16 @@ export default function PlayPage() {
                     disabled={timeUp}
                   />
                 </div>
+                <button
+                  type="button"
+                  className={`btn ghost pass-btn${confirmPass ? ' confirm' : ''}`}
+                  onClick={pass}
+                  disabled={busy || timeUp}
+                  aria-describedby="pass-hint"
+                  aria-label={confirmPass ? 'Tap again to pass this prompt for 0 points' : 'Pass'}
+                >
+                  {confirmPass ? 'SURE?' : 'Pass'}
+                </button>
                 <button type="submit" className="btn" disabled={busy || timeUp || !text.trim()}>
                   {busy ? '…' : 'FIRE'}
                 </button>
@@ -471,20 +481,9 @@ export default function PlayPage() {
               <div id="answer-feedback" className="feedback error" role="status" aria-live="polite">
                 {timeUp ? 'Time’s up!' : feedback}
               </div>
-              <div className="pass-row">
-                <button
-                  type="button"
-                  className={`btn ghost pass-btn${confirmPass ? ' confirm' : ''}`}
-                  onClick={pass}
-                  disabled={busy || timeUp}
-                  aria-describedby="pass-hint"
-                >
-                  {confirmPass ? 'Tap again to pass (+0)' : 'Pass'}
-                </button>
-                <span id="pass-hint" className="hint">
-                  Don&apos;t know this one? Skip it for 0 points. It&apos;s the same as running out of time, without the wait.
-                </span>
-              </div>
+              <p id="pass-hint" className="hint pass-hint">
+                Don&apos;t know this one? Pass skips it for 0 points, the same as running out of time without the wait. Tap Pass twice to confirm.
+              </p>
             </>
           )}
         </div>
