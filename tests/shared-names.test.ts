@@ -72,6 +72,20 @@ describe('names several characters share', () => {
 
 describe('series names for title questions', () => {
   const q = (text: string, category: string, answers: string[][]) => ({ text, category, answers });
+  it('accepts the part after the colon, but not a season label', async () => {
+    const { addSeriesNames } = await import('../scripts/shared-names.mjs');
+    const { questions } = addSeriesNames([
+      q('Name an anime.', 'Genre', [
+        ['Kaguya-sama: Love is War', 'common'],
+        ['Attack on Titan: The Final Season', 'common'],
+        ['Sword Art Online: Alicization', 'rare'],
+      ]),
+    ]);
+    expect(questions[0].answers[0]).toEqual(['Kaguya-sama: Love is War', 'common', 'Love is War']);
+    expect(questions[0].answers[1]).toEqual(['Attack on Titan: The Final Season', 'common']);
+    // A single word is too vague to be a shortcut.
+    expect(questions[0].answers[2]).toEqual(['Sword Art Online: Alicization', 'rare']);
+  });
   it('accepts the series name for a season, and an optional leading "The"', async () => {
     const { addSeriesNames } = await import('../scripts/shared-names.mjs');
     const { questions, added } = addSeriesNames([

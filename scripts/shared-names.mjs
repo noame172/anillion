@@ -85,7 +85,7 @@ export function addSeriesNames(questions) {
     const owners = new Map(); // norm of the series name -> { text, indexes }
     q.answers.forEach(([name], i) => {
       // Movies, OVAs and specials are not the series itself: "Detective Conan" must not score as a Conan movie.
-      if (/(movie|film|ova|oad|special|specials|recap|gekijouban)/i.test(name)) return;
+      if (/b(movie|film|ova|oad|special|specials|recap|gekijouban)b/i.test(name)) return;
       const words = name.trim().split(/\s+/);
       for (let k = words.length - 1; k >= 1; k--) {
         const text = words.slice(0, k).join(' ').replace(/[\s:\-–,]+$/u, '').trim();
@@ -98,7 +98,27 @@ export function addSeriesNames(questions) {
         owners.get(n).indexes.push(i);
       }
     });
+    // The part after the colon is also what people call a show: "Love is War" for "Kaguya-sama: Love is War".
+    // Season and part labels are not names, and when several answers share a subtitle the cheapest one owns it.
+    const subtitles = new Map();
+    q.answers.forEach(([name], i) => {
+      if (/(movie|film|ova|oad|special|specials|recap|gekijouban)/i.test(name)) return;
+      const cut = name.search(/\s*[:：]\s+/u);
+      if (cut < 1) return;
+      const text = name.slice(cut).replace(/^\s*[:：]\s*/u, '').replace(/[\s:\-–,]+$/u, '').trim();
+      const n = norm(text);
+      if (n.split(' ').length < 2 || n.length < 8 || taken.has(n) || known.has(n)) return;
+      if (/\b(season|part|cour|final|arc|chapter|the animation|episode)\b/i.test(text) || /^\d/.test(text)) return;
+      if (!subtitles.has(n)) subtitles.set(n, { text, indexes: [] });
+      subtitles.get(n).indexes.push(i);
+    });
     const answers = q.answers.map((a) => [...a]);
+    for (const [n, { text, indexes }] of subtitles) {
+      const best = indexes.reduce((a, b) => (RANK[answers[b][1]] < RANK[answers[a][1]] ? b : a));
+      answers[best].push(text);
+      taken.add(n);
+      added++;
+    }
     // A leading "The" is optional: "Seven Deadly Sins" for "The Seven Deadly Sins".
     answers.forEach((a) => {
       const m = a[0].match(/^(?:the|a|an)\s+(.{3,})$/i);
